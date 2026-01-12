@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="16.0.0" />
+		<PackageReference Include="AWSSDK.S3" Version="4.0.17" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.0.11" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Lazy.Application.Contracts\Lazy.Application.Contracts.csproj" />
+		<ProjectReference Include="..\Lazy.Core\Lazy.Core.csproj" />
+	</ItemGroup>
+
+</Project>

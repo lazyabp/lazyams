@@ -1,0 +1,233 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Lazy.Application;
+using Lazy.Core;
+using Lazy.Core.LazyAttribute;
+using Lazy.Model.DBContext;
+using Lazy.Shared.Hubs;
+using Lazy.Shared.SharedConfig;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.WebEncoders;
+using Microsoft.IdentityModel.Tokens;
+using NLog;
+using NLog.Web;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using WebApi.Filters;
+using WebApi.Init;
+using WebApi.Middlewares;
+
+namespace WebApi
+{
+    /// <summary>
+    /// Provides the entry point for the application and configures the web host, services, middleware, and application
+    /// startup logic.
+    /// </summary>
+    /// <remarks>
+    /// The Program class is responsible for initializing logging, dependency injection,
+    /// configuration, authentication, CORS, Swagger, and other core services required by the application. It sets up
+    /// middleware for exception handling, authentication, and authorization, and configures endpoints for controllers
+    /// and SignalR hubs. The class also ensures that database seed data is initialized at startup. This class is not
+    /// intended to be instantiated; all logic is contained within the static Main method.
+    /// </remarks>
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // Early init of NLog to allow startup and exception logging, before host is built
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            logger.Debug("init main");
+            var defaultPolicy = "AllowAllOrigins";
+            try
+            {
+                var builder = WebApplication.CreateBuilder(args);
+                builder.WebHost.UseKestrel(options =>
+                {
+                    // Handle requests up to 50 MB
+                    options.Limits.MaxRequestBodySize = 52428800;
+                });
+                //autofac
+                builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+                builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+                {
+                    containerBuilder.RegisterModule<AutofacModule>();
+                });
+
+                builder.Services.AddOptions<JwtSettingConfig>().Bind(builder.Configuration.GetSection(JwtSettingConfig.Section)).ValidateDataAnnotations().ValidateOnStart();
+
+                // Configure response headers to use UTF-8 encoding(non-English)  
+                builder.Services.Configure<WebEncoderOptions>(options =>
+                {
+                    options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All);
+                });
+
+                // Add services to the container.
+                builder.Services.AddAppCore(builder.Configuration);
+
+                //Add Lazy Application services
+                builder.Services.AddApplication();
+
+                builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(typeof(Program)); });
+
+                builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
+                builder.Services.AddDbContext<LazyDBContext>(option =>
+                {
+                    var connectString = builder.Configuration["DataBase:ConnectionString"];
+                    // MySQL
+                    option.UseMySql(connectString, ServerVersion.AutoDetect(connectString), mysqlOptions =>
+                    {
+                        mysqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(5),
+                            errorNumbersToAdd: null);
+                    });
+                });
+
+                //Config AWS S3 Service
+                //Config AWS S3 Service
+                DotNetEnv.Env.Load();
+                var awsConfig = new AwsS3Config
+                {
+                    AccessKeyId = builder.Configuration["AwsConfig:AccessKeyId"],
+                    SecretAccessKey = builder.Configuration["AwsConfig:SecretAccessKey"],
+                    BucketName = builder.Configuration["AwsConfig:BucketName"],
+                    Region = builder.Configuration["AwsConfig:Region"]
+                };
+
+                builder.Services.AddSingleton(awsConfig);
+                //builder.Services.AddScoped<IFileUploadService, FileUploadService>();//use autofac DI later when having a deeper understanding of other ID methods.
+                // Config AWS S3 service to Avatar
+                // builder.Services.AddScoped<IAvatarService, AvatarService>();
+
+                //Add JWT Authentication
+                builder
+                    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.SaveToken = true;
+
+                        options.TokenValidationParameters =
+                            new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                            {
+                                ValidateIssuer = true,
+                                ValidateAudience = true,
+                                ValidateLifetime = true,
+                                ValidIssuer = builder.Configuration["JwtSetting:Issuer"],
+                                ValidAudience = builder.Configuration["JwtSetting:Audience"],
+                                IssuerSigningKey = new SymmetricSecurityKey(
+                                    Encoding.UTF8.GetBytes(
+                                        builder.Configuration["JwtSetting:SecurityKey"]
+                                    )
+                                ),
+                            };
+                    });
+
+                builder
+                    .Services.AddControllers(options =>
+                    {
+                        options.Filters.Add<ValidateModelFilter>();
+                        options.Filters.Add<UnifiedResultFilter>();
+                        //Handle requests up to 50 MB
+                        options.Filters.Add(
+                            new RequestFormLimitsAttribute() { BufferBodyLengthLimit = 52428800 }
+                        );
+                    })
+                    .ConfigureApiBehaviorOptions(options =>
+                    {
+                        options.SuppressModelStateInvalidFilter = true;
+                    })
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNamingPolicy =
+                            JsonNamingPolicy.CamelCase;
+                    });
+
+                // NLog: Setup NLog for Dependency injection
+                builder.Logging.ClearProviders();
+                builder.Host.UseNLog();
+
+                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+                //builder.Services.AddEndpointsApiExplorer();
+
+                builder.Services.AddSwaggerLazy();
+
+
+                //CORS
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(defaultPolicy,
+                        builder =>
+                        {
+                            builder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                        });
+                });
+
+                builder.Services.AddSignalR();
+
+                builder.Services.AddHttpContextAccessor();
+
+                var app = builder.Build();
+
+
+
+                app.UseRouting();
+                app.UseCors(defaultPolicy);
+                app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+                app.MapHub<FileUploadHub>("/fileUploadHub");
+
+                // Configure the HTTP request pipeline.
+                //app.UseSwaggerLazy();
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwaggerLazy();
+                }
+                app.UseAuthentication();
+                app.UseMiddleware<AuthLoggingMiddleware>();
+                app.UseAuthorization();
+
+
+                app.MapControllers();
+
+                using (var socpe = app.Services.CreateScope())
+                {
+                    var dbSeedDataSevices = socpe.ServiceProvider.GetRequiredService<IEnumerable<IDBSeedDataService>>();
+
+                    SortedDictionary<int, IDBSeedDataService> sdSeedData = new SortedDictionary<int, IDBSeedDataService>();
+
+                    foreach (var dbSeedDataSevice in dbSeedDataSevices)
+                    {
+                        var orderAttri = dbSeedDataSevice.GetType().GetCustomAttribute<DBSeedDataOrderAttribute>();
+                        if (orderAttri != null)
+                        {
+                            sdSeedData.Add(orderAttri.Order, dbSeedDataSevice);
+                        }
+                    }
+                    foreach (var item in sdSeedData)
+                    {
+                        item.Value.InitAsync().GetAwaiter().GetResult();
+                    }
+                }
+
+                app.Run();
+            }
+            catch (Exception exception)
+            {
+                // NLog: catch setup errors
+                logger.Error(exception, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            }
+        }
+    }
+}

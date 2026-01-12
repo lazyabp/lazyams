@@ -1,0 +1,11 @@
+﻿global using AutoMapper;
+global using Microsoft.EntityFrameworkCore;
+global using Lazy.Application.Contracts.Admin;
+global using Lazy.Application.Contracts.Dto;
+global using Lazy.Core.Caching;
+global using Lazy.Core.DependencyInjection;
+global using Lazy.Core.ExceptionHandling;
+global using Lazy.Model.DBContext;
+global using Lazy.Model.Entity;
+global using Lazy.Shared;
+global using System.Linq.Dynamic.Core;

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Dto\LoginResponseDto.cs" />
+	  <Compile Remove="Dto\RegisterRequestDto.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Dto\LoginResponseDto.cs" />
+	  <None Include="Dto\RegisterRequestDto.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Lazy.Core\Lazy.Core.csproj" />
+		<ProjectReference Include="..\Lazy.Model\Lazy.Model.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AWSSDK.S3" Version="4.0.17" />
+	</ItemGroup>
+
+</Project>

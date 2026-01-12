@@ -1,0 +1,132 @@
+﻿using Lazy.Application.Contracts.Admin;
+using Lazy.Application.Contracts.Dto;
+using Lazy.Core.WrapperResult;
+using Lazy.Shared;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Net.Http.Json;
+using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Lazy.UnitTest
+{
+    public class UserEndPointsTest : BaseTest
+    {
+        [Order(3)]
+        [Test]
+        public async Task TestGetByPageAsync([Values("test01", "test02")] string userName)
+        {
+
+            var resp = await this.Client.GetAsync("/api/user/GetByPage?PageIndex=1&PageSize=12&Filter=" + userName);
+            Assert.That(resp, Is.Not.Null);
+            Assert.That(HttpStatusCode.OK == resp.StatusCode, "The statu code is incorrect");
+
+            var stringResult = await resp.Content.ReadAsStringAsync();
+            Assert.That(stringResult, Is.Not.Null);
+
+            var serializeOptions = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+
+            };
+            var jsonResult = JsonSerializer.Deserialize<ApiResponseResult<PagedResultDto<UserDto>>>(stringResult, serializeOptions);
+
+            Assert.That(jsonResult, Is.Not.Null);
+            Assert.That(jsonResult.IsSuccess, Is.True);
+
+        }
+
+        [Order(2)]
+        [Test, Sequential]
+        public async Task TestDeleteAsync(
+            [Values("test01", "test02")] string userName
+            )
+        {
+            List<long> ids = await GetUserIdbyUserName(userName);
+
+            foreach (var id in ids)
+            {
+                var resp = await this.Client.DeleteAsync("/api/user/Delete/" + id);
+                Assert.That(resp, Is.Not.Null);
+                Assert.That(HttpStatusCode.OK == resp.StatusCode, "The statu code is incorrect");
+
+                var stringResult = await resp.Content.ReadAsStringAsync();
+                Assert.That(stringResult, Is.Not.Null);
+
+                var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
+
+                Assert.That(jsonResult, Is.Not.Null);
+                Assert.That(jsonResult.IsSuccess, Is.True);
+            }
+        }
+
+        private async Task<List<long>> GetUserIdbyUserName(string userName)
+        {
+            var resp = await this.Client.GetAsync("/api/user/GetByPage?PageIndex=1&PageSize=12&Filter=" + userName);
+            var stringResult = await resp.Content.ReadAsStringAsync();
+
+
+            var serializeOptions = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+
+            };
+            var jsonResult = JsonSerializer.Deserialize<ApiResponseResult<PagedResultDto<UserDto>>>(stringResult, serializeOptions);
+            if (jsonResult.IsSuccess && jsonResult.Data != null)
+            {
+                return jsonResult.Data.Items.Select(x => x.Id).ToList();
+            }
+
+            return new List<long>();
+        }
+
+        [Order(1)]
+        [Test, Sequential]
+        public async Task TestAddAsync(
+        [Values("test01", "test02")] string userName,
+        [Values("123456", "123455")] string password,
+        [Values(30, 40)] int Age,
+        [Values("abc@gmail.com", "qqq@gmail.com")] string email,
+        [Values("0421658272", "0421658255")] string phone,
+        [Values("brisbane", "Adelaide")] string address,
+        [Values(Gender.Female, Gender.Male)] Gender gender,
+        [Values("test01", "test02")] string Avatar
+        )
+        {
+            long uniqueId = DateTime.UtcNow.Ticks;
+            string uniqueUserName = $"{userName}_{Guid.NewGuid()}";
+            string uniqueEmail = $"{Guid.NewGuid()}_{email}";
+            CreateUserDto user = new CreateUserDto
+            {
+                Id = uniqueId,
+                UserName = uniqueUserName,
+                Password = password,
+                Age = Age,
+                Email = uniqueEmail,
+                        
+                Gender = gender,
+                Avatar = Avatar,
+                // Include RoleIds if required by the API
+                RoleIds = new List<long> { 1 } // Example role ID; ensure it exists in your test DB
+            };
+
+            var jsonContent = JsonContent.Create(user);
+
+                var resp = await this.Client.PostAsync("/api/user/Add", jsonContent);
+                Assert.That(resp, Is.Not.Null);
+                Assert.That(HttpStatusCode.OK == resp.StatusCode, "The statu code is incorrect");
+
+                var stringResult = await resp.Content.ReadAsStringAsync();
+                Assert.That(stringResult, Is.Not.Null);
+                var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
+
+                Assert.That(jsonResult, Is.Not.Null);
+                Assert.That(jsonResult.IsSuccess, Is.True);
+        }
+
+    }
+
+}
