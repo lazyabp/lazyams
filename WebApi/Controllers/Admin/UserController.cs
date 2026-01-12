@@ -1,5 +1,6 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 using Lazy.Application.Contracts.Admin.Dto.User;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers.Admin
 {
@@ -31,7 +32,7 @@ namespace WebApi.Controllers.Admin
         /// Retrive users
         /// </summary>
         /// <returns></returns>
-        // [Authorize(PermissionConsts.User.Search)]
+        [Authorize(PermissionConsts.User.Default)]
         [HttpGet]
         public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
         {
@@ -52,7 +53,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        // [Authorize(PermissionConsts.User.Add)]
+        [Authorize(PermissionConsts.User.Add)]
         [HttpPost]
         public async Task<bool> Add([FromBody] CreateUserDto input)
         {
@@ -65,7 +66,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        // [Authorize(PermissionConsts.User.Update)]
+        [Authorize(PermissionConsts.User.Update)]
         [HttpPost]
         public async Task<bool> Update([FromBody] UpdateUserDto input)
         {
@@ -78,7 +79,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        // [Authorize(PermissionConsts.User.Delete)]
+        [Authorize(PermissionConsts.User.Delete)]
         [HttpDelete("{id}")]
         public async Task<bool> Delete(long id)
         {
@@ -91,7 +92,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-
+        [Authorize(PermissionConsts.User.Default)]
         [HttpGet("{userName}")]
         public async Task<UserDto> Get(string userName)
         {
@@ -103,6 +104,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(PermissionConsts.User.Default)]
         [HttpGet("{id}")]
         public async Task<UserWithRoleIdsDto> GetUserById(long id)
         {

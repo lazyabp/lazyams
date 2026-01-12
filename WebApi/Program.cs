@@ -2,11 +2,13 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Lazy.Application;
 using Lazy.Core;
+using Lazy.Core.Authorization;
 using Lazy.Core.LazyAttribute;
 using Lazy.Model.DBContext;
 using Lazy.Shared.Hubs;
 using Lazy.Shared.SharedConfig;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.WebEncoders;
 using Microsoft.IdentityModel.Tokens;
@@ -125,6 +127,11 @@ namespace WebApi
                             };
                     });
 
+                // Add Authorization with custom policy provider
+                builder.Services.AddAuthorization();
+                builder.Services.AddSingleton<IAuthorizationPolicyProvider, LazyAuthorizationPolicyProvider>();
+                builder.Services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
+
                 builder
                     .Services.AddControllers(options =>
                     {
@@ -209,6 +216,7 @@ namespace WebApi
                             sdSeedData.Add(orderAttri.Order, dbSeedDataSevice);
                         }
                     }
+
                     foreach (var item in sdSeedData)
                     {
                         item.Value.InitAsync().GetAwaiter().GetResult();

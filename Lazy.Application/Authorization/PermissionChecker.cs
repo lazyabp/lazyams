@@ -22,13 +22,24 @@ public class PermissionChecker : IPermissionChecker, ITransientDependency
     {
         var userId = claimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
+        {
+            Console.WriteLine($"[Permission Check] Failed: No NameIdentifier claim found");
             return false;
-
+        }
 
         if (!long.TryParse(userId, out var userIdValue))
+        {
+            Console.WriteLine($"[Permission Check] Failed: Invalid userId format - {userId}");
             return false;
+        }
 
         var permissList = await _roleService.GetPermissionsbyUserIdAsync(userIdValue);
-        return permissList.Contains(name);
+        var hasPermission = permissList.Contains(name);
+        
+        Console.WriteLine($"[Permission Check] UserId={userIdValue}, RequiredPermission={name}");
+        Console.WriteLine($"[Permission Check] UserPermissions=[{string.Join(", ", permissList)}]");
+        Console.WriteLine($"[Permission Check] Result={hasPermission}");
+        
+        return hasPermission;
     }
 }

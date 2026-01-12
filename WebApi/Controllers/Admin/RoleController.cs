@@ -30,7 +30,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        //[Authorize(PermissionConsts.Role.Search)]
+        [Authorize(PermissionConsts.Role.Default)]
         [HttpGet]
         public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
         {
@@ -44,7 +44,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        //[Authorize(PermissionConsts.Role.Add)]
+        [Authorize(PermissionConsts.Role.Add)]
         [HttpPost]
         public async Task<bool> Add([FromBody] CreateRoleDto input)
         {
@@ -57,7 +57,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        //[Authorize(PermissionConsts.Role.Update)]
+        [Authorize(PermissionConsts.Role.Update)]
         [HttpPost]
         public async Task<bool> Update([FromBody] UpdateRoleDto input)
         {
@@ -70,7 +70,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        //[Authorize(PermissionConsts.Role.Delete)]
+        [Authorize(PermissionConsts.Role.Delete)]
         [HttpDelete("{id}")]
         public async Task<bool> Delete(long id)
         {
@@ -82,7 +82,7 @@ namespace WebApi.Controllers.Admin
         /// Delete several roles
         /// </summary>
         /// <param name="ids"></param>
-        //[Authorize(PermissionConsts.Role.Delete)]
+        [Authorize(PermissionConsts.Role.Delete)]
         [HttpDelete]
         public async Task<bool> BatchDelete([FromBody] long[] ids)
         {
@@ -100,6 +100,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(PermissionConsts.Role.Default)]
         [HttpGet("{id}")]
         public async Task<RoleDto> GetById(long id)
         {
@@ -117,7 +118,5 @@ namespace WebApi.Controllers.Admin
             var category = await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
             return true;
         }
-
-
     }
 }
