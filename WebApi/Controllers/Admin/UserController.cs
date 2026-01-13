@@ -55,10 +55,9 @@ namespace WebApi.Controllers.Admin
         /// <returns></returns>
         [Authorize(PermissionConsts.User.Add)]
         [HttpPost]
-        public async Task<bool> Add([FromBody] CreateUserDto input)
+        public async Task<UserDto> Add([FromBody] CreateUserDto input)
         {
-            var userDto = await _userService.CreateAsync(input);
-            return userDto.Id > 0;
+            return await _userService.CreateAsync(input);
         }
 
         /// <summary>
@@ -68,10 +67,9 @@ namespace WebApi.Controllers.Admin
         /// <returns></returns>
         [Authorize(PermissionConsts.User.Update)]
         [HttpPost]
-        public async Task<bool> Update([FromBody] UpdateUserDto input)
+        public async Task<UserDto> Update([FromBody] UpdateUserDto input)
         {
-            await _userService.UpdateAsync(input.Id, input);
-            return true;
+            return await _userService.UpdateAsync(input.Id, input);
         }
 
         /// <summary>
@@ -84,6 +82,7 @@ namespace WebApi.Controllers.Admin
         public async Task<bool> Delete(long id)
         {
             await _userService.DeleteAsync(id);
+
             return true;
         }
 
@@ -92,7 +91,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        [Authorize(PermissionConsts.User.Default)]
+        //[Authorize(PermissionConsts.User.Default)]
         [HttpGet("{userName}")]
         public async Task<UserDto> Get(string userName)
         {

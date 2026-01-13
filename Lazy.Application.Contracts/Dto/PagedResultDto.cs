@@ -22,5 +22,4 @@ public class PagedResultDto<T> : ListResultDto<T>
     {
         Total = total;
     }
-
 }

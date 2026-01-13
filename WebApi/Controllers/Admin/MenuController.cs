@@ -1,5 +1,6 @@
 using Lazy.Application.Contracts.Admin.Dto.Menu;
 using Lazy.Shared.Enum;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers.Admin
 {
@@ -32,6 +33,7 @@ namespace WebApi.Controllers.Admin
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(PermissionConsts.Role.Default)]
         public async Task<PagedResultDto<MenuDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
         {
             return await _menuService.GetListAsync(input);
@@ -43,10 +45,10 @@ namespace WebApi.Controllers.Admin
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<bool> Add([FromBody] CreateMenuDto input)
+        [Authorize(PermissionConsts.Role.Add)]
+        public async Task<MenuDto> Add([FromBody] CreateMenuDto input)
         {
-            var menuDto = await _menuService.CreateAsync(input);
-            return menuDto.Id > 0;
+            return await _menuService.CreateAsync(input);
         }
 
         /// <summary>
@@ -55,19 +57,10 @@ namespace WebApi.Controllers.Admin
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<bool> Update([FromBody] UpdateMenuDto input)
+        [Authorize(PermissionConsts.Role.Update)]
+        public async Task<MenuDto> Update([FromBody] UpdateMenuDto input)
         {
-            //try
-            //{
-            await _menuService.UpdateAsync(input.Id, input);
-            //}
-            //catch (EntityNotFoundException)
-            //{
-            //    HttpContext.Response.StatusCode = 404;
-            //    return false;
-            //}
-
-            return true;
+            return await _menuService.UpdateAsync(input.Id, input);
         }
 
         /// <summary>
@@ -76,22 +69,11 @@ namespace WebApi.Controllers.Admin
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(PermissionConsts.Role.Delete)]
         public async Task<bool> Delete(long id)
         {
-            //try
-            //{
             await _menuService.DeleteAsync(id);
-            //}
-            //catch(EntityNotFoundException)
-            //{
-            //    HttpContext.Response.StatusCode = 404;
-            //    return false;
-            //}
-            //catch (LazyValidationException)
-            //{
-            //    HttpContext.Response.StatusCode = 400;
-            //    return false;
-            //}
+
             return true;
         }
 
@@ -101,17 +83,11 @@ namespace WebApi.Controllers.Admin
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(PermissionConsts.Role.Default)]
         public async Task<MenuDto> GetById(long id)
         {
-            var menu = new MenuDto();
-            //try
-            //{
-            menu = await _menuService.GetAsync(id);
-            //}
-            //catch(EntityNotFoundException)
-            //{
-            //    HttpContext.Response.StatusCode = 404;
-            //}
+            var menu = await _menuService.GetAsync(id);
+
             return menu;
         }
 
@@ -120,6 +96,7 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <returns>A list of menus with tree structure</returns>
         [HttpGet]
+        [Authorize(PermissionConsts.Role.Default)]
         public async Task<List<MenuDto>> GetMenuTree()
         {
             return await _menuService.GetMenuTreeAsync();
@@ -147,9 +124,7 @@ namespace WebApi.Controllers.Admin
         [HttpGet("{id}")]
         public async Task<List<MenuIdDTO>> GetMenuIdsByRoleId(long id)
         {
-            var menuIds = await _menuService.GetMenuIdsByRoleIdAsync(id);
-            return menuIds;
+            return await _menuService.GetMenuIdsByRoleIdAsync(id);
         }
-
     }
 }

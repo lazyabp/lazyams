@@ -15,7 +15,6 @@ namespace WebApi.Controllers.Admin
     {
         private readonly IRoleService _roleService;
 
-
         /// <summary>
         /// RoleController
         /// </summary>
@@ -46,10 +45,9 @@ namespace WebApi.Controllers.Admin
         /// <returns></returns>
         [Authorize(PermissionConsts.Role.Add)]
         [HttpPost]
-        public async Task<bool> Add([FromBody] CreateRoleDto input)
+        public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
         {
-            var roleDto = await _roleService.CreateAsync(input);
-            return roleDto.Id > 0;
+            return await _roleService.CreateAsync(input);
         }
 
         /// <summary>
@@ -59,10 +57,9 @@ namespace WebApi.Controllers.Admin
         /// <returns></returns>
         [Authorize(PermissionConsts.Role.Update)]
         [HttpPost]
-        public async Task<bool> Update([FromBody] UpdateRoleDto input)
+        public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
         {
-            await _roleService.UpdateAsync(input.Id, input);
-            return true;
+            return await _roleService.UpdateAsync(input.Id, input);
         }
 
         /// <summary>
@@ -75,6 +72,7 @@ namespace WebApi.Controllers.Admin
         public async Task<bool> Delete(long id)
         {
             await _roleService.DeleteAsync(id);
+
             return true;
         }
 
@@ -87,12 +85,8 @@ namespace WebApi.Controllers.Admin
         public async Task<bool> BatchDelete([FromBody] long[] ids)
         {
             Console.WriteLine("get a array from client:", ids);
-            List<long> idList = new List<long>();
-            foreach (var item in ids)
-            {
-               idList.Add(item);
-            }
-            return await _roleService.BulkDelete(idList);
+
+            return await _roleService.BulkDelete(ids);
         }
 
         /// <summary>
@@ -112,11 +106,11 @@ namespace WebApi.Controllers.Admin
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
+        [Authorize(PermissionConsts.Role.Update)]
         [HttpPost]
         public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
         {
-            var category = await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
-            return true;
+            return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
         }
     }
 }

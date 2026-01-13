@@ -72,7 +72,7 @@ namespace Lazy.Application.Admin
         /// </summary>
         /// <param name="ids"></param>
         /// <returns>true or false</returns>
-        public async Task<bool> BulkDelete(List<long> ids)
+        public async Task<bool> BulkDelete(IEnumerable<long> ids)
         {
             var dbSet = this.GetDbSet();
             var roleList = await this.LazyDBContext.Roles.Where(x => ids.Contains(x.Id)).ToListAsync();
@@ -81,6 +81,7 @@ namespace Lazy.Application.Admin
             var deleteList = await dbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
             if (deleteList.Any())
                 dbSet.RemoveRange(deleteList);
+
             await this.LazyDBContext.SaveChangesAsync();
             return true;
         }
@@ -122,7 +123,7 @@ namespace Lazy.Application.Admin
         /// <param name="id">Role id</param>
         /// <param name="menuIdList">permission list</param>
         /// <returns></returns>
-        public async Task<bool> RolePermissionAsync(long id, List<long> menuIdList)
+        public async Task<bool> RolePermissionAsync(long id, IEnumerable<long> menuIdList)
         {
             var oldRoleMenuList = await this.LazyDBContext.RoleMenus.Where(x => x.RoleId == id).ToListAsync();
             this.LazyDBContext.RoleMenus.RemoveRange(oldRoleMenuList);
@@ -132,6 +133,7 @@ namespace Lazy.Application.Admin
                 SetIdForLong(roleMenu);
                 this.LazyDBContext.RoleMenus.Add(roleMenu);
             }
+
             var isSuccesss = await this.LazyDBContext.SaveChangesAsync() > 0;
 
             if (isSuccesss)
@@ -142,8 +144,8 @@ namespace Lazy.Application.Admin
                     var cacheKey = string.Format(CacheConsts.PermissCacheKey, userId);
                     await _LazyCache.RemoveAsync(cacheKey);
                 }
-
             }
+
             return isSuccesss;
         }
     }

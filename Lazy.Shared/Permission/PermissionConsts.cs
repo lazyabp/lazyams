@@ -29,4 +29,12 @@ public class PermissionConsts
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
     }
+
+    public class Carousel
+    {
+        public const string Default = PermissionManagement + ".Carousel";
+        public const string Add = Default + ".Add";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+    }
 }
