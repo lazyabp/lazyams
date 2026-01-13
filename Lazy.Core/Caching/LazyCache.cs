@@ -9,12 +9,12 @@ public class LazyCache : ILazyCache, ISingletonDependency
     private readonly IDistributedCache _cache;
     public LazyCache(IDistributedCache cache)
     {
-        this._cache = cache;
+        _cache = cache;
     }
 
     public T Get<T>(string key)
     {
-        var valueString = this._cache.GetString(key);
+        var valueString = _cache.GetString(key);
         if (string.IsNullOrEmpty(valueString))
             return default(T);
 
@@ -23,7 +23,7 @@ public class LazyCache : ILazyCache, ISingletonDependency
 
     public async Task<T> GetAsync<T>(string key)
     {
-        var valueString = await this._cache.GetStringAsync(key);
+        var valueString = await _cache.GetStringAsync(key);
         if (string.IsNullOrEmpty(valueString))
             return default(T);
 
@@ -33,41 +33,59 @@ public class LazyCache : ILazyCache, ISingletonDependency
 
     public void Remove(string key)
     {
-        this._cache.Remove(key);
+        _cache.Remove(key);
     }
 
     public Task RemoveAsync(string key)
     {
-        return this._cache.RemoveAsync(key);
+        return _cache.RemoveAsync(key);
     }
 
-    public void Set<T>(string key, T value, int second, bool isAbsoluteExpiration = false)
+    public void Set<T>(string key, T value, int? seconds = null, bool isAbsoluteExpiration = false)
     {
         if (value == null)
             return;
 
         var valueString = JsonSerializer.Serialize(value);
-        var options = new DistributedCacheEntryOptions();
-        if (isAbsoluteExpiration)
-            options.SetSlidingExpiration(TimeSpan.FromSeconds(second));
-        else
-            options.SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(second));
 
-         this._cache.SetString(key, valueString, options);
+        if (seconds.HasValue)
+        {
+            var options = new DistributedCacheEntryOptions();
+
+            if (isAbsoluteExpiration)
+                options.SetSlidingExpiration(TimeSpan.FromSeconds(seconds.Value));
+            else
+                options.SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(seconds.Value));
+
+            _cache.SetString(key, valueString, options);
+        }
+        else
+        {
+            _cache.SetString(key, valueString);
+        }
     }
 
-    public Task SetAsync<T>(string key, T value, int second, bool isAbsoluteExpiration = false)
+    public Task SetAsync<T>(string key, T value, int? seconds = null, bool isAbsoluteExpiration = false)
     {
         if (value == null)
             return Task.CompletedTask;
 
         var valueString = JsonSerializer.Serialize(value);
-        var options = new DistributedCacheEntryOptions();
-        if (isAbsoluteExpiration)
-            options.SetSlidingExpiration(TimeSpan.FromSeconds(second));
-        else
-            options.SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(second));
 
-        return this._cache.SetStringAsync(key, valueString, options);
+        if (seconds.HasValue)
+        {
+            var options = new DistributedCacheEntryOptions();
+
+            if (isAbsoluteExpiration)
+                options.SetSlidingExpiration(TimeSpan.FromSeconds(seconds.Value));
+            else
+                options.SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(seconds.Value));
+
+            return _cache.SetStringAsync(key, valueString, options);
+        }
+        else
+        {
+            return _cache.SetStringAsync(key, valueString);
+        }
     }
 }
