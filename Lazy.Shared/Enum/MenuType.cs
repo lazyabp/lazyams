@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Lazy.Shared.Enum
+namespace Lazy.Shared
 {
     public enum MenuType
     {

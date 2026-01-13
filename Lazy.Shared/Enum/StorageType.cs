@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lazy.Shared.Enum
+namespace Lazy.Shared
 {
     public enum StorageType
     {

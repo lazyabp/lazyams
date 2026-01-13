@@ -1,9 +1,8 @@
-﻿namespace Lazy.Shared.Enum
+﻿namespace Lazy.Shared;
+
+public enum MediaFileType : int
 {
-    public enum MediaFileType : int
-    {
-        Image = 0,
-        Video = 1,
-        File = 2,
-    }
+    Image = 0,
+    Video = 1,
+    File = 2,
 }

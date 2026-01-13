@@ -13,7 +13,4 @@ public class UserFriendlyException : LazyException
     {
         this.ResponseMessage = responseMessage;
     }
-
-
-
 }

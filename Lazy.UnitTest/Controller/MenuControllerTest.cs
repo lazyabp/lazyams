@@ -1,5 +1,4 @@
-﻿using Lazy.Shared.Enum;
-using Moq;
+﻿using Moq;
 
 namespace Lazy.UnitTest.Controller;
 

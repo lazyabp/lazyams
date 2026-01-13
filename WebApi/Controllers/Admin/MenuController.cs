@@ -1,5 +1,4 @@
-﻿using Lazy.Shared.Enum;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
 

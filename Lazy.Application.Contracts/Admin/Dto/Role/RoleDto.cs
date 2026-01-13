@@ -1,5 +1,4 @@
 ﻿using Lazy.Model.Entity;
-using Lazy.Shared.Enum;
 
 namespace Lazy.Application.Contracts.Dto;
 

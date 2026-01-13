@@ -208,6 +208,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.Key).IsRequired().HasMaxLength(EntityConsts.MaxLength128);
             b.Property(x => x.Value).HasColumnType("text");
+            b.HasKey(s => s.Key);
         });
     }
 

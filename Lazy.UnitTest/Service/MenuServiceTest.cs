@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Lazy.Model.DBContext;
 using Lazy.Model.Entity;
-using Lazy.Shared.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lazy.UnitTest.Service;

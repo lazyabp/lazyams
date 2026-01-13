@@ -1,9 +1,8 @@
-﻿namespace Lazy.Shared.Enum
+﻿namespace Lazy.Shared;
+
+public enum MediaApprovalStatus : int
 {
-    public enum MediaApprovalStatus : int
-    {
-        Pending = 0,
-        Approved = 1,
-        Rejected = 2
-    }
+    Pending = 0,
+    Approved = 1,
+    Rejected = 2
 }

@@ -1,6 +1,4 @@
-﻿using Lazy.Shared.Enum;
-
-namespace Lazy.Application.Contracts.Dto;
+﻿namespace Lazy.Application.Contracts.Dto;
 
 public class CreateOrUpdateMenuBaseDto : BaseEntityDto
 {

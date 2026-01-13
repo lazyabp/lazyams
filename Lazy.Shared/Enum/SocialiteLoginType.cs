@@ -4,10 +4,9 @@ using System.Text;
 
 namespace Lazy.Shared;
 
-public enum FileType
+public enum SocialiteLoginType
 {
-    Avatar = 0,
-    Image = 1,
-    Video = 2,
-    Other = 3
+    Weixin = 1,
+    WeixinMini = 2,
+    Google = 3
 }

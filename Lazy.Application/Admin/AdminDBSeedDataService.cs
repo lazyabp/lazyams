@@ -1,6 +1,5 @@
 ﻿using Lazy.Core.LazyAttribute;
 using Lazy.Core.Utils;
-using Lazy.Shared.Enum;
 
 namespace Lazy.Application;
 

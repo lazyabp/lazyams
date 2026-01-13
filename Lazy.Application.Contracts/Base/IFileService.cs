@@ -1,9 +1,4 @@
-﻿using Lazy.Core.Security;
-using Lazy.Shared.Enum;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Lazy.Application.Contracts;
 
