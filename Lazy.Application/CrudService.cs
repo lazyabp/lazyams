@@ -1,5 +1,4 @@
 ﻿using AutoMapper.Internal.Mappers;
-using Lazy.Application.Contracts;
 using Lazy.Core.Security;
 using Lazy.Core.Utils;
 
@@ -10,7 +9,6 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
       ICrudService<TGetOutputDto, TGetListOutputDto, TKey, TGetListInput, TCreateInput, TUpdateInput>
       where TEntity : BaseEntity
 {
-
     public ICurrentUser CurrentUser { get; set; }
 
     public CrudService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)

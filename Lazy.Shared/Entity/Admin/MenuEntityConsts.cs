@@ -1,4 +1,5 @@
-namespace Lazy.Shared.Entity.Admin;
+﻿namespace Lazy.Shared.Entity;
+
 public class MenuEntityConsts
 {
     public const int MaxTitleLength = 200;

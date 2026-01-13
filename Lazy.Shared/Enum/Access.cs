@@ -1,10 +1,10 @@
-namespace Lazy.Shared;
+﻿namespace Lazy.Shared;
 
 public enum Access : int
 {
-    Admin = 0,
+    Guest = 0,
 
     Member = 1,
 
-    Guest = 2,
+    Admin = 2,
 }

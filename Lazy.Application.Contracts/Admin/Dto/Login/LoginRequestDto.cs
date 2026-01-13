@@ -1,4 +1,4 @@
-namespace Lazy.Application.Contracts.Admin;
+﻿namespace Lazy.Application.Contracts.Dto;
 
 public class LoginRequestDto : BaseEntityDto
 {

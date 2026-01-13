@@ -1,4 +1,4 @@
-﻿namespace Lazy.Shared.Entity.Admin;
+﻿namespace Lazy.Shared.Entity;
 
 public class RoleEntityConsts
 {

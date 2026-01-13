@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lazy.Application.Contracts.Admin.Dto.Menu
+namespace Lazy.Application.Contracts.Dto;
+
+public class MenuIdDTO
 {
-    public class MenuIdDTO
-    {
-        public long MenuId { get; set; }
-    }
+    public long MenuId { get; set; }
 }

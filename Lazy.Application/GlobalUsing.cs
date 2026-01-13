@@ -1,6 +1,6 @@
 ﻿global using AutoMapper;
 global using Microsoft.EntityFrameworkCore;
-global using Lazy.Application.Contracts.Admin;
+global using Lazy.Application.Contracts;
 global using Lazy.Application.Contracts.Dto;
 global using Lazy.Core.Caching;
 global using Lazy.Core.DependencyInjection;

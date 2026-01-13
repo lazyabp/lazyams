@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyModel;
 using System.Reflection;
 using System.Runtime.Loader;
-using Lazy.Application.Admin;
-using Lazy.Application.Contracts.Admin;
 
 namespace Lazy.Application;
 

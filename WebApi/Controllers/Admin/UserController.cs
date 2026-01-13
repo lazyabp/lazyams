@@ -1,113 +1,110 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-using Lazy.Application.Contracts.Admin.Dto.User;
 using Microsoft.AspNetCore.Authorization;
 
-namespace WebApi.Controllers.Admin
+namespace WebApi.Controllers;
+
+/// <summary>
+/// Provides API endpoints for managing user accounts, including creating, updating, deleting, and retrieving user
+/// information.
+/// </summary>
+/// <remarks>
+/// This controller is intended for administrative operations on users and is grouped under the
+/// AdminService API documentation. All actions are accessible via routes prefixed with 'api/User/'. Request size
+/// limits for multipart form data are set to 50 MB. Endpoints support operations such as paginated user retrieval,
+/// user creation, update, deletion, and fetching user details by username or ID.
+/// </remarks>
+[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
+[Route("api/[controller]/[action]")]
+[ApiController]
+public class UserController : ControllerBase
 {
-    /// <summary>
-    /// Provides API endpoints for managing user accounts, including creating, updating, deleting, and retrieving user
-    /// information.
-    /// </summary>
-    /// <remarks>
-    /// This controller is intended for administrative operations on users and is grouped under the
-    /// AdminService API documentation. All actions are accessible via routes prefixed with 'api/User/'. Request size
-    /// limits for multipart form data are set to 50 MB. Endpoints support operations such as paginated user retrieval,
-    /// user creation, update, deletion, and fetching user details by username or ID.
-    /// </remarks>
-    [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    [RequestFormLimits(MultipartBodyLengthLimit = 52428800)]
-    public class UserController : ControllerBase
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
     {
-        private readonly IUserService _userService;
+        _userService = userService;
 
-        public UserController(IUserService userService)
+    }
+
+    /// <summary>
+    /// Retrive users
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.User.Default)]
+    [HttpGet]
+    public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
+    {
+        var pagedResult = await _userService.GetListAsync(input);
+        if (pagedResult.Items.Count > 0)
         {
-            _userService = userService;
-
-        }
-
-        /// <summary>
-        /// Retrive users
-        /// </summary>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.User.Default)]
-        [HttpGet]
-        public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
-        {
-            var pagedResult = await _userService.GetListAsync(input);
-            if (pagedResult.Items.Count > 0)
+            foreach (var item in pagedResult.Items)
             {
-                foreach (var item in pagedResult.Items)
-                {
-                    item.Password = "";
-                }
+                item.Password = "";
             }
-
-            return pagedResult;
         }
 
-        /// <summary>
-        /// add user
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.User.Add)]
-        [HttpPost]
-        public async Task<UserDto> Add([FromBody] CreateUserDto input)
-        {
-            return await _userService.CreateAsync(input);
-        }
+        return pagedResult;
+    }
 
-        /// <summary>
-        /// udpate user
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.User.Update)]
-        [HttpPost]
-        public async Task<UserDto> Update([FromBody] UpdateUserDto input)
-        {
-            return await _userService.UpdateAsync(input.Id, input);
-        }
+    /// <summary>
+    /// add user
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.User.Add)]
+    [HttpPost]
+    public async Task<UserDto> Add([FromBody] CreateUserDto input)
+    {
+        return await _userService.CreateAsync(input);
+    }
 
-        /// <summary>
-        /// delete user
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.User.Delete)]
-        [HttpDelete("{id}")]
-        public async Task<bool> Delete(long id)
-        {
-            await _userService.DeleteAsync(id);
+    /// <summary>
+    /// udpate user
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.User.Update)]
+    [HttpPost]
+    public async Task<UserDto> Update([FromBody] UpdateUserDto input)
+    {
+        return await _userService.UpdateAsync(input.Id, input);
+    }
 
-            return true;
-        }
+    /// <summary>
+    /// delete user
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.User.Delete)]
+    [HttpDelete("{id}")]
+    public async Task<bool> Delete(long id)
+    {
+        await _userService.DeleteAsync(id);
 
-        /// <summary>
-        /// Get user information
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <returns></returns>
-        //[Authorize(PermissionConsts.User.Default)]
-        [HttpGet("{userName}")]
-        public async Task<UserDto> Get(string userName)
-        {
-            return await _userService.GetByUserNameAsync(userName);
-        }
+        return true;
+    }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.User.Default)]
-        [HttpGet("{id}")]
-        public async Task<UserWithRoleIdsDto> GetUserById(long id)
-        {
-            return await _userService.GetUserByIdAsync(id);
-        }
+    /// <summary>
+    /// Get user information
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns></returns>
+    //[Authorize(PermissionConsts.User.Default)]
+    [HttpGet("{userName}")]
+    public async Task<UserDto> Get(string userName)
+    {
+        return await _userService.GetByUserNameAsync(userName);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.User.Default)]
+    [HttpGet("{id}")]
+    public async Task<UserWithRoleIdsDto> GetUserById(long id)
+    {
+        return await _userService.GetUserByIdAsync(id);
     }
 }

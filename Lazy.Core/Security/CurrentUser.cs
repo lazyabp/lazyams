@@ -9,7 +9,10 @@ public class CurrentUser : ICurrentUser, ITransientDependency
     public bool IsAuthenticated => Id.HasValue;
 
     public long? Id => GetUserId();
+
     public string Name => FindClaimValue(ClaimTypes.Name);
+
+    public string Email => FindClaimValue(ClaimTypes.Email);
 
     private readonly IHttpContextAccessor _contextAccessor;
     public CurrentUser(IHttpContextAccessor httpContextAccessor)
@@ -21,6 +24,7 @@ public class CurrentUser : ICurrentUser, ITransientDependency
     {
         return this._contextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == claimType);
     }
+
     public virtual long? GetUserId()
     {
         var claim = FindClaim(ClaimTypes.NameIdentifier);

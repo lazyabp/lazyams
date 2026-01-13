@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lazy.Application.Contracts.Admin.Dto.Login;
+namespace Lazy.Application.Contracts.Dto;
 
 /// <summary>
 /// Result of login

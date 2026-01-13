@@ -1,10 +1,9 @@
-﻿using Lazy.Shared.Entity.Admin;
+﻿using Lazy.Shared.Entity;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public static class LazyDbContextModelCreatingExtensions
 {
     private const string TablePrefix = "";
-
 
     /// <summary>
     /// Admin
@@ -17,6 +16,10 @@ public static class LazyDbContextModelCreatingExtensions
         ConfigureRole(modelBuilder);
         ConfigureRoleMenu(modelBuilder);
         ConfigureUserRole(modelBuilder);
+
+        ConfigureSetting(modelBuilder);
+        ConfigureSocialiteUser(modelBuilder);
+        ConfigureFile(modelBuilder);
         ConfigureCarousel(modelBuilder);
     }
 
@@ -29,17 +32,19 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.UserName).IsRequired().HasMaxLength(UserEntityConsts.MaxUserNameLength);
             b.Property(x => x.Password).HasMaxLength(UserEntityConsts.MaxPasswordLength);
-            b.Property(x => x.Email).HasMaxLength(UserEntityConsts.MaxEmailLength);
+            b.Property(x => x.Email).IsRequired().HasMaxLength(UserEntityConsts.MaxEmailLength);
             b.Property(x => x.Age).HasMaxLength(UserEntityConsts.MaxAgeLength);
             b.HasMany(x => x.UserRoles);
             b.Property(x => x.Avatar).HasMaxLength(UserEntityConsts.MaxAvatarLength);
-            b.Property(x => x.Gender).HasConversion(
-                v => v.ToString(),
-                v => (Gender)Enum.Parse(typeof(Gender), v));
             b.Property(x => x.Access).HasConversion(
                 v => v.ToString(),
                 v => (Access)Enum.Parse(typeof(Access), v));
-            b.Property(x => x.IsActive).IsRequired().HasDefaultValue(true);
+            b.Property(x => x.Gender).HasConversion(
+                v => v.ToString(),
+                v => (Gender)Enum.Parse(typeof(Gender), v));
+            b.Property(x => x.IsAdministrator).IsRequired().HasDefaultValue(false);
+            b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
+            b.Property(x => x.Address).HasMaxLength(UserEntityConsts.MaxAddressLength);
             // b.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");//for SQLite
             b.ConfigureSoftDelete();
             b.HasIndex(x => new { x.IsDeleted, x.CreatedAt });
@@ -150,6 +155,59 @@ public static class LazyDbContextModelCreatingExtensions
             b.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(x => x.UpdatedBy);
+        });
+    }
+
+    private static void ConfigureSocialiteUser(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<SocialiteUser>(b =>
+        {
+            b.ToTable(TablePrefix + "SocialiteUser");
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Name).HasMaxLength(SocialiteUserConsts.MaxNameLength);
+            b.Property(x => x.Provider).HasMaxLength(SocialiteUserConsts.MaxProviderLength);
+            b.Property(x => x.ProviderId).HasMaxLength(SocialiteUserConsts.MaxProviderIdLength);
+            b.Property(x => x.LastIpAddress).HasMaxLength(SocialiteUserConsts.MaxLastIpAddressLength);
+            b.Property(x => x.AccessToken).HasMaxLength(SocialiteUserConsts.MaxAccessTokenLength);
+            b.ConfigureAudit();
+        });
+    }
+
+    private static void ConfigureFile(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Lazy.Model.Entity.File>(b =>
+        {
+            b.ToTable(TablePrefix + "File");
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Storage).HasConversion(
+                v => v.ToString(),
+                v => (StorageType)Enum.Parse(typeof(StorageType), v));
+            b.Property(x => x.FileType).HasConversion(
+                v => v.ToString(),
+                v => (FileType)Enum.Parse(typeof(FileType), v));
+            b.Property(x => x.Domain).HasMaxLength(FileConsts.MaxDomainLength);
+            b.Property(x => x.MimeType).HasMaxLength(FileConsts.MaxMimeTypeLength);
+            b.Property(x => x.FileExt).HasMaxLength(FileConsts.MaxFileExtLength);
+            b.Property(x => x.FileMd5).HasMaxLength(FileConsts.MaxFileMd5Length);
+            b.Property(x => x.FileHash).HasMaxLength(FileConsts.MaxFileHashLength);
+            b.Property(x => x.FileName).HasMaxLength(FileConsts.MaxFileNameLength);
+            b.Property(x => x.FilePath).HasMaxLength(FileConsts.MaxFilePathLength);
+            b.ConfigureAudit();
+            b.HasIndex(x => x.FileMd5);
+        });
+    }
+
+    private static void ConfigureSetting(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Setting>(b =>
+        {
+            b.ToTable(TablePrefix + "Setting");
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Key).IsRequired().HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.Value).HasColumnType("text");
         });
     }
 

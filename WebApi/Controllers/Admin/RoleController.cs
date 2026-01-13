@@ -1,116 +1,113 @@
-﻿using Lazy.Application.Contracts.Admin.Dto.Role;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 
 
-namespace WebApi.Controllers.Admin
-{   
+namespace WebApi.Controllers;
+
+/// <summary>
+/// Admin controller
+/// </summary>
+[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
+[Route("api/[controller]/[action]")]
+[ApiController]
+public class RoleController : ControllerBase
+{
+    private readonly IRoleService _roleService;
+
     /// <summary>
-    /// Admin controller
+    /// RoleController
     /// </summary>
-    [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    [RequestFormLimits(MultipartBodyLengthLimit = 52428800)]
-    public class RoleController : ControllerBase
+    /// <param name="roleService"></param>
+    public RoleController(IRoleService roleService)
     {
-        private readonly IRoleService _roleService;
+        _roleService = roleService;
+    }
 
-        /// <summary>
-        /// RoleController
-        /// </summary>
-        /// <param name="roleService"></param>
-        public RoleController(IRoleService roleService)
-        {
-            _roleService = roleService;
-        }
+    /// <summary>
+    /// Get roles by page
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Default)]
+    [HttpGet]
+    public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
+    {
+       var pagedResult = await _roleService.GetListAsync(input);
+       //var pagedResult = await _roleService.GetAllRolesAsync(input);
+        return pagedResult;
+    }
 
-        /// <summary>
-        /// Get roles by page
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Default)]
-        [HttpGet]
-        public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
-        {
-           var pagedResult = await _roleService.GetListAsync(input);
-           //var pagedResult = await _roleService.GetAllRolesAsync(input);
-            return pagedResult;
-        }
+    /// <summary>
+    /// Add a new role
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Add)]
+    [HttpPost]
+    public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
+    {
+        return await _roleService.CreateAsync(input);
+    }
 
-        /// <summary>
-        /// Add a new role
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Add)]
-        [HttpPost]
-        public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
-        {
-            return await _roleService.CreateAsync(input);
-        }
+    /// <summary>
+    /// Update a role
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Update)]
+    [HttpPost]
+    public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
+    {
+        return await _roleService.UpdateAsync(input.Id, input);
+    }
 
-        /// <summary>
-        /// Update a role
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Update)]
-        [HttpPost]
-        public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
-        {
-            return await _roleService.UpdateAsync(input.Id, input);
-        }
+    /// <summary>
+    /// Delete a role
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Delete)]
+    [HttpDelete("{id}")]
+    public async Task<bool> Delete(long id)
+    {
+        await _roleService.DeleteAsync(id);
 
-        /// <summary>
-        /// Delete a role
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Delete)]
-        [HttpDelete("{id}")]
-        public async Task<bool> Delete(long id)
-        {
-            await _roleService.DeleteAsync(id);
+        return true;
+    }
 
-            return true;
-        }
+    /// <summary>
+    /// Delete several roles
+    /// </summary>
+    /// <param name="ids"></param>
+    [Authorize(PermissionConsts.Role.Delete)]
+    [HttpDelete]
+    public async Task<bool> BatchDelete([FromBody] long[] ids)
+    {
+        Console.WriteLine("get a array from client:", ids);
 
-        /// <summary>
-        /// Delete several roles
-        /// </summary>
-        /// <param name="ids"></param>
-        [Authorize(PermissionConsts.Role.Delete)]
-        [HttpDelete]
-        public async Task<bool> BatchDelete([FromBody] long[] ids)
-        {
-            Console.WriteLine("get a array from client:", ids);
+        return await _roleService.BulkDelete(ids);
+    }
 
-            return await _roleService.BulkDelete(ids);
-        }
+    /// <summary>
+    /// Get a role by ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Default)]
+    [HttpGet("{id}")]
+    public async Task<RoleDto> GetById(long id)
+    {
+        return await _roleService.GetAsync(id);
+    }
 
-        /// <summary>
-        /// Get a role by ID
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Default)]
-        [HttpGet("{id}")]
-        public async Task<RoleDto> GetById(long id)
-        {
-            return await _roleService.GetAsync(id);
-        }
-
-        /// <summary>
-        /// Save Role Permission
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Authorize(PermissionConsts.Role.Update)]
-        [HttpPost]
-        public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
-        {
-            return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
-        }
+    /// <summary>
+    /// Save Role Permission
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Update)]
+    [HttpPost]
+    public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
+    {
+        return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
     }
 }

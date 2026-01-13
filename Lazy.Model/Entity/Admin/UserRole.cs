@@ -1,4 +1,4 @@
-namespace Lazy.Model.Entity;
+﻿namespace Lazy.Model.Entity;
 
 public class UserRole : BaseEntity
 {

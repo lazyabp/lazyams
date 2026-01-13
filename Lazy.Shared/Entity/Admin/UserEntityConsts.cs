@@ -1,4 +1,4 @@
-﻿namespace Lazy.Shared.Entity.Admin;
+﻿namespace Lazy.Shared.Entity;
 
 public class UserEntityConsts
 {
@@ -19,5 +19,7 @@ public class UserEntityConsts
     public const int MaxAvatarLength = 300;
 
     public const int MaxAgeLength = 100;
+
+    public const int MaxIpAddressLength = 64;
 
 }

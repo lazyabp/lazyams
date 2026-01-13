@@ -16,5 +16,9 @@ public interface ICurrentUser
     /// User Name
     /// </summary>
     string Name { get; }
-   
+
+    /// <summary>
+    /// User Email
+    /// </summary>
+    string Email { get; }
 }

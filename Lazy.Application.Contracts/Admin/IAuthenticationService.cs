@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Lazy.Model.Entity;
 
-namespace Lazy.Application.Contracts.Admin;
+namespace Lazy.Application.Contracts;
 
 public interface IAuthenticationService
 {

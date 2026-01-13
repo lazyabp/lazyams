@@ -1,4 +1,4 @@
-namespace Lazy.Shared.Enum
+﻿namespace Lazy.Shared.Enum
 {
     public enum MediaApprovalStatus : int
     {

@@ -1,8 +1,7 @@
-﻿using Lazy.Application.Contracts.Admin.Dto.User;
-using Lazy.Core.Utils;
+﻿using Lazy.Core.Utils;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Lazy.Application.Admin;
+namespace Lazy.Application;
 
 public class UserService : CrudService<User, UserDto, UserDto, long, FilterPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
@@ -25,15 +24,27 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
     }
 
     /// <summary>
-    /// Creates a new user and assigns roles (if provided).
-    /// Includes validation for duplicate usernames and invalid RoleIds.
+    /// 通过用户名创建用户
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     public override async Task<UserDto> CreateAsync(CreateUserDto input)
     {
+        var id = SnowflakeIdGeneratorUtil.NextId();
+
+        if (string.IsNullOrEmpty(input.UserName) && string.IsNullOrEmpty(input.Email))
+            throw new ArgumentException("Either UserName or Email must be provided.");
+
+        if (!string.IsNullOrEmpty(input.Email))
+            await ValidateEmailAsync(input.Email);
+        else
+            input.Email = id.ToString() + "@default.com";
+
         // Validate that the username is unique.
-        await ValidateNameAsync(input.UserName);
+        if (!string.IsNullOrEmpty(input.UserName))
+            await ValidateNameAsync(input.UserName);
+        else 
+            input.UserName = id.ToString();
 
         // Validate provided Role IDs.
         await ValidateRoleIdsAsync(input.RoleIds);
@@ -74,7 +85,6 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
 
         return userDto;
     }
-
 
     /// <summary>
     /// Validates that all provided Role IDs exist in the database.
@@ -151,23 +161,34 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
 
     protected virtual async Task ValidateNameAsync(string userName, long? expectedId = null)
     {
-        var category = await this.GetQueryable().FirstOrDefaultAsync(p => p.UserName == userName);
-        if (category != null && category.Id != expectedId)
+        var user = await this.GetQueryable().FirstOrDefaultAsync(p => p.UserName == userName);
+        if (user != null && user.Id != expectedId)
         {
             throw new EntityAlreadyExistsException($"User {userName} already exists", $"{userName} already exists");
+        }
+    }
+
+    protected virtual async Task ValidateEmailAsync(string email, long? expectedId = null)
+    {
+        var user = await this.GetQueryable().FirstOrDefaultAsync(p => p.Email == email);
+        if (user != null && user.Id != expectedId)
+        {
+            throw new EntityAlreadyExistsException($"User {email} already exists", $"{email} already exists");
         }
     }
 
     public async Task<UserDto> GetByUserNameAsync(string userName)
     {
         var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-        if (user == null)
-        {
-            throw new EntityNotFoundException($"User {userName} not found", $"{userName} not found");
-        }
 
-        var userOutput = this.Mapper.Map<UserDto>(user);
-        return userOutput;
+        return this.Mapper.Map<UserDto>(user);
+    }
+
+    public async Task<UserDto> GetByEmailAsync(string email)
+    {
+        var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+        
+        return this.Mapper.Map<UserDto>(user);
     }
 
     /// <summary>

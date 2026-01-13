@@ -1,6 +1,4 @@
-using Lazy.Application.Contracts.Admin;
-
-namespace Lazy.Application.Admin;
+﻿namespace Lazy.Application;
 
 public class AuthenticationService : IAuthenticationService, ITransientDependency
 {

@@ -1,4 +1,4 @@
-namespace Lazy.Shared;
+﻿namespace Lazy.Shared;
 
 public enum AutoOrMannual
 {

@@ -1,7 +1,6 @@
-namespace WebApi.Config
+﻿namespace WebApi.Config;
+
+public class DBConnectionConfig
 {
-    public class DBConnectionConfig
-    {
-        public string ConnectionString { get; set; }
-    }
+    public string ConnectionString { get; set; }
 }

@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using Lazy.Core.Caching;
 using Microsoft.Extensions.DependencyInjection;
-using Lazy.Core.Caching;
 
 namespace Lazy.UnitTest;
 

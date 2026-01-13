@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Lazy.Model.Entity;
+
+public class SocialiteUser : BaseEntityWithAudit
+{
+    public long UserId { get; set; }
+
+    public string Name { get; set; }
+
+    public string Provider { get; set; }
+
+    public string ProviderId { get; set; }
+
+    public string LastIpAddress { get; set; }
+
+    public DateTime? LastLoginAt { get; set; }
+
+    public string AccessToken { get; set; }
+}

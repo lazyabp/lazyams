@@ -1,4 +1,4 @@
-namespace Lazy.Model.Entity;
+﻿namespace Lazy.Model.Entity;
 
 public class User : BaseEntityWithSoftDelete
 {
@@ -10,15 +10,17 @@ public class User : BaseEntityWithSoftDelete
 
     public int? Age { get; set; }
 
-    public string Address { get; set; }
+    public bool IsAdministrator { get; set; } = false;
 
-    public Access Access { get; set; }
+    public Access Access { get; set; } = Access.Guest;
 
     public Gender Gender { get; set; }
 
     public string Avatar { get; set; }
 
     public bool IsActive { get; set; }
+
+    public string Address { get; set; }
 
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

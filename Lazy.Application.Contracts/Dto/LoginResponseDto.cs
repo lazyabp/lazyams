@@ -1,4 +1,4 @@
-namespace Lazy.Application.Contracts.Dto;
+﻿namespace Lazy.Application.Contracts.Dto;
 
 public Class LoginResponseDto 
 {

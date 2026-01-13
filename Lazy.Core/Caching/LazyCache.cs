@@ -7,6 +7,7 @@ namespace Lazy.Core.Caching;
 public class LazyCache : ILazyCache, ISingletonDependency
 {
     private readonly IDistributedCache _cache;
+
     public LazyCache(IDistributedCache cache)
     {
         _cache = cache;

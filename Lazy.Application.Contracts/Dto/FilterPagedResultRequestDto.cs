@@ -1,7 +1,6 @@
-﻿namespace Lazy.Application.Contracts.Dto
+﻿namespace Lazy.Application.Contracts.Dto;
+
+public class FilterPagedResultRequestDto : PagedResultRequestDto, IFilterResultRequest
 {
-    public class FilterPagedResultRequestDto : PagedResultRequestDto, IFilterResultRequest
-    {
-        public string Filter { get; set; }
-    }
+    public string Filter { get; set; }
 }

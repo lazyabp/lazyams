@@ -1,11 +1,11 @@
-using Lazy.Application.Contracts.Admin.Dto.User;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Lazy.Application.Contracts.Admin;
+namespace Lazy.Application.Contracts;
 
 public interface IUserService : ICrudService<UserDto, UserDto, long, FilterPagedResultRequestDto, CreateUserDto, UpdateUserDto>
 {
     Task<UserDto> GetByUserNameAsync(string userName);
+    Task<UserDto> GetByEmailAsync(string email);
     Task<UserWithRoleIdsDto> GetUserByIdAsync(long id);
 
 }

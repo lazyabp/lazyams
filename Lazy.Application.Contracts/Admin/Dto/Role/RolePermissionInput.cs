@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lazy.Application.Contracts.Admin.Dto.Role
-{
-    public class RolePermissionInput
-    {
-        public long Id { get; set; }
+namespace Lazy.Application.Contracts.Dto;
 
-        public List<long> MenuIds { get; set; }
-    }
+public class RolePermissionInput
+{
+    public long Id { get; set; }
+
+    public List<long> MenuIds { get; set; }
 }

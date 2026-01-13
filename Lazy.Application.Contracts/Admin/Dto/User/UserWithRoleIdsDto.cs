@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lazy.Application.Contracts.Admin.Dto.User;
+namespace Lazy.Application.Contracts.Dto;
 
 public class UserWithRoleIdsDto : UserDto
 {

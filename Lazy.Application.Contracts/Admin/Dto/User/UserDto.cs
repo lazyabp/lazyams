@@ -1,4 +1,4 @@
-namespace Lazy.Application.Contracts.Admin;
+﻿namespace Lazy.Application.Contracts.Dto;
 
 public class UserDto : BaseEntityDto
 {
@@ -9,12 +9,15 @@ public class UserDto : BaseEntityDto
     public string Email { get; set; }
 
     public int? Age { get; set; }
-    public string Address { get; set; }
+
+    public bool IsAdministrator { get; set; }
+
     public Access Access { get; set; }
 
     public Gender Gender { get; set; }
 
     public string Avatar { get; set; }
+    public string Address { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 

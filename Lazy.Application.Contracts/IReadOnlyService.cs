@@ -1,9 +1,8 @@
-﻿namespace Lazy.Application.Contracts
-{
-    public interface IReadOnlyService<TGetOutputDto, TGetListOutputDto, in TKey, in TGetListInput>
-    {
-        Task<TGetOutputDto> GetAsync(TKey id);
+﻿namespace Lazy.Application.Contracts;
 
-        Task<PagedResultDto<TGetListOutputDto>> GetListAsync(TGetListInput input);
-    }
+public interface IReadOnlyService<TGetOutputDto, TGetListOutputDto, in TKey, in TGetListInput>
+{
+    Task<TGetOutputDto> GetAsync(TKey id);
+
+    Task<PagedResultDto<TGetListOutputDto>> GetListAsync(TGetListInput input);
 }

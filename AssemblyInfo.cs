@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 
 [assembly: AssemblyCompany("Lazy Project Team")]
 [assembly: AssemblyProduct("Lazy")]
