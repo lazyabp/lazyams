@@ -9,7 +9,6 @@ public class StorageSettingModel
     public StorageType Type { get; set; } = StorageType.Local;
 }
 
-
 public class StorageSettingBaseModel
 {
     public string AccessKey { get; set; } = string.Empty;
@@ -19,7 +18,6 @@ public class StorageSettingBaseModel
     public string Region { get; set; } = string.Empty;
     public string Domain { get; set; } = string.Empty;
 }
-
 
 public class StorageAliyunSettingModel : StorageSettingBaseModel
 {
@@ -46,5 +44,12 @@ public class StorageCustomSettingModel
     public string Token { get; set; } = string.Empty;
     public string FileUploadUrl { get; set; } = string.Empty;
     public string FieldName { get; set; } = "file";
+    public string Domain { get; set; } = string.Empty;
+}
+
+public class StorageLocalSettingModel
+{
+    public string UploadDir { get; set; } = "uploads";
+
     public string Domain { get; set; } = string.Empty;
 }

@@ -64,7 +64,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadImageAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetModelByKeyAsync<UploadFileSettingModel>(SettingKeyConsts.UploadFile);
+        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
         if (fileSetting == null)
             throw new UserFriendlyException("Not found file settings!");
 
@@ -91,7 +91,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadVideoAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetModelByKeyAsync<UploadFileSettingModel>(SettingKeyConsts.UploadFile);
+        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
         if (fileSetting == null)
             throw new UserFriendlyException("Not found file settings!");
 
@@ -118,7 +118,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadOtherAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetModelByKeyAsync<UploadFileSettingModel>(SettingKeyConsts.UploadFile);
+        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
         if (fileSetting == null)
             throw new UserFriendlyException("Not found file settings!");
 
@@ -146,7 +146,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     {
         // 这里可以根据不同的存储类型实现不同的存储逻辑
         // 例如本地存储、云存储等
-        var storageSetting = await _settingService.GetModelByKeyAsync<StorageSettingModel>(SettingKeyConsts.Storage);
+        var storageSetting = await _settingService.GetSettingAsync<StorageSettingModel>(SettingNames.Storage);
         if (storageSetting == null)
             throw new UserFriendlyException("Not found storage settings!");
 

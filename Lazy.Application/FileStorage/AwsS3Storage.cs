@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Lazy.Shared.Settings;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,8 +15,8 @@ public class AwsS3Storage : IFileStorage, ISingletonDependency
         _settingService = settingService;
     }
 
-    public Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
+    public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        throw new NotImplementedException();
+        var aws3Setting = await _settingService.GetSettingAsync<StorageAwsS3SettingModel>(SettingNames.StorageAwsS3);
     }
 }

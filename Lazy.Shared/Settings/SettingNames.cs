@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lazy.Shared.Settings;
 
-public static class SettingKeyConsts
+public static class SettingNames
 {
     public const string Site = "settings.site";
     public const string UploadFile = "settings.uploadfile";
@@ -17,6 +17,7 @@ public static class SettingKeyConsts
     public const string StorageMinio = "settings.storage.minio";
     public const string StorageAwsS3 = "settings.storage.awss3";
     public const string StorageCustom = "settings.storage.custom";
+    public const string StorageLocal = "settings.storage.local";
 
     public const string SocialiteLogin = "settings.socialitelogin";
     public const string SocialiteLoginWeixin = "settings.socialitelogin.weixin";

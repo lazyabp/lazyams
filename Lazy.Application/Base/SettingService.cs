@@ -21,7 +21,7 @@ public class SettingService : CrudService<Setting, SettingDto, SettingDto, long,
         return base.CreateFilteredQuery(input);
     }
 
-    public async Task<SettingDto> GetByKeyAsync(string key)
+    public async Task<SettingDto> GetSettingAsync(string key)
     {
         //var cacheKey = $"setting_key_{key}";
 
@@ -33,7 +33,7 @@ public class SettingService : CrudService<Setting, SettingDto, SettingDto, long,
         return Mapper.Map<SettingDto>(setting);
     }
 
-    public async Task<T> GetModelByKeyAsync<T>(string key)
+    public async Task<T> GetSettingAsync<T>(string key)
     {
         var setting = await LazyDBContext.Settings.FirstOrDefaultAsync(x => x.Key == key);
 
