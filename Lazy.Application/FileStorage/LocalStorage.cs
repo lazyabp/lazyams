@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Lazy.Application.FileStorage;
 
+/// <summary>
+/// 本地文件存储
+/// </summary>
 public class LocalStorage : IFileStorage, ISingletonDependency
 {
     private readonly ISettingService _settingService;
@@ -30,9 +33,10 @@ public class LocalStorage : IFileStorage, ISingletonDependency
             await file.CopyToAsync(stream);
 
             if (!string.IsNullOrEmpty(localSetting.UploadDir))
-            {
                 createFileDto.FilePath = $"/{localSetting.UploadDir}/" + createFileDto.FilePath;
-            }
+            else
+                createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
+
             createFileDto.Domain = localSetting.Domain.TrimEnd('/');
         }
     }

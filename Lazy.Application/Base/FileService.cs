@@ -1,6 +1,5 @@
 ﻿using Lazy.Application.FileStorage;
 using Lazy.Core.Utils;
-using Lazy.Shared;
 using Lazy.Shared.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +43,12 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         return Mapper.Map<FileDto>(file);
     }
 
+    /// <summary>
+    /// 上传文件
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task<FileDto> UploadAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -59,6 +64,40 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
             var ct when ct.StartsWith("video/") => await UploadVideoAsync(file),
             _ => await UploadOtherAsync(file)
         };
+    }
+
+    /// <summary>
+    /// 上传头像
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="UserFriendlyException"></exception>
+    public async Task<string> UploadAvatarAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("上传文件不能为空");
+
+        if (file.Length > 200000)
+            throw new UserFriendlyException($"Image size cannot exceed 200KB!");
+
+        var allowExtensions = new List<string> { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var fileExt = Path.GetExtension(file.FileName).ToLower();
+        if (!allowExtensions.Contains(fileExt))
+            throw new UserFriendlyException($"Image format '{fileExt}' is not allowed!");
+
+        var fileMd5 = await FileUtil.Md5Async(file);
+        var dto = await StorageFileAsync(file, FileType.Avatar, fileMd5);
+        var avatarUrl = dto.Domain + dto.FilePath;
+
+        var user = await LazyDBContext.Users.FindAsync(CurrentUser.Id);
+        if (user != null)
+        {
+            user.Avatar = avatarUrl;
+            await LazyDBContext.SaveChangesAsync();
+        }
+
+        return avatarUrl;
     }
 
     private async Task<FileDto> UploadImageAsync(IFormFile file)
@@ -161,8 +200,8 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         {
             case FileType.Avatar:
                 fileExt = fileExt ?? ".jpg";
-                var username = CurrentUser.Name;
-                filePath = $"avatar/{username}{fileExt}";
+                var userid = CurrentUser.Id;
+                filePath = $"avatar/{userid}{fileExt}";
                 break;
             case FileType.Image:
                 fileExt = fileExt ?? ".jpg";

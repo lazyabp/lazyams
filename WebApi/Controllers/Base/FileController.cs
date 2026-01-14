@@ -27,8 +27,21 @@ public class FileController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize]
-    public async Task<FileDto> UploadAsync(IFormFile file)
+    public async Task<FileDto> UploadAsync([FromForm] IFormFile file)
     {
         return await _fileService.UploadAsync(file);
+    }
+
+    /// <summary>
+    /// 上传头像
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> UploadAvatarAsync([FromForm] IFormFile file)
+    {
+        var avatarUrl = await _fileService.UploadAvatarAsync(file);
+        return Ok(new { avatarUrl });
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 namespace Lazy.Application.FileStorage;
 
 /// <summary>
-/// 自定义存储
+/// 自定义文件存储
 /// </summary>
 public class CustomStorage : IFileStorage, ISingletonDependency
 {

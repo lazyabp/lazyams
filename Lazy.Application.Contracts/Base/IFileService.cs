@@ -6,5 +6,7 @@ public interface IFileService : ICrudService<FileDto, FileDto, long, FilterPaged
 {
     Task<FileDto> UploadAsync(IFormFile file);
 
+    Task<string> UploadAvatarAsync(IFormFile file);
+
     Task<FileDto> GetByMd5Async(string md5);
 }
