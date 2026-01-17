@@ -9,4 +9,6 @@ public interface ISettingService : ICrudService<SettingDto, SettingDto, long, Fi
     Task<SettingDto> GetSettingAsync(string key);
 
     Task<T> GetSettingAsync<T>(string key);
+
+    Task SetSettingAsync(string key, IDictionary<string, object> value);
 }

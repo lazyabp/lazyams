@@ -42,4 +42,16 @@ public class SettingService : CrudService<Setting, SettingDto, SettingDto, long,
 
         return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(setting.Value);
     }
+
+    public async Task SetSettingAsync(string key, IDictionary<string, object> value)
+    {
+        var setting = await LazyDBContext.Settings.FirstOrDefaultAsync(x => x.Key == key);
+        if (setting == null)
+            throw new UserFriendlyException($"Setting with key '{key}' not found.");
+
+        setting.Value = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+        LazyDBContext.Settings.Update(setting);
+
+        await LazyDBContext.SaveChangesAsync();
+    }
 }

@@ -37,4 +37,10 @@ public class PermissionConsts
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
     }
+
+    public class Setting
+    {
+        public const string Default = PermissionManagement + ".Setting";
+        public const string Update = Default + ".Update";
+    }
 }
