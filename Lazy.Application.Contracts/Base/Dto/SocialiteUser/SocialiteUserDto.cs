@@ -10,6 +10,10 @@ public class SocialiteUserDto : BaseEntityWithAuditDto
 
     public string ProviderId { get; set; }
 
+    public string OpenId { get; set; }
+
+    public string UnionId { get; set; }
+
     public string LastIpAddress { get; set; }
 
     public DateTime? LastLoginAt { get; set; }

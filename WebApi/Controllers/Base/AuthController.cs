@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
             ExThrow.Throw("user credentials incorrect", "user credentials incorrect");
         }
 
-        var token = GenerateJwtToken(user);
+        var token = _authenticationService.GenerateJwtToken(user);
         loginResponseDto.Token = token;
         loginResponseDto.Permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
 
@@ -86,29 +86,5 @@ public class AuthController : ControllerBase
             UserName = model.Email,
             Password = model.Password
         });
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
-
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._settingConfig.Value.SecurityKey));
-
-        var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: this._settingConfig.Value.Issuer,
-            audience: this._settingConfig.Value.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(this._settingConfig.Value.ExpireSeconds),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

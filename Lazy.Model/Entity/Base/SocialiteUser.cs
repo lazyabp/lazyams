@@ -6,13 +6,17 @@ namespace Lazy.Model.Entity;
 
 public class SocialiteUser : BaseEntityWithAudit
 {
-    public long UserId { get; set; }
+    public long? UserId { get; set; }
 
     public string Name { get; set; }
 
     public string Provider { get; set; }
 
     public string ProviderId { get; set; }
+
+    public string OpenId { get; set; }
+
+    public string UnionId { get; set; }
 
     public string LastIpAddress { get; set; }
 

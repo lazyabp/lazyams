@@ -7,6 +7,8 @@ public class CreateOrUpdateUserBaseDto : BaseEntityDto
     [StringLength(100, ErrorMessage = "UserName  must be less than 100 characters")]
     public string UserName { get; set; }
 
+    public string NickName { get; set; }
+
     // [Required(ErrorMessage = "Password is null")]
     // [StringLength(100, ErrorMessage = "Password  must be less than 100 characters")]
     public int Age { get; set; }

@@ -31,9 +31,10 @@ public static class LazyDbContextModelCreatingExtensions
             b.HasKey(x => x.Id);
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.UserName).IsRequired().HasMaxLength(UserEntityConsts.MaxUserNameLength);
+            b.Property(x => x.NickName).HasMaxLength(UserEntityConsts.MaxUserNameLength);
             b.Property(x => x.Password).HasMaxLength(UserEntityConsts.MaxPasswordLength);
             b.Property(x => x.Email).IsRequired().HasMaxLength(UserEntityConsts.MaxEmailLength);
-            b.Property(x => x.Age).HasMaxLength(UserEntityConsts.MaxAgeLength);
+            b.Property(x => x.Age).HasDefaultValue(0);
             b.HasMany(x => x.UserRoles);
             b.Property(x => x.Avatar).HasMaxLength(UserEntityConsts.MaxAvatarLength);
             b.Property(x => x.Access).HasConversion(
@@ -168,9 +169,14 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Name).HasMaxLength(SocialiteUserConsts.MaxNameLength);
             b.Property(x => x.Provider).HasMaxLength(SocialiteUserConsts.MaxProviderLength);
             b.Property(x => x.ProviderId).HasMaxLength(SocialiteUserConsts.MaxProviderIdLength);
+            b.Property(x => x.OpenId).HasMaxLength(SocialiteUserConsts.MaxOpenIdLength);
+            b.Property(x => x.UnionId).HasMaxLength(SocialiteUserConsts.MaxUnionIdLength);
             b.Property(x => x.LastIpAddress).HasMaxLength(SocialiteUserConsts.MaxLastIpAddressLength);
             b.Property(x => x.AccessToken).HasMaxLength(SocialiteUserConsts.MaxAccessTokenLength);
             b.ConfigureAudit();
+            b.HasIndex(x => new { x.Provider, x.ProviderId });
+            b.HasIndex(x => new { x.Provider, x.OpenId });
+            b.HasIndex(x => new { x.Provider, x.UnionId });
         });
     }
 
