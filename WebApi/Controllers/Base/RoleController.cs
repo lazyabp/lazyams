@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-
 namespace WebApi.Controllers;
 
 /// <summary>
-/// Admin controller
+/// 角色管理
 /// </summary>
-[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
+[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class RoleController : ControllerBase

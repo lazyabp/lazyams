@@ -4,16 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 namespace WebApi.Controllers;
 
 /// <summary>
-/// Provides API endpoints for managing user accounts, including creating, updating, deleting, and retrieving user
-/// information.
+/// 用户管理
 /// </summary>
-/// <remarks>
-/// This controller is intended for administrative operations on users and is grouped under the
-/// AdminService API documentation. All actions are accessible via routes prefixed with 'api/User/'. Request size
-/// limits for multipart form data are set to 50 MB. Endpoints support operations such as paginated user retrieval,
-/// user creation, update, deletion, and fetching user details by username or ID.
-/// </remarks>
-[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
+[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class UserController : ControllerBase

@@ -1,14 +1,12 @@
 ﻿using Lazy.Core.ExceptionHandling;
-using Lazy.Model.Entity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace WebApi.Controllers;
 
+/// <summary>
+/// 授权登录
+/// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]/[action]")]
 [ApiController]

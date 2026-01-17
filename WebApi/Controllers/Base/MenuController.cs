@@ -3,16 +3,9 @@
 namespace WebApi.Controllers;
 
 /// <summary>
-/// Provides API endpoints for managing menus, including operations to create, update, delete, and retrieve menu
-/// items and menu trees.
+/// 菜单管理
 /// </summary>
-/// <remarks>
-/// This controller is intended for administrative use and exposes endpoints for menu management
-/// tasks such as pagination, retrieval by ID, and role-based menu queries. All actions require appropriate
-/// authorization. The controller enforces a multipart form body size limit of 50 MB for relevant
-/// endpoints.
-/// </remarks>
-[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.AdminService))]
+[ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class MenuController : ControllerBase
