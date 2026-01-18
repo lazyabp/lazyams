@@ -166,13 +166,13 @@ public static class LazyDbContextModelCreatingExtensions
             b.ToTable(TablePrefix + "SocialiteUser");
             b.HasKey(x => x.Id);
             b.Property(x => x.Id).ValueGeneratedNever();
-            b.Property(x => x.Name).HasMaxLength(SocialiteUserConsts.MaxNameLength);
-            b.Property(x => x.Provider).HasMaxLength(SocialiteUserConsts.MaxProviderLength);
-            b.Property(x => x.ProviderId).HasMaxLength(SocialiteUserConsts.MaxProviderIdLength);
-            b.Property(x => x.OpenId).HasMaxLength(SocialiteUserConsts.MaxOpenIdLength);
-            b.Property(x => x.UnionId).HasMaxLength(SocialiteUserConsts.MaxUnionIdLength);
-            b.Property(x => x.LastIpAddress).HasMaxLength(SocialiteUserConsts.MaxLastIpAddressLength);
-            b.Property(x => x.AccessToken).HasMaxLength(SocialiteUserConsts.MaxAccessTokenLength);
+            b.Property(x => x.Name).HasMaxLength(SocialiteUserEntityConsts.MaxNameLength);
+            b.Property(x => x.Provider).HasMaxLength(SocialiteUserEntityConsts.MaxProviderLength);
+            b.Property(x => x.ProviderId).HasMaxLength(SocialiteUserEntityConsts.MaxProviderIdLength);
+            b.Property(x => x.OpenId).HasMaxLength(SocialiteUserEntityConsts.MaxOpenIdLength);
+            b.Property(x => x.UnionId).HasMaxLength(SocialiteUserEntityConsts.MaxUnionIdLength);
+            b.Property(x => x.LastIpAddress).HasMaxLength(SocialiteUserEntityConsts.MaxLastIpAddressLength);
+            b.Property(x => x.AccessToken).HasMaxLength(SocialiteUserEntityConsts.MaxAccessTokenLength);
             b.ConfigureAudit();
             b.HasIndex(x => new { x.Provider, x.ProviderId });
             b.HasIndex(x => new { x.Provider, x.OpenId });
@@ -193,15 +193,16 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.FileType).HasConversion(
                 v => v.ToString(),
                 v => (FileType)Enum.Parse(typeof(FileType), v));
-            b.Property(x => x.Domain).HasMaxLength(FileConsts.MaxDomainLength);
-            b.Property(x => x.MimeType).HasMaxLength(FileConsts.MaxMimeTypeLength);
-            b.Property(x => x.FileExt).HasMaxLength(FileConsts.MaxFileExtLength);
-            b.Property(x => x.FileMd5).HasMaxLength(FileConsts.MaxFileMd5Length);
-            b.Property(x => x.FileHash).HasMaxLength(FileConsts.MaxFileHashLength);
-            b.Property(x => x.FileName).HasMaxLength(FileConsts.MaxFileNameLength);
-            b.Property(x => x.FilePath).HasMaxLength(FileConsts.MaxFilePathLength);
+            b.Property(x => x.Domain).HasMaxLength(FileEntityConsts.MaxDomainLength);
+            b.Property(x => x.MimeType).HasMaxLength(FileEntityConsts.MaxMimeTypeLength);
+            b.Property(x => x.FileExt).HasMaxLength(FileEntityConsts.MaxFileExtLength);
+            b.Property(x => x.FileMd5).HasMaxLength(FileEntityConsts.MaxFileMd5Length);
+            b.Property(x => x.FileHash).HasMaxLength(FileEntityConsts.MaxFileHashLength);
+            b.Property(x => x.FileName).HasMaxLength(FileEntityConsts.MaxFileNameLength);
+            b.Property(x => x.FilePath).HasMaxLength(FileEntityConsts.MaxFilePathLength);
             b.ConfigureAudit();
             b.HasIndex(x => x.FileMd5);
+            b.HasIndex(x => x.FileHash);
         });
     }
 

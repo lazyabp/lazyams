@@ -7,7 +7,7 @@ namespace WebApi.Controllers;
 /// 文件上传
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class FileController : ControllerBase
 {
@@ -27,9 +27,12 @@ public class FileController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize]
-    public async Task<FileDto> UploadAsync([FromForm] IFormFile file)
+    [Route("upload")]
+    public async Task<BaseResultDto<FileDto>> UploadAsync(IFormFile file)
     {
-        return await _fileService.UploadAsync(file);
+        var data = await _fileService.UploadAsync(file);
+
+        return new BaseResultDto<FileDto>(data);
     }
 
     /// <summary>
@@ -39,9 +42,10 @@ public class FileController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> UploadAvatarAsync([FromForm] IFormFile file)
+    [Route("avatar/upload")]
+    public async Task<BaseResultDto<string>> UploadAvatarAsync(IFormFile file)
     {
         var avatarUrl = await _fileService.UploadAvatarAsync(file);
-        return Ok(new { avatarUrl });
+        return new BaseResultDto<string>(avatarUrl);
     }
 }

@@ -11,7 +11,7 @@ public class AdminProfile : Profile
         CreateMap<UpdateUserDto, User>();
 
         CreateMap<Menu, MenuDto>();
-        CreateMap<MenuIdDTO, Menu>().ReverseMap().ForMember(dest => dest.MenuId, opt => opt.MapFrom(src => src.Id));
+        CreateMap<MenuIdDto, Menu>().ReverseMap().ForMember(dest => dest.MenuId, opt => opt.MapFrom(src => src.Id));
         CreateMap<CreateMenuDto, Menu>();
         CreateMap<UpdateMenuDto, Menu>();
 

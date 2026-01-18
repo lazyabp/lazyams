@@ -49,7 +49,7 @@ public class RoleEndPointsTest : BaseTest
         var jsonResult = JsonSerializer.Deserialize<ApiResponseResult<PagedResultDto<RoleDto>>>(stringResult, serializeOptions);
         if (jsonResult.IsSuccess && jsonResult.Data != null)
         {
-            return jsonResult.Data.Items.Select(x => x.Id).ToList();
+            return jsonResult.Data.Data.Select(x => x.Id).ToList();
         }
 
         return new List<long>();

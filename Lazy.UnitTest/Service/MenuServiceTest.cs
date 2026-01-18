@@ -57,9 +57,9 @@ public class MenuServiceTest
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Total, Is.EqualTo(3));
-            Assert.That(result.Items.Count, Is.EqualTo(3)); 
-            Assert.That(result.Items[0].Title, Is.EqualTo("Menu1")); 
-            Assert.That(result.Items[1].Title, Is.EqualTo("Menu2")); 
+            Assert.That(result.Data.Count, Is.EqualTo(3)); 
+            Assert.That(result.Data[0].Title, Is.EqualTo("Menu1")); 
+            Assert.That(result.Data[1].Title, Is.EqualTo("Menu2")); 
         }
     }
 

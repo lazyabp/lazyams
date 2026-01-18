@@ -100,7 +100,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
         };
 
         var result = await GetListAsync(input);
-        return result.Items.ToList();
+        return result.Data.ToList();
     }
 
     // Build menu tree
@@ -134,14 +134,13 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
         return entity;
     }
 
-    public async Task<List<MenuIdDTO>> GetMenuIdsByRoleIdAsync(long roleId)
+    public async Task<List<MenuIdDto>> GetMenuIdsByRoleIdAsync(long roleId)
     {
         var roleMenusList = await LazyDBContext.RoleMenus.Where(rm => rm.RoleId == roleId).Include(rm => rm.Menu).ToListAsync();
 
         var menuIds = roleMenusList.Select(rm => rm.Menu).ToList();
 
-        var menuDtos = _mapper.Map<List<MenuIdDTO>>(menuIds);
+        var menuDtos = _mapper.Map<List<MenuIdDto>>(menuIds);
         return menuDtos;
-
     }
 }

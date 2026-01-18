@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class MenuIdDTO
+public class MenuIdDto
 {
     public long MenuId { get; set; }
 }

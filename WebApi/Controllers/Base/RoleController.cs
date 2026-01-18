@@ -22,7 +22,7 @@ public class RoleController : ControllerBase
     }
 
     /// <summary>
-    /// Get roles by page
+    /// 分页获取角色列表
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
@@ -30,83 +30,93 @@ public class RoleController : ControllerBase
     [HttpGet]
     public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
-       var pagedResult = await _roleService.GetListAsync(input);
-       //var pagedResult = await _roleService.GetAllRolesAsync(input);
+        var pagedResult = await _roleService.GetListAsync(input);
+        //var pagedResult = await _roleService.GetAllRolesAsync(input);
         return pagedResult;
     }
 
     /// <summary>
-    /// Add a new role
+    /// 添加角色
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Add)]
     [HttpPost]
-    public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
+    public async Task<BaseResultDto<RoleDto>> Add([FromBody] CreateRoleDto input)
     {
-        return await _roleService.CreateAsync(input);
+        var data = await _roleService.CreateAsync(input);
+
+        return new BaseResultDto<RoleDto>(data);
     }
 
     /// <summary>
-    /// Update a role
+    /// 更新角色
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
     [HttpPost]
-    public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
+    public async Task<BaseResultDto<RoleDto>> Update([FromBody] UpdateRoleDto input)
     {
-        return await _roleService.UpdateAsync(input.Id, input);
+        var data = await _roleService.UpdateAsync(input.Id, input);
+
+        return new BaseResultDto<RoleDto>(data);
     }
 
     /// <summary>
-    /// Delete a role
+    /// 删除角色
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Delete)]
     [HttpDelete("{id}")]
-    public async Task<bool> Delete(long id)
+    public async Task<BaseResultDto<bool>> Delete(long id)
     {
         await _roleService.DeleteAsync(id);
 
-        return true;
+        return new BaseResultDto<bool>(true);
     }
 
     /// <summary>
-    /// Delete several roles
+    /// 批量删除角色
     /// </summary>
     /// <param name="ids"></param>
     [Authorize(PermissionConsts.Role.Delete)]
     [HttpDelete]
-    public async Task<bool> BatchDelete([FromBody] long[] ids)
+    public async Task<BaseResultDto<bool>> BatchDelete([FromBody] long[] ids)
     {
         Console.WriteLine("get a array from client:", ids);
 
-        return await _roleService.BulkDelete(ids);
+        var data = await _roleService.BulkDelete(ids);
+
+        return new BaseResultDto<bool>(data);
     }
 
     /// <summary>
-    /// Get a role by ID
+    /// 通过ID获取角色信息
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
     [HttpGet("{id}")]
-    public async Task<RoleDto> GetById(long id)
+    public async Task<BaseResultDto<RoleDto>> GetById(long id)
     {
-        return await _roleService.GetAsync(id);
+        var data = await _roleService.GetAsync(id);
+
+        return new BaseResultDto<RoleDto>(data);
     }
 
     /// <summary>
-    /// Save Role Permission
+    /// 给角色赋权
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
     [HttpPost]
-    public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
+    public async Task<BaseResultDto<bool>> RolePermissionAsync([FromBody]RolePermissionInput input)
     {
-        return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
+        var data = await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
+
+        return new BaseResultDto<bool>(data);
     }
 }

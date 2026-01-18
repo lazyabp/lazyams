@@ -163,7 +163,7 @@ public class MenuEndPointsTest : BaseTest
         var jsonResult = Deserialize<ApiResponseResult<PagedResultDto<MenuDto>>>(stringResult);
 
         return jsonResult.IsSuccess && jsonResult.Data != null
-            ? jsonResult.Data.Items.Select(x => x.Id).ToList()
+            ? jsonResult.Data.Data.Select(x => x.Id).ToList()
             : new List<long>();
     }
 

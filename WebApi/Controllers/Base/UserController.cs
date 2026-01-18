@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Retrive users
+    /// 分页获取用户列表
     /// </summary>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
@@ -28,9 +28,9 @@ public class UserController : ControllerBase
     public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         var pagedResult = await _userService.GetListAsync(input);
-        if (pagedResult.Items.Count > 0)
+        if (pagedResult.Data.Count > 0)
         {
-            foreach (var item in pagedResult.Items)
+            foreach (var item in pagedResult.Data)
             {
                 item.Password = "";
             }
@@ -40,64 +40,73 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// add user
+    /// 添加用户
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Add)]
     [HttpPost]
-    public async Task<UserDto> Add([FromBody] CreateUserDto input)
+    public async Task<BaseResultDto<UserDto>> Add([FromBody] CreateUserDto input)
     {
-        return await _userService.CreateAsync(input);
+        var data = await _userService.CreateAsync(input);
+
+        return new BaseResultDto<UserDto>(data);
     }
 
     /// <summary>
-    /// udpate user
+    /// 更新用户
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Update)]
     [HttpPost]
-    public async Task<UserDto> Update([FromBody] UpdateUserDto input)
+    public async Task<BaseResultDto<UserDto>> Update([FromBody] UpdateUserDto input)
     {
-        return await _userService.UpdateAsync(input.Id, input);
+        var data = await _userService.UpdateAsync(input.Id, input);
+
+        return new BaseResultDto<UserDto>(data);
     }
 
     /// <summary>
-    /// delete user
+    /// 删除用户
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Delete)]
     [HttpDelete("{id}")]
-    public async Task<bool> Delete(long id)
+    public async Task<BaseResultDto<bool>> Delete(long id)
     {
         await _userService.DeleteAsync(id);
 
-        return true;
+        return new BaseResultDto<bool>(true);
     }
 
     /// <summary>
-    /// Get user information
+    /// 通过用户名获取用户信息
     /// </summary>
     /// <param name="userName"></param>
     /// <returns></returns>
     //[Authorize(PermissionConsts.User.Default)]
     [HttpGet("{userName}")]
-    public async Task<UserDto> Get(string userName)
+    public async Task<BaseResultDto<UserDto>> Get(string userName)
     {
-        return await _userService.GetByUserNameAsync(userName);
+        var data = await _userService.GetByUserNameAsync(userName);
+        data.Password = "";
+
+        return new BaseResultDto<UserDto>(data);
     }
 
     /// <summary>
-    /// 
+    /// 通过ID获取用户信息
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
     [HttpGet("{id}")]
-    public async Task<UserWithRoleIdsDto> GetUserById(long id)
+    public async Task<BaseResultDto<UserWithRoleIdsDto>> GetUserById(long id)
     {
-        return await _userService.GetUserByIdAsync(id);
+        var data = await _userService.GetUserByIdAsync(id);
+
+        return new BaseResultDto<UserWithRoleIdsDto>(data);
     }
 }

@@ -11,4 +11,14 @@ public enum SwaggerGroup
     /// AdminService
     /// </summary>
     AdminService = 2,
+
+    ///<summary>
+    /// MemberService
+    /// </summary>
+    MemberService = 3,
+
+    ///<summary>
+    /// CmsService
+    /// </summary>
+    CmsService = 4,
 }

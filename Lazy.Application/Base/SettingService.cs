@@ -21,6 +21,13 @@ public class SettingService : CrudService<Setting, SettingDto, SettingDto, long,
         return base.CreateFilteredQuery(input);
     }
 
+    public async Task<List<SettingDto>> GetAllSettingsAsync(IEnumerable<string> keys)
+    {
+        var result = await GetQueryable().Where(x => keys.Contains(x.Key)).ToListAsync();
+
+        return Mapper.Map<List<SettingDto>>(result);
+    }
+
     public async Task<SettingDto> GetSettingAsync(string key)
     {
         //var cacheKey = $"setting_key_{key}";

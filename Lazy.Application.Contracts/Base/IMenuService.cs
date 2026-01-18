@@ -5,5 +5,5 @@ public interface IMenuService : ICrudService<MenuDto, MenuDto, long, FilterPaged
 {
     Task<List<MenuDto>> GetMenuTreeAsync();
 
-    Task<List<MenuIdDTO>> GetMenuIdsByRoleIdAsync(long roleId);
+    Task<List<MenuIdDto>> GetMenuIdsByRoleIdAsync(long roleId);
 }

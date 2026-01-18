@@ -35,7 +35,7 @@ public class MenuControllerTest
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Total, Is.EqualTo(2));
-        Assert.That(result.Items.Count, Is.EqualTo(2));
+        Assert.That(result.Data.Count, Is.EqualTo(2));
         _menuServiceMock.Verify(service => service.GetListAsync(input), Times.Once);
     }
 
@@ -140,8 +140,8 @@ public class MenuControllerTest
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Id, Is.EqualTo(menuId));
-        Assert.That(result.Title, Is.EqualTo("Menu1"));
+        Assert.That(result.Data.Id, Is.EqualTo(menuId));
+        Assert.That(result.Data.Title, Is.EqualTo("Menu1"));
         _menuServiceMock.Verify(service => service.GetAsync(menuId), Times.Once);
     }
 
@@ -171,10 +171,10 @@ public class MenuControllerTest
         Assert.That(result, Is.InstanceOf<List<MenuDto>>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Count, Is.EqualTo(1));
-        Assert.That(result[0].Title, Is.EqualTo("Root Menu"));
+        Assert.That(result.Data.Count, Is.EqualTo(1));
+        Assert.That(result.Data[0].Title, Is.EqualTo("Root Menu"));
 
-        var children = result[0].Children.ToList();
+        var children = result.Data[0].Children.ToList();
         Assert.That(children.Count, Is.EqualTo(2));
         Assert.That(children[0].Title, Is.EqualTo("Child Menu 1"));
         Assert.That(children[1].Title, Is.EqualTo("Child Menu 2"));

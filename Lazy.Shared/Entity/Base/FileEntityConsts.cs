@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lazy.Shared.Entity;
 
-public static class FileConsts
+public static class FileEntityConsts
 {
     public const int MaxDomainLength = 50;
     public const int MaxMimeTypeLength = 100;

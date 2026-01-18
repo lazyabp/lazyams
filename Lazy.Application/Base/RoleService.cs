@@ -37,7 +37,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, FilterPaged
         return new PagedResultDto<RoleDto>
         {
             Total = totalItems,
-            Items = roleDtos
+            Data = roleDtos
         };
         //return await base.GetListAsync(input);
     }

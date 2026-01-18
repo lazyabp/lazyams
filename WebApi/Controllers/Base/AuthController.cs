@@ -1,6 +1,4 @@
-﻿using Lazy.Core.ExceptionHandling;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Identity.Data;
 
 namespace WebApi.Controllers;
 
@@ -14,32 +12,32 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     //private readonly IConfiguration _configuration;
-    private readonly IOptions<JwtSettingConfig> _settingConfig;
+    //private readonly IOptions<JwtSettingConfig> _settingConfig;
     private readonly IRoleService _roleService;
     private readonly IUserService _userService;
 
     public AuthController(
         IAuthenticationService authenticationService,
         //IConfiguration configuration,
-        IOptions<JwtSettingConfig> settingConfig,
+        //IOptions<JwtSettingConfig> settingConfig,
         IRoleService roleService,
         IUserService userService
     )
     {
         _authenticationService = authenticationService;
         //_configuration = configuration;
-        _settingConfig = settingConfig;
+        //_settingConfig = settingConfig;
         _roleService = roleService;
         _userService = userService;
     }
 
     /// <summary>
-    /// user login 
+    /// 用户登录
     /// </summary>
     /// <param name="loginRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<LoginResponseDto> Login([FromBody] LoginRequestDto loginRequest)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
     {
         LoginResponseDto loginResponseDto = new LoginResponseDto();
         var user = await _authenticationService.ValidateUserAsync(
@@ -48,24 +46,22 @@ public class AuthController : ControllerBase
         );
 
         if (user == null)
-        {
-            ExThrow.Throw("user credentials incorrect", "user credentials incorrect");
-        }
+            return BadRequest("用户凭据不正确");
 
         var token = _authenticationService.GenerateJwtToken(user);
         loginResponseDto.Token = token;
         loginResponseDto.Permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
 
-        return loginResponseDto;
+        return Ok(loginResponseDto);
     }
 
     /// <summary>
-    /// user register
+    /// 用户注册
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<LoginResponseDto> Register([FromBody] RegisterRequest model)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest model)
     {
         var user = new CreateUserDto
         {

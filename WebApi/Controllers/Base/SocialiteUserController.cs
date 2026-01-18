@@ -8,10 +8,10 @@ using System.Text.Json;
 namespace WebApi.Controllers;
 
 /// <summary>
-/// 第三方登录控制器
+/// 第三方授权登录
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/socialite/[action]")]
+[Route("api/socialite")]
 [ApiController]
 public class SocialiteUserController : ControllerBase
 {
@@ -29,39 +29,51 @@ public class SocialiteUserController : ControllerBase
     }
 
     /// <summary>
-    /// Socialite Login
+    /// 微信登录
     /// </summary>
-    /// <param name="type"></param>
     /// <returns></returns>
-    public async Task<IActionResult> Login(SocialiteLoginType type)
+    [HttpGet("weixin/login")]
+    public async Task<BaseResultDto<SocialiteLoginWeixinSettingModel>> WexinLogin()
     {
-        switch (type)
-        {
-            case SocialiteLoginType.Weixin:
-                var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
-                weixinSetting.AppSecret = null; // 保护敏感信息
-                return Ok(weixinSetting);
-            case SocialiteLoginType.WeixinMini:
-                var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
-                weixinMiniSetting.AppSecret = null; // 保护敏感信息
-                return Ok(weixinMiniSetting);
-            case SocialiteLoginType.Google:
-                var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
-                googleSetting.ClientSecret = null; // 保护敏感信息
-                return Ok(googleSetting);
-            default:
-                throw new UserFriendlyException("Unsupported socialite login type.");
-        }
+        var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
+        weixinSetting.AppSecret = null; // 保护敏感信息
+
+        return new BaseResultDto<SocialiteLoginWeixinSettingModel>(weixinSetting);
     }
 
     /// <summary>
-    /// 微信回调
+    /// 微信小程序登录
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("weixin-mini/login")]
+    public async Task<BaseResultDto<SocialiteLoginWeixinMiniSettingModel>> WeixinMiniLogin()
+    {
+        var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
+        weixinMiniSetting.AppSecret = null; // 保护敏感信息
+
+        return new BaseResultDto<SocialiteLoginWeixinMiniSettingModel>(weixinMiniSetting);
+    }
+
+    /// <summary>
+    /// Google登录
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("google/login")]
+    public async Task<BaseResultDto<SocialiteLoginGoogleSettingModel>> GoogleLogin()
+    {
+        var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
+        googleSetting.ClientSecret = null; // 保护敏感信息
+
+        return new BaseResultDto<SocialiteLoginGoogleSettingModel>(googleSetting);
+    }
+
+    /// <summary>
+    /// 微信登录回调
     /// </summary>
     /// <param name="code"></param>
-    /// <param name="state"></param>
     /// <returns></returns>
     [HttpGet("weixin/callback")]
-    public async Task<LoginResponseDto> WeixinCallback(string code, string state)
+    public async Task<IActionResult> WeixinCallback(string code)
     {
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("用户拒绝授权");
@@ -90,11 +102,19 @@ public class SocialiteUserController : ControllerBase
         var userInfo = await client.GetFromJsonAsync<WeixinUserInfo>(userInfoUrl);
 
         // 5. 业务逻辑处理
-        return await _socialiteUserService.WeixinLoginAsync(userInfo);
+        var result = await _socialiteUserService.WeixinLoginAsync(userInfo);
+
+        return Ok(result);
     }
 
+    /// <summary>
+    /// 微信小程序登录回调
+    /// </summary>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    /// <exception cref="UserFriendlyException"></exception>
     [HttpPost("weixin-mini/callback")]
-    public async Task<LoginResponseDto> WeixinMiniCallback([FromBody] WeixinMiniInfo info)
+    public async Task<IActionResult> WeixinMiniCallback([FromBody] WeixinMiniInfo info)
     {
         if (string.IsNullOrEmpty(info.Code))
             throw new UserFriendlyException("Invalid code");
@@ -121,7 +141,9 @@ public class SocialiteUserController : ControllerBase
 
         // 4. 登录系统
         var userInfo = JsonSerializer.Deserialize<WeixinUserInfo>(userData);
-        return await _socialiteUserService.WeixinLoginAsync(userInfo);
+        var result = await _socialiteUserService.WeixinLoginAsync(userInfo);
+
+        return Ok(result);
     }
 
     /// <summary>
@@ -166,13 +188,13 @@ public class SocialiteUserController : ControllerBase
     }
 
     /// <summary>
-    /// Google 回调
+    /// Google登录回调
     /// </summary>
     /// <param name="code"></param>
     /// <returns></returns>
     /// <exception cref="UserFriendlyException"></exception>
     [HttpGet("google/callback")]
-    public async Task<LoginResponseDto> GoogleCallback(string code)
+    public async Task<IActionResult> GoogleCallback(string code)
     {
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("Invalid code");
@@ -209,6 +231,8 @@ public class SocialiteUserController : ControllerBase
         var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<GoogleUserInfo>();
 
         // 5. 登录
-        return await _socialiteUserService.GoogleLoginAsync(userInfo);
+        var result = await _socialiteUserService.GoogleLoginAsync(userInfo);
+
+        return Ok(result);
     }
 }

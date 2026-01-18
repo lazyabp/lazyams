@@ -77,7 +77,7 @@ public class UserServiceTest
             context.Users.AddRange(users);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
 
             //act
             var result = await service.CreateAsync(newUser);
@@ -112,7 +112,7 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
             //act
             var result = await service.GetByUserNameAsync("A1");
             var inValidResult = await service.GetByUserNameAsync("nonExistingUser");
@@ -144,7 +144,7 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
             //act
             var updatedResult = await service.UpdateAsync(5, updatedUser);
             //Assert
@@ -188,7 +188,7 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
             updatedResult = await service.UpdateAsync(2, updatedUser);
         }
 
@@ -238,7 +238,7 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
 
             //act & assert
             var exception = Assert.ThrowsAsync<InvalidOperationException>
@@ -279,7 +279,7 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
 
             var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await service.UpdateAsync(3, updatedUser));
             Assert.That(ex.Message, Does.Contain("the following role ids are invalid:100"));
@@ -303,7 +303,7 @@ public class UserServiceTest
             context.Users.AddRange(users);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
             isDeleted = await service.DeleteAsync(deleteUserId);
         }
 
@@ -331,7 +331,7 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _mockWebHostEnvironment.Object, _LazyCache);
+            var service = new UserService(context, _mapper, _LazyCache);
 
             Assert.ThrowsAsync<EntityNotFoundException>(async () => await service.DeleteAsync(deleteUserId));
         }

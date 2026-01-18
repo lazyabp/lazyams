@@ -3,12 +3,8 @@
 namespace WebApi.Controllers;
 
 /// <summary>
-/// Provides API endpoints for managing carousel resources in the administration service.
+/// 轮播内容
 /// </summary>
-/// <remarks>
-/// This controller is part of the BaseService API group and is intended for administrative
-/// operations related to carousels. All routes are prefixed with 'api/Carousel/'.
-/// </remarks>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -21,68 +17,69 @@ public class CarouselController : ControllerBase
         _carouselService = carouselService;
     }
 
+    /// <summary>
+    /// 分页获取轮播内容列表
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     [HttpGet]
-    //[Authorize(PermissionConsts.Carousel.Default)]
     public async Task<PagedResultDto<CarouselDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         return await _carouselService.GetListAsync(input);
     }
 
     /// <summary>
-    /// Get carousel by id
+    /// 通过ID获取轮播内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    //[Authorize(PermissionConsts.Carousel.Default)]
     [HttpGet("{id}")]
-    public async Task<CarouselDto> GetById(long id)
+    public async Task<BaseResultDto<CarouselDto>> GetById(long id)
     {
-        return await _carouselService.GetAsync(id);
+        var data = await _carouselService.GetAsync(id);
+
+        return new BaseResultDto<CarouselDto>(data);
     }
 
     /// <summary>
-    /// Creates a new carousel item using the specified input data.
+    /// 添加轮播内容
     /// </summary>
-    /// <remarks>
-    /// Requires the caller to have the appropriate permission to add carousel items. This
-    /// endpoint is accessible via HTTP GET, which is unconventional for resource creation; consider using HTTP POST
-    /// for standard RESTful practices.
-    /// </remarks>
-    /// <param name="input">
-    /// The data used to create the new carousel item. Cannot be null.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="CarouselDto"/>
-    /// representing the newly created carousel item.
-    /// </returns>
+    /// <param name="input"></param>
+    /// <returns></returns>
     [HttpGet]
     [Authorize(PermissionConsts.Carousel.Add)]
-    public async Task<CarouselDto> Add([FromBody] CreateCarouselDto input)
+    public async Task<BaseResultDto<CarouselDto>> Add([FromBody] CreateCarouselDto input)
     {
-        return await _carouselService.CreateAsync(input);
+        var data = await _carouselService.CreateAsync(input);
+
+        return new BaseResultDto<CarouselDto>(data);
     }
 
     /// <summary>
-    /// udpate carousel
+    /// 更新轮播内容
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Carousel.Update)]
     [HttpPost]
-    public async Task<CarouselDto> Update([FromBody] UpdateCarouselDto input)
+    public async Task<BaseResultDto<CarouselDto>> Update([FromBody] UpdateCarouselDto input)
     {
-        return await _carouselService.UpdateAsync(input.Id, input);
+        var data = await _carouselService.UpdateAsync(input.Id, input);
+
+        return new BaseResultDto<CarouselDto>(data);
     }
 
     /// <summary>
-    /// delete carousel
+    /// 删除轮播内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Carousel.Delete)]
     [HttpDelete("{id}")]
-    public async Task<bool> Delete(long id)
+    public async Task<BaseResultDto<bool>> Delete(long id)
     {
         await _carouselService.DeleteAsync(id);
 
-        return true;
+        return new BaseResultDto<bool>(true);
     }
 }

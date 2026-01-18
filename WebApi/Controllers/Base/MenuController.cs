@@ -18,7 +18,7 @@ public class MenuController : ControllerBase
     }
 
     /// <summary>
-    /// Get menus by page
+    /// 分页获取菜单列表
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
@@ -30,90 +30,102 @@ public class MenuController : ControllerBase
     }
 
     /// <summary>
-    /// Add a new menu
+    /// 添加菜单
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost]
     [Authorize(PermissionConsts.Role.Add)]
-    public async Task<MenuDto> Add([FromBody] CreateMenuDto input)
+    public async Task<BaseResultDto<MenuDto>> Add([FromBody] CreateMenuDto input)
     {
-        return await _menuService.CreateAsync(input);
+        var data = await _menuService.CreateAsync(input);
+
+        return new BaseResultDto<MenuDto>(data);
     }
 
     /// <summary>
-    /// Update a menu
+    /// 更新菜单
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost]
     [Authorize(PermissionConsts.Role.Update)]
-    public async Task<MenuDto> Update([FromBody] UpdateMenuDto input)
+    public async Task<BaseResultDto<MenuDto>> Update([FromBody] UpdateMenuDto input)
     {
-        return await _menuService.UpdateAsync(input.Id, input);
+        var data = await _menuService.UpdateAsync(input.Id, input);
+
+        return new BaseResultDto<MenuDto>(data);
     }
 
     /// <summary>
-    /// Delete a menu
+    /// 删除菜单
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(PermissionConsts.Role.Delete)]
-    public async Task<bool> Delete(long id)
+    public async Task<BaseResultDto<bool>> Delete(long id)
     {
         await _menuService.DeleteAsync(id);
 
-        return true;
+        return new BaseResultDto<bool>(true);
     }
 
     /// <summary>
-    /// Get a menu by ID
+    /// 通过ID获取菜单
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
     [Authorize(PermissionConsts.Role.Default)]
-    public async Task<MenuDto> GetById(long id)
+    public async Task<BaseResultDto<MenuDto>> GetById(long id)
     {
         var menu = await _menuService.GetAsync(id);
 
-        return menu;
+        return new BaseResultDto<MenuDto>(menu);
     }
 
     /// <summary>
-    /// Get the menu tree
+    /// 获取菜单树
     /// </summary>
     /// <returns>A list of menus with tree structure</returns>
     [HttpGet]
     [Authorize(PermissionConsts.Role.Default)]
-    public async Task<List<MenuDto>> GetMenuTree()
+    public async Task<ListResultDto<MenuDto>> GetMenuTree()
     {
-        return await _menuService.GetMenuTreeAsync();
-    }
+        var data = await _menuService.GetMenuTreeAsync();
 
-    [HttpGet]
-    public List<string> GetMenuType()
-    {
-        var result = new List<string>();
-
-        typeof(MenuType).GetEnumNames().ToList().ForEach(item =>
-        {
-            result.Add(item);
-        });
-
-        return result;
+        return new ListResultDto<MenuDto>(data);
     }
 
     /// <summary>
-    /// Get the menuIds by a role id
+    /// 获取菜单类型
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public BaseResultDto<Dictionary<int, string>> GetMenuType()
+    {
+        var result = new Dictionary<int, string>();
+
+        foreach (MenuType item in Enum.GetValues(typeof(MenuType)))
+        {
+            result.Add((int)item, item.ToString());
+        }
+
+        return new BaseResultDto<Dictionary<int, string>>(result);
+    }
+
+    /// <summary>
+    /// 通过角色ID获取菜单列表
     /// </summary>
     /// <param name="id"></param>
     /// <returns>A list of menu Ids</returns>
 
     [HttpGet("{id}")]
-    public async Task<List<MenuIdDTO>> GetMenuIdsByRoleId(long id)
+    public async Task<ListResultDto<MenuIdDto>> GetMenuIdsByRoleId(long id)
     {
-        return await _menuService.GetMenuIdsByRoleIdAsync(id);
+        var data = await _menuService.GetMenuIdsByRoleIdAsync(id);
+
+        return new ListResultDto<MenuIdDto>(data);
     }
 }

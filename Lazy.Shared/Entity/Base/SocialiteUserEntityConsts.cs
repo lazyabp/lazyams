@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lazy.Shared.Entity;
 
-public static class SocialiteUserConsts
+public static class SocialiteUserEntityConsts
 {
     public const int MaxProviderLength = 64;
     public const int MaxProviderIdLength = 128;

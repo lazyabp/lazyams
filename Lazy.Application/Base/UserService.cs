@@ -1,16 +1,15 @@
 ﻿using Lazy.Core.Utils;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Lazy.Application;
 
 public class UserService : CrudService<User, UserDto, UserDto, long, FilterPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
 {
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    //private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILazyCache _LazyCache;
-    public UserService(LazyDBContext dbContext, IMapper mapper, IWebHostEnvironment webHostEnvironment, ILazyCache LazyCache) : base(dbContext, mapper)
+    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache LazyCache) : base(dbContext, mapper)
     {
-        this._webHostEnvironment = webHostEnvironment;
+        //this._webHostEnvironment = webHostEnvironment;
         this._LazyCache = LazyCache;
     }
 
