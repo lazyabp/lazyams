@@ -27,7 +27,7 @@ public class MenuEndPointsTest : BaseTest
         var jsonResult = JsonSerializer.Deserialize<ApiResponseResult<PagedResultDto<MenuDto>>>(stringResult, serializeOptions);
 
         Assert.That(jsonResult, Is.Not.Null);
-        Assert.That(jsonResult.IsSuccess, Is.True);
+        Assert.That(jsonResult.Success, Is.True);
     }
 
     [Order(2)]
@@ -45,7 +45,7 @@ public class MenuEndPointsTest : BaseTest
             var jsonResult = Deserialize<ApiResponseResult<MenuDto>>(stringResult);
 
             Assert.That(jsonResult, Is.Not.Null);
-            Assert.That(jsonResult.IsSuccess, Is.True);
+            Assert.That(jsonResult.Success, Is.True);
             Assert.That(id, Is.EqualTo(jsonResult.Data?.Id));
         }
         else
@@ -81,7 +81,7 @@ public class MenuEndPointsTest : BaseTest
         var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
 
         Assert.That(jsonResult, Is.Not.Null);
-        Assert.That(jsonResult.IsSuccess, Is.True);
+        Assert.That(jsonResult.Success, Is.True);
     }
 
     [Order(4)]
@@ -114,7 +114,7 @@ public class MenuEndPointsTest : BaseTest
             var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
 
             Assert.That(jsonResult, Is.Not.Null);
-            Assert.That(jsonResult.IsSuccess, Is.True);
+            Assert.That(jsonResult.Success, Is.True);
         }
         else
         {
@@ -136,7 +136,7 @@ public class MenuEndPointsTest : BaseTest
 
             var menu = Deserialize<ApiResponseResult<MenuDto>>(await getByIdResp.Content.ReadAsStringAsync());
             Assert.That(menu, Is.Not.Null);
-            Assert.That(menu.IsSuccess, Is.True);
+            Assert.That(menu.Success, Is.True);
 
             if (menu.Data?.Children != null && menu.Data.Children.Any())
             {
@@ -162,8 +162,8 @@ public class MenuEndPointsTest : BaseTest
         var stringResult = await resp.Content.ReadAsStringAsync();
         var jsonResult = Deserialize<ApiResponseResult<PagedResultDto<MenuDto>>>(stringResult);
 
-        return jsonResult.IsSuccess && jsonResult.Data != null
-            ? jsonResult.Data.Data.Select(x => x.Id).ToList()
+        return jsonResult.Success && jsonResult.Data != null
+            ? jsonResult.Data.Items.Select(x => x.Id).ToList()
             : new List<long>();
     }
 
@@ -191,7 +191,7 @@ public class MenuEndPointsTest : BaseTest
 
         var result = Deserialize<ApiResponseResult<List<MenuDto>>>(stringResult);
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Success, Is.True);
         Assert.That(result.Data, Is.Not.Null);
     }
 }

@@ -1,4 +1,5 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Lazy.Core.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
@@ -28,9 +29,9 @@ public class UserController : ControllerBase
     public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         var pagedResult = await _userService.GetListAsync(input);
-        if (pagedResult.Data.Count > 0)
+        if (pagedResult.Items.Count > 0)
         {
-            foreach (var item in pagedResult.Data)
+            foreach (var item in pagedResult.Items)
             {
                 item.Password = "";
             }
@@ -46,11 +47,9 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Add)]
     [HttpPost]
-    public async Task<BaseResultDto<UserDto>> Add([FromBody] CreateUserDto input)
+    public async Task<UserDto> Add([FromBody] CreateUserDto input)
     {
-        var data = await _userService.CreateAsync(input);
-
-        return new BaseResultDto<UserDto>(data);
+        return await _userService.CreateAsync(input);
     }
 
     /// <summary>
@@ -60,11 +59,9 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Update)]
     [HttpPost]
-    public async Task<BaseResultDto<UserDto>> Update([FromBody] UpdateUserDto input)
+    public async Task<UserDto> Update([FromBody] UpdateUserDto input)
     {
-        var data = await _userService.UpdateAsync(input.Id, input);
-
-        return new BaseResultDto<UserDto>(data);
+        return await _userService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -74,26 +71,11 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Delete)]
     [HttpDelete("{id}")]
-    public async Task<BaseResultDto<bool>> Delete(long id)
+    public async Task<bool> Delete(long id)
     {
         await _userService.DeleteAsync(id);
 
-        return new BaseResultDto<bool>(true);
-    }
-
-    /// <summary>
-    /// 通过用户名获取用户信息
-    /// </summary>
-    /// <param name="userName"></param>
-    /// <returns></returns>
-    //[Authorize(PermissionConsts.User.Default)]
-    [HttpGet("{userName}")]
-    public async Task<BaseResultDto<UserDto>> Get(string userName)
-    {
-        var data = await _userService.GetByUserNameAsync(userName);
-        data.Password = "";
-
-        return new BaseResultDto<UserDto>(data);
+        return true;
     }
 
     /// <summary>
@@ -103,10 +85,29 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
     [HttpGet("{id}")]
-    public async Task<BaseResultDto<UserWithRoleIdsDto>> GetUserById(long id)
+    public async Task<UserWithRoleIdsDto> GetUserById(long id)
     {
-        var data = await _userService.GetUserByIdAsync(id);
+        return await _userService.GetUserByIdAsync(id);
+    }
 
-        return new BaseResultDto<UserWithRoleIdsDto>(data);
+    /// <summary>
+    /// 通过用户名获取用户信息
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns></returns>
+    //[Authorize(PermissionConsts.User.Default)]
+    [HttpGet("{userName}")]
+    public async Task<UserDto> Get(string userName)
+    {
+        var data = await _userService.GetByUserNameAsync(userName);
+        data.Password = "";
+
+        return data;
+    }
+
+    [HttpGet("info")]
+    public async Task<UserWithRoleIdsDto> GetUserInfo()
+    {
+        return await _userService.GetCurrentUserInfoAsync();
     }
 }

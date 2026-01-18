@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Lazy.Core.ExceptionHandling;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace WebApi.Controllers;
 
@@ -37,7 +38,7 @@ public class AuthController : ControllerBase
     /// <param name="loginRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
+    public async Task<LoginResponseDto> Login([FromBody] LoginRequestDto loginRequest)
     {
         LoginResponseDto loginResponseDto = new LoginResponseDto();
         var user = await _authenticationService.ValidateUserAsync(
@@ -46,13 +47,13 @@ public class AuthController : ControllerBase
         );
 
         if (user == null)
-            return BadRequest("用户凭据不正确");
+            throw new UserFriendlyException("用户凭据不正确");
 
         var token = _authenticationService.GenerateJwtToken(user);
         loginResponseDto.Token = token;
         loginResponseDto.Permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
 
-        return Ok(loginResponseDto);
+        return loginResponseDto;
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ public class AuthController : ControllerBase
     /// <param name="model"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest model)
+    public async Task<LoginResponseDto> Register([FromBody] RegisterRequest model)
     {
         var user = new CreateUserDto
         {

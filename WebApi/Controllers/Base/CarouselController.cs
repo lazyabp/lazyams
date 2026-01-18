@@ -34,11 +34,9 @@ public class CarouselController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<BaseResultDto<CarouselDto>> GetById(long id)
+    public async Task<CarouselDto> GetById(long id)
     {
-        var data = await _carouselService.GetAsync(id);
-
-        return new BaseResultDto<CarouselDto>(data);
+        return await _carouselService.GetAsync(id);
     }
 
     /// <summary>
@@ -48,11 +46,9 @@ public class CarouselController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [Authorize(PermissionConsts.Carousel.Add)]
-    public async Task<BaseResultDto<CarouselDto>> Add([FromBody] CreateCarouselDto input)
+    public async Task<CarouselDto> Add([FromBody] CreateCarouselDto input)
     {
-        var data = await _carouselService.CreateAsync(input);
-
-        return new BaseResultDto<CarouselDto>(data);
+        return await _carouselService.CreateAsync(input);
     }
 
     /// <summary>
@@ -62,11 +58,9 @@ public class CarouselController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Carousel.Update)]
     [HttpPost]
-    public async Task<BaseResultDto<CarouselDto>> Update([FromBody] UpdateCarouselDto input)
+    public async Task<CarouselDto> Update([FromBody] UpdateCarouselDto input)
     {
-        var data = await _carouselService.UpdateAsync(input.Id, input);
-
-        return new BaseResultDto<CarouselDto>(data);
+        return await _carouselService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -76,10 +70,10 @@ public class CarouselController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Carousel.Delete)]
     [HttpDelete("{id}")]
-    public async Task<BaseResultDto<bool>> Delete(long id)
+    public async Task<bool> Delete(long id)
     {
         await _carouselService.DeleteAsync(id);
 
-        return new BaseResultDto<bool>(true);
+        return true;
     }
 }

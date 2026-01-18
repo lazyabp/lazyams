@@ -2,16 +2,13 @@
 
 public class ListResultDto<T>
 {
-    public bool Success { get; set; }
-    public string Message { get; set; } = string.Empty;
-
-    public IReadOnlyList<T> Data
+    public IReadOnlyList<T> Items
     {
-        get { return _data ?? (_data = new List<T>()); }
-        set { _data = value; }
+        get { return _items ?? (_items = new List<T>()); }
+        set { _items = value; }
     }
 
-    private IReadOnlyList<T> _data;
+    private IReadOnlyList<T> _items;
 
     /// <summary>
     /// Creates a new <see cref="ListResultDto{T}"/> object.
@@ -23,24 +20,9 @@ public class ListResultDto<T>
     /// <summary>
     /// Creates a new <see cref="ListResultDto{T}"/> object.
     /// </summary>
-    /// <param name="data">List of data</param>
-    public ListResultDto(IReadOnlyList<T> data)
+    /// <param name="items">List of data</param>
+    public ListResultDto(IReadOnlyList<T> items)
     {
-        Success = true;
-        Message = "Successfully";
-        Data = data;
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="ListResultDto{T}"/> object.
-    /// </summary>
-    /// <param name="success"></param>
-    /// <param name="message"></param>
-    /// <param name="data"></param>
-    public ListResultDto(bool success, string message, IReadOnlyList<T> data)
-    {
-        Success = success;
-        Message = message;
-        Data = data;
+        Items = _items;
     }
 }

@@ -100,7 +100,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
         };
 
         var result = await GetListAsync(input);
-        return result.Data.ToList();
+        return result.Items.ToList();
     }
 
     // Build menu tree

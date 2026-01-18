@@ -28,11 +28,9 @@ public class FileController : ControllerBase
     [HttpPost]
     [Authorize]
     [Route("upload")]
-    public async Task<BaseResultDto<FileDto>> UploadAsync(IFormFile file)
+    public async Task<FileDto> UploadAsync(IFormFile file)
     {
-        var data = await _fileService.UploadAsync(file);
-
-        return new BaseResultDto<FileDto>(data);
+        return await _fileService.UploadAsync(file);
     }
 
     /// <summary>
@@ -43,9 +41,8 @@ public class FileController : ControllerBase
     [HttpPost]
     [Authorize]
     [Route("avatar/upload")]
-    public async Task<BaseResultDto<string>> UploadAvatarAsync(IFormFile file)
+    public async Task<string> UploadAvatarAsync(IFormFile file)
     {
-        var avatarUrl = await _fileService.UploadAvatarAsync(file);
-        return new BaseResultDto<string>(avatarUrl);
+        return await _fileService.UploadAvatarAsync(file);
     }
 }

@@ -155,7 +155,6 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
         await _LazyCache.RemoveAsync(cacheKey);
 
         return userDto;
-
     }
 
     protected virtual async Task ValidateNameAsync(string userName, long? expectedId = null)
@@ -228,5 +227,19 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
         userOutput.RoleIds.Clear();
         userOutput.RoleIds.AddRange(user.UserRoles.Select(x => x.RoleId).Distinct());
         return userOutput;
+    }
+
+    /// <summary>
+    /// 获取当前登录的用户信息
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="UserFriendlyException"></exception>
+    public Task<UserWithRoleIdsDto> GetCurrentUserInfoAsync()
+    {
+        var userId = CurrentUser.Id;
+        if (!userId.HasValue)
+            throw new UserFriendlyException("用户没有登录或登录已失效！");
+
+        return GetUserByIdAsync(userId.Value);
     }
 }

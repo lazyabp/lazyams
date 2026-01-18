@@ -43,7 +43,7 @@ public static class HttpExceptionUtil
     public static ApiResponseResult GetApiResponseResult(Exception exception)
     {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
-        apiResponseResult.IsSuccess = false;
+        apiResponseResult.Success = false;
 
         if (exception is LazyValidationException LazyValidationException)
         {

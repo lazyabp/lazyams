@@ -28,7 +28,7 @@ public class RoleControllerTest
         };
         var pagedResult = new PagedResultDto<RoleDto>
         {
-            Data = roles,
+            Items = roles,
             Total = 5,
         };
         _roleServiceMock.Setup(service => service.GetListAsync(input)).ReturnsAsync(pagedResult);
@@ -142,7 +142,7 @@ public class RoleControllerTest
         var rolesAfterDeleteValid = from listItem in rolesBeforeDelete where id != validId select listItem;
         var pagedResult = new PagedResultDto<RoleDto>
         {
-            Data = rolesAfterDeleteValid as List<RoleDto>,
+            Items = rolesAfterDeleteValid as List<RoleDto>,
             Total = 4,
         };
         _roleServiceMock.Setup(service => service.DeleteAsync(validId)).Returns(Task.FromResult(pagedResult));
@@ -162,7 +162,7 @@ public class RoleControllerTest
         var rolesAfterDeleteInvalid = from listItem in rolesBeforeDelete where id != invalidId select listItem;
         var pagedResultInvalid = new PagedResultDto<RoleDto>
         {
-            Data = rolesAfterDeleteValid as List<RoleDto>,
+            Items = rolesAfterDeleteValid as List<RoleDto>,
             Total = 5,
         };
         _roleServiceMock.Setup(service => service.DeleteAsync(invalidId)).Returns(Task.FromResult(pagedResultInvalid));

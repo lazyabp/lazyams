@@ -36,11 +36,9 @@ public class MenuController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize(PermissionConsts.Role.Add)]
-    public async Task<BaseResultDto<MenuDto>> Add([FromBody] CreateMenuDto input)
+    public async Task<MenuDto> Add([FromBody] CreateMenuDto input)
     {
-        var data = await _menuService.CreateAsync(input);
-
-        return new BaseResultDto<MenuDto>(data);
+        return await _menuService.CreateAsync(input);
     }
 
     /// <summary>
@@ -50,11 +48,9 @@ public class MenuController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize(PermissionConsts.Role.Update)]
-    public async Task<BaseResultDto<MenuDto>> Update([FromBody] UpdateMenuDto input)
+    public async Task<MenuDto> Update([FromBody] UpdateMenuDto input)
     {
-        var data = await _menuService.UpdateAsync(input.Id, input);
-
-        return new BaseResultDto<MenuDto>(data);
+        return await _menuService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -64,11 +60,11 @@ public class MenuController : ControllerBase
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(PermissionConsts.Role.Delete)]
-    public async Task<BaseResultDto<bool>> Delete(long id)
+    public async Task<bool> Delete(long id)
     {
         await _menuService.DeleteAsync(id);
 
-        return new BaseResultDto<bool>(true);
+        return true;
     }
 
     /// <summary>
@@ -78,11 +74,9 @@ public class MenuController : ControllerBase
     /// <returns></returns>
     [HttpGet("{id}")]
     [Authorize(PermissionConsts.Role.Default)]
-    public async Task<BaseResultDto<MenuDto>> GetById(long id)
+    public async Task<MenuDto> GetById(long id)
     {
-        var menu = await _menuService.GetAsync(id);
-
-        return new BaseResultDto<MenuDto>(menu);
+        return await _menuService.GetAsync(id);
     }
 
     /// <summary>
@@ -103,7 +97,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public BaseResultDto<Dictionary<int, string>> GetMenuType()
+    public Dictionary<int, string> GetMenuType()
     {
         var result = new Dictionary<int, string>();
 
@@ -112,7 +106,7 @@ public class MenuController : ControllerBase
             result.Add((int)item, item.ToString());
         }
 
-        return new BaseResultDto<Dictionary<int, string>>(result);
+        return result;
     }
 
     /// <summary>

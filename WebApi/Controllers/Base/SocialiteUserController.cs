@@ -33,12 +33,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("weixin/login")]
-    public async Task<BaseResultDto<SocialiteLoginWeixinSettingModel>> WexinLogin()
+    public async Task<SocialiteLoginWeixinSettingModel> WexinLogin()
     {
         var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
         weixinSetting.AppSecret = null; // 保护敏感信息
 
-        return new BaseResultDto<SocialiteLoginWeixinSettingModel>(weixinSetting);
+        return weixinSetting;
     }
 
     /// <summary>
@@ -46,12 +46,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("weixin-mini/login")]
-    public async Task<BaseResultDto<SocialiteLoginWeixinMiniSettingModel>> WeixinMiniLogin()
+    public async Task<SocialiteLoginWeixinMiniSettingModel> WeixinMiniLogin()
     {
         var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
         weixinMiniSetting.AppSecret = null; // 保护敏感信息
 
-        return new BaseResultDto<SocialiteLoginWeixinMiniSettingModel>(weixinMiniSetting);
+        return weixinMiniSetting;
     }
 
     /// <summary>
@@ -59,12 +59,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("google/login")]
-    public async Task<BaseResultDto<SocialiteLoginGoogleSettingModel>> GoogleLogin()
+    public async Task<SocialiteLoginGoogleSettingModel> GoogleLogin()
     {
         var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
         googleSetting.ClientSecret = null; // 保护敏感信息
 
-        return new BaseResultDto<SocialiteLoginGoogleSettingModel>(googleSetting);
+        return googleSetting;
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class SocialiteUserController : ControllerBase
     /// <param name="code"></param>
     /// <returns></returns>
     [HttpGet("weixin/callback")]
-    public async Task<IActionResult> WeixinCallback(string code)
+    public async Task<LoginResponseDto> WeixinCallback(string code)
     {
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("用户拒绝授权");
@@ -104,7 +104,7 @@ public class SocialiteUserController : ControllerBase
         // 5. 业务逻辑处理
         var result = await _socialiteUserService.WeixinLoginAsync(userInfo);
 
-        return Ok(result);
+        return result;
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public class SocialiteUserController : ControllerBase
     /// <returns></returns>
     /// <exception cref="UserFriendlyException"></exception>
     [HttpPost("weixin-mini/callback")]
-    public async Task<IActionResult> WeixinMiniCallback([FromBody] WeixinMiniInfo info)
+    public async Task<LoginResponseDto> WeixinMiniCallback([FromBody] WeixinMiniInfo info)
     {
         if (string.IsNullOrEmpty(info.Code))
             throw new UserFriendlyException("Invalid code");
@@ -143,7 +143,7 @@ public class SocialiteUserController : ControllerBase
         var userInfo = JsonSerializer.Deserialize<WeixinUserInfo>(userData);
         var result = await _socialiteUserService.WeixinLoginAsync(userInfo);
 
-        return Ok(result);
+        return result;
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public class SocialiteUserController : ControllerBase
     /// <returns></returns>
     /// <exception cref="UserFriendlyException"></exception>
     [HttpGet("google/callback")]
-    public async Task<IActionResult> GoogleCallback(string code)
+    public async Task<LoginResponseDto> GoogleCallback(string code)
     {
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("Invalid code");
@@ -233,6 +233,6 @@ public class SocialiteUserController : ControllerBase
         // 5. 登录
         var result = await _socialiteUserService.GoogleLoginAsync(userInfo);
 
-        return Ok(result);
+        return result;
     }
 }

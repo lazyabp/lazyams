@@ -42,11 +42,9 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Add)]
     [HttpPost]
-    public async Task<BaseResultDto<RoleDto>> Add([FromBody] CreateRoleDto input)
+    public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
     {
-        var data = await _roleService.CreateAsync(input);
-
-        return new BaseResultDto<RoleDto>(data);
+        return await _roleService.CreateAsync(input);
     }
 
     /// <summary>
@@ -56,11 +54,9 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
     [HttpPost]
-    public async Task<BaseResultDto<RoleDto>> Update([FromBody] UpdateRoleDto input)
+    public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
     {
-        var data = await _roleService.UpdateAsync(input.Id, input);
-
-        return new BaseResultDto<RoleDto>(data);
+        return await _roleService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -70,11 +66,11 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Delete)]
     [HttpDelete("{id}")]
-    public async Task<BaseResultDto<bool>> Delete(long id)
+    public async Task<bool> Delete(long id)
     {
         await _roleService.DeleteAsync(id);
 
-        return new BaseResultDto<bool>(true);
+        return true;
     }
 
     /// <summary>
@@ -83,13 +79,11 @@ public class RoleController : ControllerBase
     /// <param name="ids"></param>
     [Authorize(PermissionConsts.Role.Delete)]
     [HttpDelete]
-    public async Task<BaseResultDto<bool>> BatchDelete([FromBody] long[] ids)
+    public async Task<bool> BatchDelete([FromBody] long[] ids)
     {
-        Console.WriteLine("get a array from client:", ids);
+        //Console.WriteLine("get a array from client:", ids);
 
-        var data = await _roleService.BulkDelete(ids);
-
-        return new BaseResultDto<bool>(data);
+        return await _roleService.BulkDelete(ids);
     }
 
     /// <summary>
@@ -99,11 +93,9 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
     [HttpGet("{id}")]
-    public async Task<BaseResultDto<RoleDto>> GetById(long id)
+    public async Task<RoleDto> GetById(long id)
     {
-        var data = await _roleService.GetAsync(id);
-
-        return new BaseResultDto<RoleDto>(data);
+        return await _roleService.GetAsync(id);
     }
 
     /// <summary>
@@ -113,10 +105,8 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
     [HttpPost]
-    public async Task<BaseResultDto<bool>> RolePermissionAsync([FromBody]RolePermissionInput input)
+    public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
     {
-        var data = await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
-
-        return new BaseResultDto<bool>(data);
+        return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
     }
 }

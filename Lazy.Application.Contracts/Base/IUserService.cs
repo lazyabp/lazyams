@@ -8,4 +8,5 @@ public interface IUserService : ICrudService<UserDto, UserDto, long, FilterPaged
     Task<UserDto> GetByEmailAsync(string email);
     Task<UserWithRoleIdsDto> GetUserByIdAsync(long id);
 
+    Task<UserWithRoleIdsDto> GetCurrentUserInfoAsync();
 }

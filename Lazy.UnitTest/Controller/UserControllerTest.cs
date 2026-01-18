@@ -28,7 +28,7 @@ public class UserControllerTest
         };
         var pagedResult = new PagedResultDto<UserDto>
         {
-            Data = users,
+            Items = users,
             Total = 5,
         };
         _userServiceMock.Setup(service => service.GetListAsync(input)).ReturnsAsync(pagedResult);
@@ -200,7 +200,7 @@ public class UserControllerTest
         var usersAfterDeleteValid = from listItem in usersBeforeDelete where id != validId select listItem;
         var pagedResult = new PagedResultDto<UserDto>
         {
-            Data = usersAfterDeleteValid as List<UserDto>,
+            Items = usersAfterDeleteValid as List<UserDto>,
             Total = 4,
         };
         _userServiceMock.Setup(service => service.DeleteAsync(validId)).Returns(Task.FromResult(pagedResult));
@@ -218,7 +218,7 @@ public class UserControllerTest
         var usersAfterDeleteInvalid = from listItem in usersBeforeDelete where id != invalidId select listItem;
         var pagedResultInvalid = new PagedResultDto<UserDto>
         {
-            Data = usersAfterDeleteValid as List<UserDto>,
+            Items = usersAfterDeleteValid as List<UserDto>,
             Total = 5,
         };
         _userServiceMock.Setup(service => service.DeleteAsync(invalidId)).Returns(Task.FromResult(pagedResultInvalid));
@@ -252,8 +252,8 @@ public class UserControllerTest
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Data.UserName, Is.EqualTo("Apple"));
-        Assert.That(result.Data.Email, Is.EqualTo("abc@uow.edu.au"));
+        Assert.That(result.UserName, Is.EqualTo("Apple"));
+        Assert.That(result.Email, Is.EqualTo("abc@uow.edu.au"));
         _userServiceMock.Verify(service => service.GetByUserNameAsync("Apple"), Times.Once);
     }
 

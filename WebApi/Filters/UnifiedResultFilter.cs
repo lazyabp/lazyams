@@ -45,7 +45,7 @@ public class UnifiedResultFilter : IResultFilter
                 }
 
                 var apiResponseResult = new ApiResponseResult<object>();
-                apiResponseResult.IsSuccess = (context.HttpContext.Response.StatusCode >= (int)HttpStatusCode.OK && context.HttpContext.Response.StatusCode <= (int)HttpStatusCode.NoContent);
+                apiResponseResult.Success = (context.HttpContext.Response.StatusCode >= (int)HttpStatusCode.OK && context.HttpContext.Response.StatusCode <= (int)HttpStatusCode.NoContent);
                 apiResponseResult.Status = context.HttpContext.Response.StatusCode;
                 apiResponseResult.Time = DateTime.Now;
                 apiResponseResult.Data = objectResult.Value;

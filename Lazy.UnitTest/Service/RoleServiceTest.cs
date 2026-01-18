@@ -61,9 +61,9 @@ public class RoleServiceTest
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Total, Is.EqualTo(3));
-            Assert.That(result.Data.Count, Is.EqualTo(3));
-            Assert.That(result.Data[0].RoleName, Is.EqualTo("Admin1"));
-            Assert.That(result.Data[1].RoleName, Is.EqualTo("Admin2"));
+            Assert.That(result.Items.Count, Is.EqualTo(3));
+            Assert.That(result.Items[0].RoleName, Is.EqualTo("Admin1"));
+            Assert.That(result.Items[1].RoleName, Is.EqualTo("Admin2"));
         }
     }
 

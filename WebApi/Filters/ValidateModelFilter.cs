@@ -41,7 +41,7 @@ public class ValidateModelFilter : IActionFilter
 
             var apiResponseResult = new ApiResponseResult<List<ErrorResults>>
             {
-                IsSuccess = false,
+                Success = false,
                 Status = (int)HttpStatusCode.BadRequest,
                 Time = DateTime.Now,
                 // Return the list of field-specific errors

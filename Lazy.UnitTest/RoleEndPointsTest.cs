@@ -32,7 +32,7 @@ public class RoleEndPointsTest : BaseTest
         var jsonResult = Deserialize<ApiResponseResult<PagedResultDto<RoleDto>>>(stringResult);
 
         Assert.That(jsonResult, Is.Not.Null);
-        Assert.That(jsonResult.IsSuccess, Is.True);
+        Assert.That(jsonResult.Success, Is.True);
 
     }
     private async Task<List<long>> GetRoleIdbyRoleName(string roleName)
@@ -47,9 +47,9 @@ public class RoleEndPointsTest : BaseTest
 
         };
         var jsonResult = JsonSerializer.Deserialize<ApiResponseResult<PagedResultDto<RoleDto>>>(stringResult, serializeOptions);
-        if (jsonResult.IsSuccess && jsonResult.Data != null)
+        if (jsonResult.Success && jsonResult.Data != null)
         {
-            return jsonResult.Data.Data.Select(x => x.Id).ToList();
+            return jsonResult.Data.Items.Select(x => x.Id).ToList();
         }
 
         return new List<long>();
@@ -75,7 +75,7 @@ public class RoleEndPointsTest : BaseTest
         var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
 
         Assert.That(jsonResult, Is.Not.Null);
-        Assert.That(jsonResult.IsSuccess, Is.True);
+        Assert.That(jsonResult.Success, Is.True);
     }
 
     [Order(3)]
@@ -109,7 +109,7 @@ public class RoleEndPointsTest : BaseTest
         var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
 
         Assert.That(jsonResult, Is.Not.Null, "Response deserialization failed");
-        Assert.That(jsonResult.IsSuccess, Is.True, "API did not succeed");
+        Assert.That(jsonResult.Success, Is.True, "API did not succeed");
     }
 
     [Order(4)]
@@ -131,7 +131,7 @@ public class RoleEndPointsTest : BaseTest
             var jsonResult = Deserialize<ApiResponseResult<bool>>(stringResult);
 
             Assert.That(jsonResult, Is.Not.Null);
-            Assert.That(jsonResult.IsSuccess, Is.True);
+            Assert.That(jsonResult.Success, Is.True);
         }
 
     }

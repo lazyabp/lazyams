@@ -8,7 +8,7 @@ namespace WebApi.Controllers;
 /// 配置管理控制器
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class SettingController : ControllerBase
 {
@@ -24,7 +24,7 @@ public class SettingController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("all")]
-    public async Task<BaseResultDto<Dictionary<string, object>>> GetAllPublicSettings()
+    public async Task<Dictionary<string, object>> GetAllPublicSettings()
     {
         var keys = new List<string>();
         keys.Add(SettingNames.Site);
@@ -41,7 +41,7 @@ public class SettingController : ControllerBase
             result[item.Key] = data;
         }
 
-        return new BaseResultDto<Dictionary<string, object>>(result);
+        return result;
     }
 
     /// <summary>
@@ -50,12 +50,12 @@ public class SettingController : ControllerBase
     /// <param name="key"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Setting.Default)]
-    [HttpGet]
-    public async Task<BaseResultDto<IDictionary<string, object>>> GetSetting(string key)
+    [HttpGet("get")]
+    public async Task<IDictionary<string, object>> GetSetting(string key)
     {
         var setting = await _settingService.GetSettingAsync<IDictionary<string, object>>(key);
 
-        return new BaseResultDto<IDictionary<string, object>>(setting);
+        return setting;
     }
 
     /// <summary>
@@ -65,11 +65,11 @@ public class SettingController : ControllerBase
     /// <param name="value"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Setting.Update)]
-    [HttpPost]
-    public async Task<BaseResultDto<bool>> SetSetting(string key, IDictionary<string, object> value)
+    [HttpPost("set")]
+    public async Task<bool> SetSetting(string key, IDictionary<string, object> value)
     {
         await _settingService.SetSettingAsync(key, value);
 
-        return new BaseResultDto<bool>(true);
+        return true;
     }
 }

@@ -21,17 +21,4 @@ public class PagedResultDto<T> : ListResultDto<T>
     {
         Total = total;
     }
-
-    /// <summary>
-    /// Creates a new <see cref="PagedResultDto{T}"/> object.
-    /// </summary>
-    /// <param name="success"></param>
-    /// <param name="message"></param>
-    /// <param name="total"></param>
-    /// <param name="data"></param>
-    public PagedResultDto(bool success, string message, long total, IReadOnlyList<T> data)
-        : base(success, message, data)
-    {
-        Total = total;
-    }
 }
