@@ -6,8 +6,11 @@ namespace Lazy.Shared.Settings;
 
 public class SocialiteLoginSettingModel
 {
-    public bool Enable { get; set; } = false;
-    public SocialiteLoginType Type { get; set; } = SocialiteLoginType.Weixin;
+    public bool WeixinLogin { get; set; } = false;
+
+    public bool WeixinMiniLogin { get; set; } = false;
+
+    public bool GoogleLogin { get; set; } = false;
 }
 
 public class SocialiteLoginWeixinSettingModel
