@@ -68,6 +68,7 @@ public class Program
 
             //Add Lazy Application services
             builder.Services.AddApplication();
+            builder.Services.AddHttpClient();
 
             builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(typeof(Program)); });
 

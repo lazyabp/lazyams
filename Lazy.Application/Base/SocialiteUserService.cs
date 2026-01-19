@@ -6,7 +6,6 @@ public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto,
     ISocialiteUserService, ITransientDependency
 {
     private readonly ILazyCache _lazyCache;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
     private readonly IRoleService _roleService;
@@ -15,14 +14,12 @@ public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto,
         LazyDBContext dbContext, 
         IMapper mapper, 
         ILazyCache lazyCache,
-        IHttpClientFactory httpClientFactory,
         IAuthenticationService authenticationService,
         IUserService userService,
         IRoleService roleService)
         : base(dbContext, mapper)
     {
         _lazyCache = lazyCache;
-        _httpClientFactory = httpClientFactory;
         _authenticationService = authenticationService;
         _userService = userService;
         _roleService = roleService;
