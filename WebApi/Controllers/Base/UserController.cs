@@ -8,7 +8,7 @@ namespace WebApi.Controllers;
 /// 用户管理
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -25,7 +25,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
-    [HttpGet]
+    [HttpGet("GetByPage")]
     public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         var pagedResult = await _userService.GetListAsync(input);
@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Add)]
-    [HttpPost]
+    [HttpPost("Add")]
     public async Task<UserDto> Add([FromBody] CreateUserDto input)
     {
         return await _userService.CreateAsync(input);
@@ -58,7 +58,7 @@ public class UserController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Update)]
-    [HttpPost]
+    [HttpPost("Update")]
     public async Task<UserDto> Update([FromBody] UpdateUserDto input)
     {
         return await _userService.UpdateAsync(input.Id, input);
@@ -70,7 +70,7 @@ public class UserController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Delete)]
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete/{id}")]
     public async Task<bool> Delete(long id)
     {
         await _userService.DeleteAsync(id);
@@ -84,7 +84,7 @@ public class UserController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
-    [HttpGet("{id}")]
+    [HttpGet("GetUserById/{id}")]
     public async Task<UserWithRoleIdsDto> GetUserById(long id)
     {
         return await _userService.GetUserByIdAsync(id);
@@ -96,7 +96,7 @@ public class UserController : ControllerBase
     /// <param name="userName"></param>
     /// <returns></returns>
     //[Authorize(PermissionConsts.User.Default)]
-    [HttpGet("{userName}")]
+    [HttpGet("Get/{userName}")]
     public async Task<UserDto> Get(string userName)
     {
         var data = await _userService.GetByUserNameAsync(userName);

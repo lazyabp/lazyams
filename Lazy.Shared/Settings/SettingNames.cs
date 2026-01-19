@@ -6,25 +6,25 @@ namespace Lazy.Shared.Settings;
 
 public static class SettingNames
 {
-    public const string Site = "settings.site";
-    public const string UploadFile = "settings.uploadfile";
-    public const string Member = "settings.member";
+    public const string Site = "site";
+    public const string UploadFile = "uploadfile";
+    public const string Member = "member";
 
-    public const string Storage = "settings.storage";
-    public const string StorageAliyun = "settings.storage.aliyunoss";
-    public const string StorageQiniu = "settings.storage.qiniukodo";
-    public const string StorageTencent = "settings.storage.tencentcos";
-    public const string StorageMinio = "settings.storage.minio";
-    public const string StorageAwsS3 = "settings.storage.awss3";
-    public const string StorageCustom = "settings.storage.custom";
-    public const string StorageLocal = "settings.storage.local";
+    public const string Storage = "storage";
+    public const string StorageAliyun = "storage.aliyunoss";
+    public const string StorageQiniu = "storage.qiniukodo";
+    public const string StorageTencent = "storage.tencentcos";
+    public const string StorageMinio = "storage.minio";
+    public const string StorageAwsS3 = "storage.awss3";
+    public const string StorageCustom = "storage.custom";
+    public const string StorageLocal = "storage.local";
 
-    public const string SocialiteLogin = "settings.socialitelogin";
-    public const string SocialiteLoginWeixin = "settings.socialitelogin.weixin";
-    public const string SocialiteLoginWeixinMini = "settings.socialitelogin.weixinmini";
-    public const string SocialiteLoginGoogle = "settings.socialitelogin.google";
+    public const string SocialiteLogin = "socialitelogin";
+    public const string SocialiteLoginWeixin = "socialitelogin.weixin";
+    public const string SocialiteLoginWeixinMini = "socialitelogin.weixinmini";
+    public const string SocialiteLoginGoogle = "socialitelogin.google";
 
-    public const string Smtp = "settings.smtp";
+    public const string Smtp = "smtp";
 
-    public const string Sms = "settings.sms";
+    public const string Sms = "sms";
 }
