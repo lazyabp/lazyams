@@ -34,11 +34,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, FilterPaged
 
         var roleDtos = _mapper.Map<List<RoleDto>>(roles);
 
-        return new PagedResultDto<RoleDto>
-        {
-            Total = totalItems,
-            Items = roleDtos
-        };
+        return new PagedResultDto<RoleDto>(totalItems, roleDtos);
         //return await base.GetListAsync(input);
     }
 

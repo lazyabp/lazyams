@@ -23,6 +23,6 @@ public class ListResultDto<T>
     /// <param name="items">List of data</param>
     public ListResultDto(IReadOnlyList<T> items)
     {
-        Items = _items;
+        Items = items;
     }
 }
