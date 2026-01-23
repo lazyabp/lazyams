@@ -98,6 +98,18 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, FilterPaged
                 return new List<string>();
             var roleIds = user.UserRoles.Select(x => x.RoleId).ToList();
             permissList = new List<string>();
+
+            // 超级管理员拥有所有权限
+            if (user.IsAdministrator && user.IsActive)
+            {
+                var menus = await _dbContext.Menus.ToListAsync();
+                foreach (var menu in menus)
+                    permissList.Add(menu.Permission);
+
+                return permissList;
+            }
+
+            // 普通用户
             var roleMenuList = await this._dbContext.RoleMenus.Include(r => r.Menu).Where(r => roleIds.Contains(r.RoleId)).ToListAsync();
             foreach (var roleMenu in roleMenuList)
             {
