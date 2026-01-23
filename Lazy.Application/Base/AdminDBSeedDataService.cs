@@ -18,8 +18,8 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<User> users = new List<User>()
     {
-        new User(){Id=1, UserName="admin", Password=BCryptUtil.HashPassword("123456"), Email="admin@site.com", Age=30, IsAdministrator=true, Access = Access.Admin, Gender=Gender.Male, Avatar="https://Lazymedia.s3.us-east-1.amazonaws.com/avatars/user4/user4.jpg", CreatedBy=1, CreatedAt=DateTime.Now, IsActive=true },
-        new User(){Id=2, UserName="test", Password=BCryptUtil.HashPassword("123456"), Email="test@demo.com", Age=35, IsAdministrator=false, Access = Access.Member, Gender=Gender.Male, Avatar="https://Lazymedia.s3.us-east-1.amazonaws.com/avatars/user4/user4.jpg", CreatedBy=1, CreatedAt=DateTime.Now.AddMinutes(1), IsActive=true }
+        new User(){Id=1, UserName="admin", NickName="admin", Password=BCryptUtil.HashPassword("123456"), Email="admin@site.com", Age=30, IsAdministrator=true, Access = Access.Admin, Gender=Gender.Male, Avatar="https://Lazymedia.s3.us-east-1.amazonaws.com/avatars/user4/user4.jpg", CreatedBy=1, CreatedAt=DateTime.Now, IsActive=true },
+        new User(){Id=2, UserName="test", NickName="test", Password=BCryptUtil.HashPassword("123456"), Email="test@demo.com", Age=35, IsAdministrator=false, Access = Access.Member, Gender=Gender.Male, Avatar="https://Lazymedia.s3.us-east-1.amazonaws.com/avatars/user4/user4.jpg", CreatedBy=1, CreatedAt=DateTime.Now.AddMinutes(1), IsActive=true }
     };
 
     private List<Role> roles = new List<Role>()
@@ -46,6 +46,13 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
         new Menu(){Id=8, Title="Update",Description="Update",ParentId=6, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now},
         new Menu(){Id=9, Title="Delete",Description="Delete",ParentId=6, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now},
         new Menu(){Id=10, Title = "Menu", Description="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",ComponentPath="./pages/menu/index.jsx", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
+        new Menu(){Id=11, Title="Add",Description="Add",ParentId=10, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now},
+        new Menu(){Id=12, Title="Update",Description="Update",ParentId=10, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now},
+        new Menu(){Id=13, Title="Delete",Description="Delete",ParentId=10, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now},
+        new Menu(){Id=14, Title = "Setting", Description="Setting",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/setting",ComponentPath="./pages/setting/index.jsx", Permission=PermissionConsts.Setting.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
+        new Menu(){Id=15, Title="Update",Description="Update",ParentId=14, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Setting.Update, CreatedBy=1,CreatedAt= DateTime.Now},
+        new Menu(){Id=16, Title = "File", Description="File",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/file",ComponentPath="./pages/file/index.jsx", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
+        new Menu(){Id=17, Title="Upload",Description="Upload",ParentId=16, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now},
     };
 
     private List<Setting> settings = new List<Setting>
