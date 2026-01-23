@@ -19,6 +19,7 @@ public class UserDto : BaseEntityDto
     public Gender Gender { get; set; }
 
     public string Avatar { get; set; }
+
     public string Address { get; set; }
 
     public DateTime? CreatedDate { get; set; }

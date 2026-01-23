@@ -1,8 +1,9 @@
-﻿using Lazy.Core.Utils;
+﻿using Lazy.Application.Contracts.Base.Dto.User;
+using Lazy.Core.Utils;
 
 namespace Lazy.Application;
 
-public class UserService : CrudService<User, UserDto, UserDto, long, FilterPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
+public class UserService : CrudService<User, UserDto, UserDto, long, UserPageResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
 {
     //private readonly IWebHostEnvironment _webHostEnvironment;
@@ -13,13 +14,32 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
         this._LazyCache = LazyCache;
     }
 
-    protected override IQueryable<User> CreateFilteredQuery(FilterPagedResultRequestDto input)
+    protected override IQueryable<User> CreateFilteredQuery(UserPageResultRequestDto input)
     {
+        var query = base.CreateFilteredQuery(input);
+
+        if (input.IsAdministrator.HasValue)
+            query = query.Where(x => x.IsAdministrator == input.IsAdministrator);
+
+        if (input.Access.HasValue)
+            query = query.Where(x => x.Access == input.Access);
+
+        if (input.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == input.IsActive);
+
+        if (input.CreateBegin.HasValue)
+            query = query.Where(x => x.CreatedAt >= input.CreateBegin.Value.Date);
+
+        if (input.CreateEnd.HasValue)
+            query = query.Where(x => x.CreatedAt <= input.CreateEnd.Value.AddDays(1).Date);
+
+        if (!string.IsNullOrEmpty(input.Email))
+            query = query.Where(x => x.Email.Contains(input.Email));
+
         if (!string.IsNullOrEmpty(input.Filter))
-        {
-            return GetQueryable().Where(x => x.UserName.Contains(input.Filter));
-        }
-        return base.CreateFilteredQuery(input);
+            query = query.Where(x => x.UserName.Contains(input.Filter) || x.NickName.Contains(input.Filter));
+
+        return query;
     }
 
     /// <summary>
@@ -157,6 +177,32 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
         return userDto;
     }
 
+    /// <summary>
+    ///  Updates an existing user
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    /// <exception cref="EntityNotFoundException"></exception>
+    public async Task<UserDto> ActiveAsync(long id, ActiveDto input)
+    {
+        //Retrieve the existing user (with roles) from the database
+        var user = await LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user == null) throw new EntityNotFoundException(nameof(User), id.ToString());
+        user.IsActive = input.IsActive;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        var userDto = this.Mapper.Map<UserDto>(user);
+
+        //clear permission from cache
+        var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
+        await _LazyCache.RemoveAsync(cacheKey);
+
+        return userDto;
+    }
+
     protected virtual async Task ValidateNameAsync(string userName, long? expectedId = null)
     {
         var user = await this.GetQueryable().FirstOrDefaultAsync(p => p.UserName == userName);
@@ -199,9 +245,11 @@ public class UserService : CrudService<User, UserDto, UserDto, long, FilterPaged
     {
         var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
-        {
             throw new EntityNotFoundException(nameof(User), id.ToString());
-        }
+
+        // 禁止删除第一个超管
+        if (user.Id == 1 && user.IsAdministrator)
+            throw new UserFriendlyException("禁止删除初始管理员");
 
         this.LazyDBContext.Users.Remove(user);
         await this.LazyDBContext.SaveChangesAsync();
