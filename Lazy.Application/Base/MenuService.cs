@@ -6,6 +6,31 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     {
     }
 
+    protected override IQueryable<Menu> CreateFilteredQuery(MenuPagedResultRequestDto input)
+    {
+        var query = base.CreateFilteredQuery(input);
+
+        if (!string.IsNullOrEmpty(input.Permission))
+            query = query.Where(x => x.Permission == input.Permission);
+
+        if (!string.IsNullOrEmpty(input.Route))
+            query = query.Where(x => x.Route == input.Route);
+
+        if (input.MenuType.HasValue)
+            query = query.Where(x => x.MenuType == input.MenuType);
+
+        if (input.ParentId.HasValue)
+            query = query.Where(x => x.ParentId == input.ParentId);
+
+        if (input.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == input.IsActive);
+
+        if (!string.IsNullOrEmpty(input.Filter))
+            query = query.Where(x => x.Title.Contains(input.Filter) || x.Description.Contains(input.Filter));
+
+        return query;
+    }
+
     public async Task<MenuDto> ActiveAsync(long id, ActiveDto input)
     {
         var menu = await LazyDBContext.Menus.FirstOrDefaultAsync(u => u.Id == id);
