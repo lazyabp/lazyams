@@ -70,7 +70,7 @@ public class UserController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Update)]
-    [HttpPost("{id}/Active")]
+    [HttpPost("Active/{id}")]
     public async Task<UserDto> Active(long id, [FromBody] ActiveDto input)
     {
         return await _userService.ActiveAsync(id, input);
@@ -117,7 +117,7 @@ public class UserController : ControllerBase
         return data;
     }
 
-    [HttpGet("info")]
+    [HttpGet("Info")]
     public async Task<UserWithRoleIdsDto> GetUserInfo()
     {
         return await _userService.GetCurrentUserInfoAsync();

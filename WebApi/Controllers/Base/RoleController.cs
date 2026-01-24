@@ -6,7 +6,7 @@ namespace WebApi.Controllers;
 /// 角色管理
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class RoleController : ControllerBase
 {
@@ -27,7 +27,7 @@ public class RoleController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
-    [HttpGet]
+    [HttpGet("GetByPage")]
     public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] RolePagedResultRequestDto input)
     {
         var pagedResult = await _roleService.GetListAsync(input);
@@ -41,7 +41,7 @@ public class RoleController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Add)]
-    [HttpPost]
+    [HttpPost("Add")]
     public async Task<RoleDto> Add([FromBody] CreateRoleDto input)
     {
         return await _roleService.CreateAsync(input);
@@ -53,7 +53,7 @@ public class RoleController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
-    [HttpPost]
+    [HttpPost("Update")]
     public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
     {
         return await _roleService.UpdateAsync(input.Id, input);
@@ -66,7 +66,7 @@ public class RoleController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
-    [HttpPost("{id}/Active")]
+    [HttpPost("Active/{id}")]
     public async Task<RoleDto> Active(long id, [FromBody] ActiveDto input)
     {
         return await _roleService.ActiveAsync(id, input);
@@ -78,7 +78,7 @@ public class RoleController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Delete)]
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete/{id}")]
     public async Task<bool> Delete(long id)
     {
         await _roleService.DeleteAsync(id);
@@ -91,7 +91,7 @@ public class RoleController : ControllerBase
     /// </summary>
     /// <param name="ids"></param>
     [Authorize(PermissionConsts.Role.Delete)]
-    [HttpDelete]
+    [HttpDelete("BatchDelete")]
     public async Task<bool> BatchDelete([FromBody] long[] ids)
     {
         //Console.WriteLine("get a array from client:", ids);
@@ -105,7 +105,7 @@ public class RoleController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
-    [HttpGet("{id}")]
+    [HttpGet("GetById/{id}")]
     public async Task<RoleDto> GetById(long id)
     {
         return await _roleService.GetAsync(id);
@@ -120,6 +120,6 @@ public class RoleController : ControllerBase
     [HttpPost]
     public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
     {
-        return await this._roleService.RolePermissionAsync(input.Id, input.MenuIds);
+        return await _roleService.RolePermissionAsync(input.Id, input.MenuIds);
     }
 }

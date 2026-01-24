@@ -11,7 +11,7 @@ namespace WebApi.Controllers;
 /// 第三方授权登录
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/socialite")]
+[Route("api/Socialite")]
 [ApiController]
 public class SocialiteUserController : ControllerBase
 {
@@ -32,7 +32,7 @@ public class SocialiteUserController : ControllerBase
     /// 微信登录
     /// </summary>
     /// <returns></returns>
-    [HttpGet("weixin/login")]
+    [HttpGet("Weixin/Login")]
     public async Task<SocialiteLoginWeixinSettingModel> WexinLogin()
     {
         var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
@@ -45,7 +45,7 @@ public class SocialiteUserController : ControllerBase
     /// 微信小程序登录
     /// </summary>
     /// <returns></returns>
-    [HttpGet("weixin-mini/login")]
+    [HttpGet("WeixinMini/Login")]
     public async Task<SocialiteLoginWeixinMiniSettingModel> WeixinMiniLogin()
     {
         var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
@@ -58,7 +58,7 @@ public class SocialiteUserController : ControllerBase
     /// Google登录
     /// </summary>
     /// <returns></returns>
-    [HttpGet("google/login")]
+    [HttpGet("Google/Login")]
     public async Task<SocialiteLoginGoogleSettingModel> GoogleLogin()
     {
         var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
@@ -72,7 +72,7 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <param name="code"></param>
     /// <returns></returns>
-    [HttpGet("weixin/callback")]
+    [HttpGet("Weixin/Callback")]
     public async Task<LoginResponseDto> WeixinCallback(string code)
     {
         if (string.IsNullOrEmpty(code))
@@ -113,7 +113,7 @@ public class SocialiteUserController : ControllerBase
     /// <param name="info"></param>
     /// <returns></returns>
     /// <exception cref="UserFriendlyException"></exception>
-    [HttpPost("weixin-mini/callback")]
+    [HttpPost("WeixinMini/Callback")]
     public async Task<LoginResponseDto> WeixinMiniCallback([FromBody] WeixinMiniInfo info)
     {
         if (string.IsNullOrEmpty(info.Code))
@@ -193,7 +193,7 @@ public class SocialiteUserController : ControllerBase
     /// <param name="code"></param>
     /// <returns></returns>
     /// <exception cref="UserFriendlyException"></exception>
-    [HttpGet("google/callback")]
+    [HttpGet("Google/Callback")]
     public async Task<LoginResponseDto> GoogleCallback(string code)
     {
         if (string.IsNullOrEmpty(code))

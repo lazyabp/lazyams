@@ -6,7 +6,7 @@ namespace WebApi.Controllers;
 /// 菜单管理
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class MenuController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("GetByPage")]
     [Authorize(PermissionConsts.Menu.Default)]
     public async Task<PagedResultDto<MenuDto>> GetByPageAsync([FromQuery] MenuPagedResultRequestDto input)
     {
@@ -34,7 +34,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("Add")]
     [Authorize(PermissionConsts.Menu.Add)]
     public async Task<MenuDto> Add([FromBody] CreateMenuDto input)
     {
@@ -46,7 +46,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("Update")]
     [Authorize(PermissionConsts.Menu.Update)]
     public async Task<MenuDto> Update([FromBody] UpdateMenuDto input)
     {
@@ -54,7 +54,7 @@ public class MenuController : ControllerBase
     }
 
     [Authorize(PermissionConsts.Menu.Update)]
-    [HttpPost("{id}/Active")]
+    [HttpPost("Active/{id}")]
     public async Task<MenuDto> Active(long id, [FromBody] ActiveDto input)
     {
         return await _menuService.ActiveAsync(id, input);
@@ -65,7 +65,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete/{id}")]
     [Authorize(PermissionConsts.Menu.Delete)]
     public async Task<bool> Delete(long id)
     {
@@ -79,7 +79,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("GetById/{id}")]
     [Authorize(PermissionConsts.Menu.Default)]
     public async Task<MenuDto> GetById(long id)
     {
@@ -90,7 +90,7 @@ public class MenuController : ControllerBase
     /// 获取菜单树
     /// </summary>
     /// <returns>A list of menus with tree structure</returns>
-    [HttpGet]
+    [HttpGet("GetMenuTree")]
     [Authorize(PermissionConsts.Menu.Default)]
     public async Task<ListResultDto<MenuDto>> GetMenuTree()
     {
@@ -103,7 +103,7 @@ public class MenuController : ControllerBase
     /// 获取菜单类型
     /// </summary>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("GetMenuType")]
     public Dictionary<int, string> GetMenuType()
     {
         var result = new Dictionary<int, string>();
@@ -122,7 +122,7 @@ public class MenuController : ControllerBase
     /// <param name="id"></param>
     /// <returns>A list of menu Ids</returns>
 
-    [HttpGet("{id}")]
+    [HttpGet("GetMenuIdsByRoleId/{id}")]
     public async Task<ListResultDto<MenuIdDto>> GetMenuIdsByRoleId(long id)
     {
         var data = await _menuService.GetMenuIdsByRoleIdAsync(id);

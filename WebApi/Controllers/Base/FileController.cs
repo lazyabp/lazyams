@@ -27,7 +27,7 @@ public class FileController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize(PermissionConsts.File.Upload)]
-    [Route("upload")]
+    [Route("Upload")]
     public async Task<FileDto> UploadAsync(IFormFile file)
     {
         return await _fileService.UploadAsync(file);
@@ -40,7 +40,7 @@ public class FileController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize]
-    [Route("avatar/upload")]
+    [Route("Avatar/Upload")]
     public async Task<string> UploadAvatarAsync(IFormFile file)
     {
         return await _fileService.UploadAvatarAsync(file);

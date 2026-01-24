@@ -23,7 +23,7 @@ public class SettingController : ControllerBase
     /// 获取所有公开的配置信息
     /// </summary>
     /// <returns></returns>
-    [HttpGet("all")]
+    [HttpGet("All")]
     public async Task<Dictionary<string, object>> GetAllPublicSettings()
     {
         var keys = new List<string>();
@@ -50,7 +50,7 @@ public class SettingController : ControllerBase
     /// <param name="key"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Setting.Default)]
-    [HttpGet("get")]
+    [HttpGet("Get")]
     public async Task<IDictionary<string, object>> GetSetting(string key)
     {
         var setting = await _settingService.GetSettingAsync<IDictionary<string, object>>(key);
@@ -65,7 +65,7 @@ public class SettingController : ControllerBase
     /// <param name="value"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Setting.Update)]
-    [HttpPost("set")]
+    [HttpPost("Set")]
     public async Task<bool> SetSetting(string key, IDictionary<string, object> value)
     {
         await _settingService.SetSettingAsync(key, value);
