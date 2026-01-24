@@ -17,7 +17,7 @@ public class UserControllerTest
     public async Task GetByPageAsync_WhenPageUserexit_ShouldReturnPageUsers()
     {
         // Arrange
-        var input = new FilterPagedResultRequestDto();
+        var input = new UserPagedResultRequestDto();
         var users = new List<UserDto>
         {
             new UserDto { Id = 1, UserName = "A1", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
@@ -188,7 +188,7 @@ public class UserControllerTest
         //valid Id case
         //Arrange
         var validId = id;
-        var input = new FilterPagedResultRequestDto();
+        var input = new UserPagedResultRequestDto();
         var usersBeforeDelete = new List<UserDto>
         {
             new UserDto { Id = 1, UserName = "A1", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
@@ -214,7 +214,7 @@ public class UserControllerTest
         //invalid Id case
         //arrange
         var invalidId = id2;
-        var input2 = new FilterPagedResultRequestDto();
+        var input2 = new UserPagedResultRequestDto();
         var usersAfterDeleteInvalid = from listItem in usersBeforeDelete where id != invalidId select listItem;
         var pagedResultInvalid = new PagedResultDto<UserDto>
         {

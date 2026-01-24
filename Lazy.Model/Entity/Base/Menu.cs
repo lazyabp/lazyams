@@ -54,6 +54,8 @@ public class Menu : BaseEntityWithSoftDelete
     [Range(1, long.MaxValue, ErrorMessage = "ParentId must be a positive number.")]
     public long? ParentId { get; set; }
 
+    public bool IsActive { get; set; }
+
     /// <summary>
     /// the child menus of this menu.
     /// </summary>

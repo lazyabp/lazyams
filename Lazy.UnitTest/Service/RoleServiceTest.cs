@@ -49,7 +49,7 @@ public class RoleServiceTest
             context.SaveChanges();
 
             var service = new RoleService(context, _mapper, _LazyCache.Object);
-            var filterInput = new FilterPagedResultRequestDto
+            var filterInput = new RolePagedResultRequestDto
             {
                 PageIndex = 1,
                 PageSize = 10

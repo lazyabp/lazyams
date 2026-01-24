@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Application.Contracts.Dto;
 
-public class UserDto : BaseEntityDto
+public class UserDto : BaseEntityWithAuditDto
 {
     public string UserName { get; set; }
 
@@ -21,8 +21,6 @@ public class UserDto : BaseEntityDto
     public string Avatar { get; set; }
 
     public string Address { get; set; }
-
-    public DateTime? CreatedDate { get; set; }
 
     public bool IsActive { get; set; }
 

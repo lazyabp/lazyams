@@ -1,23 +1,30 @@
 ﻿namespace Lazy.Application;
 
-public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPagedResultRequestDto, CreateMenuDto, UpdateMenuDto>, IMenuService, ITransientDependency
+public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedResultRequestDto, CreateMenuDto, UpdateMenuDto>, IMenuService, ITransientDependency
 {
-    private readonly LazyDBContext _dbContext;
-    private readonly IMapper _mapper;
-
     public MenuService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        _dbContext = dbContext;
-        _mapper = mapper;
+    }
+
+    public async Task<MenuDto> ActiveAsync(long id, ActiveDto input)
+    {
+        var menu = await LazyDBContext.Menus.FirstOrDefaultAsync(u => u.Id == id);
+
+        if (menu == null) throw new EntityNotFoundException(nameof(Menu), id.ToString());
+        menu.IsActive = input.IsActive;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        var menuDto = Mapper.Map<MenuDto>(menu);
+
+        return menuDto;
     }
 
     // Get menu by id
     public override async Task<MenuDto> GetAsync(long id)
     {
         if (!IsMenuExist(id))
-        {
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
-        }
 
         var menu = await base.GetAsync(id);
 
@@ -29,7 +36,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
     }
 
     // Get menus based on pageniation
-    public override async Task<PagedResultDto<MenuDto>> GetListAsync(FilterPagedResultRequestDto input)
+    public override async Task<PagedResultDto<MenuDto>> GetListAsync(MenuPagedResultRequestDto input)
     {
         return await base.GetListAsync(input);
     }
@@ -39,7 +46,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
     {
         var entity = MapToEntity(input);
         GetDbSet().Add(entity);
-        await this.LazyDBContext.SaveChangesAsync();
+        await LazyDBContext.SaveChangesAsync();
         return MapToGetOutputDto(entity);
     }
 
@@ -47,9 +54,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
     public override async Task<MenuDto> UpdateAsync(long id, UpdateMenuDto input)
     {
         if (!IsMenuExist(id))
-        {
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
-        }
 
         return await base.UpdateAsync(id, input);
     }
@@ -58,14 +63,11 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
     public override async Task DeleteAsync(long id)
     {
         if (!IsMenuExist(id))
-        {
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
-        }
 
         if (IsAnyChildMenuExist(id))
-        {
             throw new UserFriendlyException($"Menu with ID {id} has child menus", "Menu has child menus");
-        }
+
         await base.DeleteAsync(id);
     }
 
@@ -80,20 +82,19 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
     // Validate menu existince
     private bool IsMenuExist(long id)
     {
-        return _dbContext.Menus.Any(menu => menu.Id == id);
+        return LazyDBContext.Menus.Any(menu => menu.Id == id);
     }
 
     // Validate child menu existince
     private bool IsAnyChildMenuExist(long id)
     {
-        return _dbContext.Menus.Any(menu => menu.ParentId == id);
+        return LazyDBContext.Menus.Any(menu => menu.ParentId == id);
     }
 
     // Get all menus
     private async Task<List<MenuDto>> GetAllMenusAsync()
     {
-
-        var input = new FilterPagedResultRequestDto
+        var input = new MenuPagedResultRequestDto
         {
             PageSize = int.MaxValue,
             PageIndex = 1
@@ -122,13 +123,13 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
                 Children = BuildMenuTree(menus, menu.Id)
             })
             .OrderBy(menu => menu.OrderNum)
-        .ToList();
+            .ToList();
     }
 
     // Override MapToEntity method
     protected override Menu MapToEntity(CreateMenuDto createInput)
     {
-        var entity = this.Mapper.Map<CreateMenuDto, Menu>(createInput);
+        var entity = Mapper.Map<CreateMenuDto, Menu>(createInput);
         SetIdForLong(entity);
         SetCreatedAudit(entity);
         return entity;
@@ -140,7 +141,8 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, FilterPaged
 
         var menuIds = roleMenusList.Select(rm => rm.Menu).ToList();
 
-        var menuDtos = _mapper.Map<List<MenuIdDto>>(menuIds);
+        var menuDtos = Mapper.Map<List<MenuIdDto>>(menuIds);
+
         return menuDtos;
     }
 }

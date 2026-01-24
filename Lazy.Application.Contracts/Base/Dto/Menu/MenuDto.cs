@@ -2,7 +2,7 @@
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class MenuDto: BaseEntityDto
+public class MenuDto: BaseEntityWithAuditDto
 {
     public string Title { get; set; }
     public string Permission { get; set; }
@@ -16,4 +16,6 @@ public class MenuDto: BaseEntityDto
 
     public Menu Parent { get; set; }
     public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
+
+    public bool IsActive { get; set; }
 }

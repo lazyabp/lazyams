@@ -23,8 +23,8 @@ public class MenuController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpGet]
-    [Authorize(PermissionConsts.Role.Default)]
-    public async Task<PagedResultDto<MenuDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
+    [Authorize(PermissionConsts.Menu.Default)]
+    public async Task<PagedResultDto<MenuDto>> GetByPageAsync([FromQuery] MenuPagedResultRequestDto input)
     {
         return await _menuService.GetListAsync(input);
     }
@@ -35,7 +35,7 @@ public class MenuController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(PermissionConsts.Role.Add)]
+    [Authorize(PermissionConsts.Menu.Add)]
     public async Task<MenuDto> Add([FromBody] CreateMenuDto input)
     {
         return await _menuService.CreateAsync(input);
@@ -47,10 +47,17 @@ public class MenuController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(PermissionConsts.Role.Update)]
+    [Authorize(PermissionConsts.Menu.Update)]
     public async Task<MenuDto> Update([FromBody] UpdateMenuDto input)
     {
         return await _menuService.UpdateAsync(input.Id, input);
+    }
+
+    [Authorize(PermissionConsts.Menu.Update)]
+    [HttpPost("{id}/Active")]
+    public async Task<MenuDto> Active(long id, [FromBody] ActiveDto input)
+    {
+        return await _menuService.ActiveAsync(id, input);
     }
 
     /// <summary>
@@ -59,7 +66,7 @@ public class MenuController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [Authorize(PermissionConsts.Role.Delete)]
+    [Authorize(PermissionConsts.Menu.Delete)]
     public async Task<bool> Delete(long id)
     {
         await _menuService.DeleteAsync(id);
@@ -73,7 +80,7 @@ public class MenuController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [Authorize(PermissionConsts.Role.Default)]
+    [Authorize(PermissionConsts.Menu.Default)]
     public async Task<MenuDto> GetById(long id)
     {
         return await _menuService.GetAsync(id);
@@ -84,7 +91,7 @@ public class MenuController : ControllerBase
     /// </summary>
     /// <returns>A list of menus with tree structure</returns>
     [HttpGet]
-    [Authorize(PermissionConsts.Role.Default)]
+    [Authorize(PermissionConsts.Menu.Default)]
     public async Task<ListResultDto<MenuDto>> GetMenuTree()
     {
         var data = await _menuService.GetMenuTreeAsync();

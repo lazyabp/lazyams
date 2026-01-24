@@ -1,9 +1,6 @@
-﻿using Lazy.Application.Contracts.Base.Dto.User;
-using System.Threading.Tasks;
+﻿namespace Lazy.Application.Contracts;
 
-namespace Lazy.Application.Contracts;
-
-public interface IUserService : ICrudService<UserDto, UserDto, long, UserPageResultRequestDto, CreateUserDto, UpdateUserDto>
+public interface IUserService : ICrudService<UserDto, UserDto, long, UserPagedResultRequestDto, CreateUserDto, UpdateUserDto>
 {
     Task<UserDto> ActiveAsync(long id, ActiveDto input);
     Task<UserDto> GetByUserNameAsync(string userName);

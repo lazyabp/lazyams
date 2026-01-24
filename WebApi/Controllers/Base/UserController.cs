@@ -1,6 +1,4 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-using Lazy.Application.Contracts.Base.Dto.User;
-using Lazy.Core.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
@@ -27,7 +25,7 @@ public class UserController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.User.Default)]
     [HttpGet("GetByPage")]
-    public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] UserPageResultRequestDto input)
+    public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] UserPagedResultRequestDto input)
     {
         var pagedResult = await _userService.GetListAsync(input);
         if (pagedResult.Items.Count > 0)

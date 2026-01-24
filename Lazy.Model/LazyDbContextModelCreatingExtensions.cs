@@ -67,7 +67,8 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(cs => cs.MenuType).HasConversion(
                v => v.ToString(),
                v => (MenuType)Enum.Parse(typeof(MenuType), v)
-           ).HasMaxLength(MenuEntityConsts.MaxMenuTypeLength);
+            ).HasMaxLength(MenuEntityConsts.MaxMenuTypeLength);
+            b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
             b.HasMany(cs => cs.RoleMenus);
             b.HasOne(cs => cs.Parent).WithMany(cs => cs.Children).HasForeignKey(cs => cs.ParentId);
             b.ConfigureSoftDelete();
@@ -84,8 +85,10 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.RoleName).IsRequired().HasMaxLength(RoleEntityConsts.MaxRoleNameLength);
             b.Property(x => x.Description).IsRequired().HasMaxLength(RoleEntityConsts.MaxDescriptionLength);
+            b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
             b.HasMany(cs => cs.RoleMenus);
             b.HasMany(x => x.UserRoles);
+            b.ConfigureSoftDelete();
         });
     }
 

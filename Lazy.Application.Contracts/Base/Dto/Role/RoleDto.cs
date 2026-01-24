@@ -2,13 +2,15 @@
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class RoleDto: BaseEntityDto
+public class RoleDto: BaseEntityWithAuditDto
 {
     [Required(ErrorMessage = "RoleName cannnot be Null")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "UserName must be between 3 and 50 character")]
     public string RoleName { get; set; }
 
     public string Description { get; set; }
+
+    public bool IsActive { get; set; }
 
     public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
 

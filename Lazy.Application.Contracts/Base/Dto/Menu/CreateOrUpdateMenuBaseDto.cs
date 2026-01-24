@@ -10,4 +10,5 @@ public class CreateOrUpdateMenuBaseDto : BaseEntityDto
     public string Route { get; set; }
     public string ComponentPath { get; set; }
     public long? ParentId { get; set; }
+    public bool IsActive { get; set; }
 }

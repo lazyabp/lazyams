@@ -28,7 +28,7 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
     [HttpGet]
-    public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
+    public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] RolePagedResultRequestDto input)
     {
         var pagedResult = await _roleService.GetListAsync(input);
         //var pagedResult = await _roleService.GetAllRolesAsync(input);
@@ -57,6 +57,19 @@ public class RoleController : ControllerBase
     public async Task<RoleDto> Update([FromBody] UpdateRoleDto input)
     {
         return await _roleService.UpdateAsync(input.Id, input);
+    }
+
+    /// <summary>
+    /// 修改状态
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Role.Update)]
+    [HttpPost("{id}/Active")]
+    public async Task<RoleDto> Active(long id, [FromBody] ActiveDto input)
+    {
+        return await _roleService.ActiveAsync(id, input);
     }
 
     /// <summary>

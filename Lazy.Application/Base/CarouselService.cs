@@ -3,12 +3,12 @@
 public class CarouselService : CrudService<Carousel, CarouselDto, CarouselDto, long, FilterPagedResultRequestDto, CreateCarouselDto, UpdateCarouselDto>,
     ICarouselService, ITransientDependency
 {
-    private readonly ILazyCache _lazyCache;
+    //private readonly ILazyCache _lazyCache;
 
-    public CarouselService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache)
+    public CarouselService(LazyDBContext dbContext, IMapper mapper)
         : base(dbContext, mapper)
     {
-        _lazyCache = lazyCache;
+        //_lazyCache = lazyCache;
     }
 
     protected override IQueryable<Carousel> CreateFilteredQuery(FilterPagedResultRequestDto input)

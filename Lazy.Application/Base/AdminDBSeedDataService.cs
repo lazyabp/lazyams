@@ -13,7 +13,7 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     public AdminDBSeedDataService(LazyDBContext dbContext)
     {
-        this._dbContext = dbContext;
+        _dbContext = dbContext;
     }
 
     private List<User> users = new List<User>()
@@ -24,8 +24,8 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<Role> roles = new List<Role>()
     {
-        new Role(){Id=1, RoleName="admin",   Description="with full permission to crud"},
-        new Role(){Id=2, RoleName="member",   Description="with limit permission to crud"}
+        new Role(){Id=1, RoleName="admin",   Description="with full permission to crud", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true},
+        new Role(){Id=2, RoleName="member",   Description="with limit permission to crud", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true}
     };
 
     private List<UserRole> userRoles = new List<UserRole>()
@@ -36,23 +36,23 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<Menu> menus = new List<Menu>()
     {
-        new Menu(){Id=1, Title="Rights Management", Description="Rights Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=2, Title="User", Description="User", ParentId=1, MenuType=MenuType.Menu, OrderNum=1, Route="/user", ComponentPath="./pages/user/index.jsx", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=3, Title="Add", Description="Add",ParentId=2, MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.User.Add, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=4, Title="Update", Description="Update",ParentId=2, MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.User.Update, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=5, Title="Delete", Description="Delete",ParentId=2, MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.User.Delete, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=6, Title="Role", Description="Role",ParentId=1,MenuType= MenuType.Menu, OrderNum=2,Route="/role", ComponentPath="./pages/role/index.jsx", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now },
-        new Menu(){Id=7, Title="Add",Description="Add",ParentId=6, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Role.Add, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=8, Title="Update",Description="Update",ParentId=6, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=9, Title="Delete",Description="Delete",ParentId=6, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=10, Title = "Menu", Description="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",ComponentPath="./pages/menu/index.jsx", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
-        new Menu(){Id=11, Title="Add",Description="Add",ParentId=10, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=12, Title="Update",Description="Update",ParentId=10, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=13, Title="Delete",Description="Delete",ParentId=10, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=14, Title = "Setting", Description="Setting",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/setting",ComponentPath="./pages/setting/index.jsx", Permission=PermissionConsts.Setting.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
-        new Menu(){Id=15, Title="Update",Description="Update",ParentId=14, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Setting.Update, CreatedBy=1,CreatedAt= DateTime.Now},
-        new Menu(){Id=16, Title = "File", Description="File",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/file",ComponentPath="./pages/file/index.jsx", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now  },
-        new Menu(){Id=17, Title="Upload",Description="Upload",ParentId=16, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now},
+        new Menu(){Id=1, Title="Rights Management", Description="Rights Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=2, Title="User", Description="User", ParentId=1, MenuType=MenuType.Menu, OrderNum=1, Route="/user", ComponentPath="/views/user/index", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=3, Title="Add", Description="Add",ParentId=2, MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.User.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=4, Title="Update", Description="Update",ParentId=2, MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.User.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=5, Title="Delete", Description="Delete",ParentId=2, MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.User.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=6, Title="Role", Description="Role",ParentId=1,MenuType= MenuType.Menu, OrderNum=2,Route="/role", ComponentPath="/views/role/index", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=7, Title="Add",Description="Add",ParentId=6, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Role.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=8, Title="Update",Description="Update",ParentId=6, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=9, Title="Delete",Description="Delete",ParentId=6, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=10, Title = "Menu", Description="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",ComponentPath="./pages/menu/index.jsx", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=11, Title="Add",Description="Add",ParentId=10, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=12, Title="Update",Description="Update",ParentId=10, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=13, Title="Delete",Description="Delete",ParentId=10, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=14, Title = "Setting", Description="Setting",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/setting",ComponentPath="./pages/setting/index.jsx", Permission=PermissionConsts.Setting.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=15, Title="Update",Description="Update",ParentId=14, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Setting.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=16, Title = "File", Description="File",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/file",ComponentPath="./pages/file/index.jsx", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=17, Title="Upload",Description="Upload",ParentId=16, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
     };
 
     private List<Setting> settings = new List<Setting>
@@ -78,28 +78,28 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     public async Task<bool> InitAsync()
     {
-        if (!this._dbContext.Users.Any())
+        if (!_dbContext.Users.Any())
         {
-            await this._dbContext.Users.AddRangeAsync(users);
-            await this._dbContext.SaveChangesAsync();
+            await _dbContext.Users.AddRangeAsync(users);
+            await _dbContext.SaveChangesAsync();
         }
 
-        if (!this._dbContext.Roles.Any())
+        if (!_dbContext.Roles.Any())
         {
-            await this._dbContext.Roles.AddRangeAsync(roles);
-            await this._dbContext.SaveChangesAsync();
+            await _dbContext.Roles.AddRangeAsync(roles);
+            await _dbContext.SaveChangesAsync();
         }
 
-        if (!this._dbContext.UserRoles.Any())
+        if (!_dbContext.UserRoles.Any())
         {
-            await this._dbContext.UserRoles.AddRangeAsync(userRoles);
-            await this._dbContext.SaveChangesAsync();
+            await _dbContext.UserRoles.AddRangeAsync(userRoles);
+            await _dbContext.SaveChangesAsync();
         }
 
-        if (!this._dbContext.Menus.Any())
+        if (!_dbContext.Menus.Any())
         {
-            await this._dbContext.Menus.AddRangeAsync(menus);
-            await this._dbContext.SaveChangesAsync();
+            await _dbContext.Menus.AddRangeAsync(menus);
+            await _dbContext.SaveChangesAsync();
         }
 
         if (!_dbContext.Settings.Any())

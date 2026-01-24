@@ -5,17 +5,17 @@ namespace Lazy.Application.Authorization;
 
 public class PermissionChecker : IPermissionChecker, ITransientDependency
 { 
-    private readonly LazyDBContext _LazyDBContext;
-    private readonly ILazyCache _LazyCache;
+    //private readonly LazyDBContext _lazyDBContext;
+    //private readonly ILazyCache _lazyCache;
     private readonly IRoleService _roleService;
 
     public PermissionChecker(
-        LazyDBContext _LazyDBContext, 
-        ILazyCache LazyCache, 
+        //LazyDBContext lazyDBContext, 
+        //ILazyCache lazyCache, 
         IRoleService roleService)
     {
-        this._LazyDBContext = _LazyDBContext;
-        this._LazyCache = LazyCache;
+        //_lazyDBContext = lazyDBContext;
+        //_lazyCache = lazyCache;
         _roleService = roleService;
     }
 

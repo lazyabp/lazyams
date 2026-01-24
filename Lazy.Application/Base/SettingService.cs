@@ -3,12 +3,12 @@
 public class SettingService : CrudService<Setting, SettingDto, SettingDto, long, FilterPagedResultRequestDto, CreateSettingDto, UpdateSettingDto>,
     ISettingService, ITransientDependency
 {
-    private readonly ILazyCache _lazyCache;
+    //private readonly ILazyCache _lazyCache;
 
     public SettingService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache)
         : base(dbContext, mapper)
     {
-        _lazyCache = lazyCache;
+        //_lazyCache = lazyCache;
     }
 
     protected override IQueryable<Setting> CreateFilteredQuery(FilterPagedResultRequestDto input)

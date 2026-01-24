@@ -1,20 +1,19 @@
-﻿using Lazy.Application.Contracts.Base.Dto.User;
-using Lazy.Core.Utils;
+﻿using Lazy.Core.Utils;
 
 namespace Lazy.Application;
 
-public class UserService : CrudService<User, UserDto, UserDto, long, UserPageResultRequestDto, CreateUserDto, UpdateUserDto>,
+public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
 {
     //private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly ILazyCache _LazyCache;
-    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache LazyCache) : base(dbContext, mapper)
+    private readonly ILazyCache _lazyCache;
+    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache) : base(dbContext, mapper)
     {
         //this._webHostEnvironment = webHostEnvironment;
-        this._LazyCache = LazyCache;
+        _lazyCache = lazyCache;
     }
 
-    protected override IQueryable<User> CreateFilteredQuery(UserPageResultRequestDto input)
+    protected override IQueryable<User> CreateFilteredQuery(UserPagedResultRequestDto input)
     {
         var query = base.CreateFilteredQuery(input);
 
@@ -75,7 +74,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
         var userDto = await base.CreateAsync(input);
 
         // Retrieve the newly created user entity (including its navigation properties) by the generated ID.
-        var user = await this.LazyDBContext.Users
+        var user = await LazyDBContext.Users
             .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == userDto.Id);
 
@@ -95,11 +94,11 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
             user.UserRoles = userRoles;
 
             // Add the UserRole entries and save changes.
-            await this.LazyDBContext.UserRoles.AddRangeAsync(userRoles);
-            await this.LazyDBContext.SaveChangesAsync();
+            await LazyDBContext.UserRoles.AddRangeAsync(userRoles);
+            await LazyDBContext.SaveChangesAsync();
 
             // Optionally, update the DTO if it includes role information.
-            userDto = this.Mapper.Map<UserDto>(user);
+            userDto = Mapper.Map<UserDto>(user);
         }
 
         return userDto;
@@ -116,7 +115,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
     {
         if (roleIds == null || roleIds.Count() == 0) return;
 
-        var validRoleIds = await this.LazyDBContext.Roles.Select(r => r.Id).ToListAsync();
+        var validRoleIds = await LazyDBContext.Roles.Select(r => r.Id).ToListAsync();
 
         //identify any invalid IDS
         var invalidRoleIds = roleIds.Except(validRoleIds).ToList();
@@ -138,12 +137,12 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
         await ValidateNameAsync(input.UserName, id);
 
         //Retrieve the existing user (with roles) from the database
-        var user = await this.LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+        var user = await LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
 
         if (user == null) throw new EntityNotFoundException(nameof(User), id.ToString());
 
         //Map updated properties from the DTO to the User entity
-        this.Mapper.Map(input, user);
+        Mapper.Map(input, user);
 
         await ValidateRoleIdsAsync(input.RoleIds);
 
@@ -166,13 +165,13 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
             user.UserRoles = user.UserRoles.Where(ur => !rolesToRemove.Contains(ur.RoleId)).ToList();
         }
 
-        await this.LazyDBContext.SaveChangesAsync();
+        await LazyDBContext.SaveChangesAsync();
 
-        var userDto = this.Mapper.Map<UserDto>(user);
+        var userDto = Mapper.Map<UserDto>(user);
 
         //clear permission from cache
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        await _LazyCache.RemoveAsync(cacheKey);
+        await _lazyCache.RemoveAsync(cacheKey);
 
         return userDto;
     }
@@ -187,18 +186,18 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
     public async Task<UserDto> ActiveAsync(long id, ActiveDto input)
     {
         //Retrieve the existing user (with roles) from the database
-        var user = await LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+        var user = await LazyDBContext.Users.FirstOrDefaultAsync(u => u.Id == id);
 
         if (user == null) throw new EntityNotFoundException(nameof(User), id.ToString());
         user.IsActive = input.IsActive;
 
         await LazyDBContext.SaveChangesAsync();
 
-        var userDto = this.Mapper.Map<UserDto>(user);
+        var userDto = Mapper.Map<UserDto>(user);
 
         //clear permission from cache
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        await _LazyCache.RemoveAsync(cacheKey);
+        await _lazyCache.RemoveAsync(cacheKey);
 
         return userDto;
     }
@@ -223,16 +222,16 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
 
     public async Task<UserDto> GetByUserNameAsync(string userName)
     {
-        var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+        var user = await LazyDBContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
 
-        return this.Mapper.Map<UserDto>(user);
+        return Mapper.Map<UserDto>(user);
     }
 
     public async Task<UserDto> GetByEmailAsync(string email)
     {
-        var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+        var user = await LazyDBContext.Users.FirstOrDefaultAsync(x => x.Email == email);
         
-        return this.Mapper.Map<UserDto>(user);
+        return Mapper.Map<UserDto>(user);
     }
 
     /// <summary>
@@ -243,7 +242,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
     /// <exception cref="EntityNotFoundException"></exception>
     public override async Task<bool> DeleteAsync(long id)
     {
-        var user = await this.LazyDBContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await LazyDBContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
             throw new EntityNotFoundException(nameof(User), id.ToString());
 
@@ -251,8 +250,8 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
         if (user.Id == 1 && user.IsAdministrator)
             throw new UserFriendlyException("禁止删除初始管理员");
 
-        this.LazyDBContext.Users.Remove(user);
-        await this.LazyDBContext.SaveChangesAsync();
+        LazyDBContext.Users.Remove(user);
+        await LazyDBContext.SaveChangesAsync();
 
         return true;
     }
@@ -265,15 +264,16 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPageRes
     /// <exception cref="EntityNotFoundException"></exception>
     public async Task<UserWithRoleIdsDto> GetUserByIdAsync(long id)
     {
-        var user = await this.LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(x => x.Id == id);
+        var user = await LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(x => x.Id == id);
         if (user == null)
         {
             throw new EntityNotFoundException($"User id {id} not found", "User  not found");
         }
 
-        var userOutput = this.Mapper.Map<UserWithRoleIdsDto>(user);
+        var userOutput = Mapper.Map<UserWithRoleIdsDto>(user);
         userOutput.RoleIds.Clear();
         userOutput.RoleIds.AddRange(user.UserRoles.Select(x => x.RoleId).Distinct());
+
         return userOutput;
     }
 

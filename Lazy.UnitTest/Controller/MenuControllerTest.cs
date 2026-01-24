@@ -19,7 +19,7 @@ public class MenuControllerTest
     public async Task GetByPageAsync_ShouldReturnPagedMenus()
     {
         // Arrange
-        var input = new FilterPagedResultRequestDto();
+        var input = new MenuPagedResultRequestDto();
         var menus = new List<MenuDto>
         {
             new MenuDto { Id = 1, Title = "Menu1", Description = "Description1", MenuType = MenuType.Dir },

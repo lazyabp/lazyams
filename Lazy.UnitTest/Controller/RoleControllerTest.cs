@@ -17,7 +17,7 @@ public class RoleControllerTest
     public async Task GetByPageAsync_WhenPageRoleExit_ShouldReturnPageRoles()
     {
         // Arrange
-        var input = new FilterPagedResultRequestDto();
+        var input = new RolePagedResultRequestDto();
         var roles = new List<RoleDto>
         {
             new RoleDto { Id = 1, RoleName ="admin1",   Description="full power" },
@@ -130,7 +130,7 @@ public class RoleControllerTest
         //valid Id case
         //Arrange
         var validId = id;
-        var input = new FilterPagedResultRequestDto();
+        var input = new RolePagedResultRequestDto();
         var rolesBeforeDelete = new List<RoleDto>
         {
             new RoleDto { Id = 1, RoleName ="admin1",   Description="full power" },
@@ -158,7 +158,7 @@ public class RoleControllerTest
         //invalid Id case
         //arrange
         var invalidId = id2;
-        var input2 = new FilterPagedResultRequestDto();
+        var input2 = new RolePagedResultRequestDto();
         var rolesAfterDeleteInvalid = from listItem in rolesBeforeDelete where id != invalidId select listItem;
         var pagedResultInvalid = new PagedResultDto<RoleDto>
         {

@@ -45,7 +45,7 @@ public class MenuServiceTest
             context.SaveChanges();
 
             var service = new MenuService(context, _mapper);
-            var filterInput = new FilterPagedResultRequestDto
+            var filterInput = new MenuPagedResultRequestDto
             {
                 PageIndex = 1,
                 PageSize = 10 
