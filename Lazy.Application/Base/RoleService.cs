@@ -1,4 +1,6 @@
-﻿namespace Lazy.Application;
+﻿using Lazy.Model.Entity;
+
+namespace Lazy.Application;
 
 public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedResultRequestDto, CreateRoleDto, UpdateRoleDto>, IRoleService, ITransientDependency
 {
@@ -127,21 +129,23 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
             {
                 var menus = await LazyDBContext.Menus.ToListAsync();
                 foreach (var menu in menus)
-                    permissList.Add(menu.Permission);
-
-                return permissList;
-            }
-
-            // 普通用户
-            var roleMenuList = await LazyDBContext.RoleMenus.Include(r => r.Menu).Where(r => roleIds.Contains(r.RoleId)).ToListAsync();
-            foreach (var roleMenu in roleMenuList)
-            {
-                if (!string.IsNullOrEmpty(roleMenu.Menu.Permission))
                 {
-                    if (!permissList.Contains(roleMenu.Menu.Permission))
+                    if (!string.IsNullOrEmpty(menu.Permission))
+                        permissList.Add(menu.Permission);
+                }
+            }
+            else
+            {
+                // 普通用户
+                var roleMenuList = await LazyDBContext.RoleMenus.Include(r => r.Menu).Where(r => roleIds.Contains(r.RoleId)).ToListAsync();
+                foreach (var roleMenu in roleMenuList)
+                {
+                    if (!string.IsNullOrEmpty(roleMenu.Menu.Permission))
                         permissList.Add(roleMenu.Menu.Permission);
                 }
             }
+
+            permissList = [...permissList.Distinct()];
 
             await _lazyCache.SetAsync(cacheKey, permissList, 60);
         }
