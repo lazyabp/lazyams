@@ -2,7 +2,7 @@
 
 public class PermissionConsts
 {
-    public const string PermissionManagement = "Lazy";
+    public const string PermissionManagement = "Permission";
 
     public class User
     {
