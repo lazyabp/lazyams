@@ -7,5 +7,5 @@ public class MenuEntityConsts
     public const int MaxMarkLength = 500;
     public const int MaxMenuTypeLength = 50;
     public const int MaxRouteLength = 60;
-    public const int MaxComponentPathLength = 100;
+    public const int MaxComponentLength = 100;
 }

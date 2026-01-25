@@ -14,7 +14,7 @@ public class LazyDBContext : DbContext
     public DbSet<RoleMenu> RoleMenus { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Lazy.Model.Entity.File> Files { get; set; }
-    public DbSet<Setting> Settings { get; set; }
+    public DbSet<Config> Configs { get; set; }
     public DbSet<SocialiteUser> SocialiteUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public class SmsSettingModel
+public class SmsConfigModel
 {
     public bool EnableSms { get; set; } = false;
     public string Provider { get; set; } = string.Empty;

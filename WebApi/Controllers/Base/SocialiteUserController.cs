@@ -1,6 +1,6 @@
 ﻿using Lazy.Application.Contracts.SocialiteUser;
 using Lazy.Core.ExceptionHandling;
-using Lazy.Shared.Settings;
+using Lazy.Shared.Configs;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -16,11 +16,11 @@ namespace WebApi.Controllers;
 public class SocialiteUserController : ControllerBase
 {
     private readonly ISocialiteUserService _socialiteUserService;
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
     private readonly IHttpClientFactory _httpClientFactory;
 
     public SocialiteUserController(ISocialiteUserService socialiteUserService, 
-        ISettingService settingService,
+        IConfigService settingService,
         IHttpClientFactory httpClientFactory)
     {
         _socialiteUserService = socialiteUserService;
@@ -33,12 +33,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("Weixin/Login")]
-    public async Task<SocialiteLoginWeixinSettingModel> WexinLogin()
+    public async Task<SocialiteLoginWeixinConfigModel> WexinLogin()
     {
-        var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
-        weixinSetting.AppSecret = null; // 保护敏感信息
+        var weixinConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinConfigModel>(ConfigNames.SocialiteLoginWeixin);
+        weixinConfig.AppSecret = null; // 保护敏感信息
 
-        return weixinSetting;
+        return weixinConfig;
     }
 
     /// <summary>
@@ -46,12 +46,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("WeixinMini/Login")]
-    public async Task<SocialiteLoginWeixinMiniSettingModel> WeixinMiniLogin()
+    public async Task<SocialiteLoginWeixinMiniConfigModel> WeixinMiniLogin()
     {
-        var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
-        weixinMiniSetting.AppSecret = null; // 保护敏感信息
+        var weixinMiniConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinMiniConfigModel>(ConfigNames.SocialiteLoginWeixinMini);
+        weixinMiniConfig.AppSecret = null; // 保护敏感信息
 
-        return weixinMiniSetting;
+        return weixinMiniConfig;
     }
 
     /// <summary>
@@ -59,12 +59,12 @@ public class SocialiteUserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("Google/Login")]
-    public async Task<SocialiteLoginGoogleSettingModel> GoogleLogin()
+    public async Task<SocialiteLoginGoogleConfigModel> GoogleLogin()
     {
-        var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
-        googleSetting.ClientSecret = null; // 保护敏感信息
+        var googleConfig = await _settingService.GetConfigAsync<SocialiteLoginGoogleConfigModel>(ConfigNames.SocialiteLoginGoogle);
+        googleConfig.ClientSecret = null; // 保护敏感信息
 
-        return googleSetting;
+        return googleConfig;
     }
 
     /// <summary>
@@ -78,14 +78,14 @@ public class SocialiteUserController : ControllerBase
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("用户拒绝授权");
 
-        var weixinSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinSettingModel>(SettingNames.SocialiteLoginWeixin);
+        var weixinConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinConfigModel>(ConfigNames.SocialiteLoginWeixin);
 
         // 1. 获取 HttpClient
         using var client = _httpClientFactory.CreateClient();
 
         // 2. 准备换取 AccessToken 的 URL (微信使用 GET 请求)
-        var appId = weixinSetting.AppId;
-        var appSecret = weixinSetting.AppSecret;
+        var appId = weixinConfig.AppId;
+        var appSecret = weixinConfig.AppSecret;
         var tokenUrl = $"https://api.weixin.qq.com/sns/oauth2/access_token?" +
                        $"appid={appId}&secret={appSecret}&code={code}&grant_type=authorization_code";
 
@@ -122,11 +122,11 @@ public class SocialiteUserController : ControllerBase
         if (!string.IsNullOrEmpty(info.IV) && !string.IsNullOrEmpty(info.EncryptedData))
             throw new UserFriendlyException("登录信息无效");
 
-        var weixinMiniSetting = await _settingService.GetSettingAsync<SocialiteLoginWeixinMiniSettingModel>(SettingNames.SocialiteLoginWeixinMini);
+        var weixinMiniConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinMiniConfigModel>(ConfigNames.SocialiteLoginWeixinMini);
 
         // 1. 构造微信 API 请求 URL
         var url = $"https://api.weixin.qq.com/sns/jscode2session?" +
-                  $"appid={weixinMiniSetting.AppId}&secret={weixinMiniSetting.AppSecret}&js_code={info.Code}&grant_type=authorization_code";
+                  $"appid={weixinMiniConfig.AppId}&secret={weixinMiniConfig.AppSecret}&js_code={info.Code}&grant_type=authorization_code";
 
         // 2. 发送请求
         using var client = _httpClientFactory.CreateClient();
@@ -199,7 +199,7 @@ public class SocialiteUserController : ControllerBase
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("Invalid code");
 
-        var googleSetting = await _settingService.GetSettingAsync<SocialiteLoginGoogleSettingModel>(SettingNames.SocialiteLoginGoogle);
+        var googleConfig = await _settingService.GetConfigAsync<SocialiteLoginGoogleConfigModel>(ConfigNames.SocialiteLoginGoogle);
 
         // 1. 创建 HttpClient
         using var client = _httpClientFactory.CreateClient();
@@ -207,11 +207,11 @@ public class SocialiteUserController : ControllerBase
         // 2. 准备换取 Token 的参数
         var tokenRequestParams = new Dictionary<string, string>
         {
-            { "client_id", googleSetting.ClientId },
-            { "client_secret", googleSetting.ClientSecret },
+            { "client_id", googleConfig.ClientId },
+            { "client_secret", googleConfig.ClientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", googleSetting.RedirectUrl } // 必须与发起请求时一致
+            { "redirect_uri", googleConfig.RedirectUrl } // 必须与发起请求时一致
         };
 
         // 3. 发送 POST 请求换取 Token

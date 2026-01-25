@@ -1,10 +1,7 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Minio;
 using Minio.DataModel.Args;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lazy.Application.FileStorage;
 
@@ -13,29 +10,29 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class MinioStorage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public MinioStorage(ISettingService settingService)
+    public MinioStorage(IConfigService settingService)
     {
         _settingService = settingService;
     }
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var minioSetting = await _settingService.GetSettingAsync<StorageMinioSettingModel>(SettingNames.StorageMinio);
+        var minioConfig = await _settingService.GetConfigAsync<StorageMinioConfigModel>(ConfigNames.StorageMinio);
 
         // 2. 初始化 Minio 客户端
         var minio = new MinioClient()
-            .WithEndpoint(minioSetting.EndPoint)
-            .WithCredentials(minioSetting.AccessKey, minioSetting.SecretKey)
-            //.WithSSL(minioSetting.Secure) // 根据配置决定是否使用 HTTPS
+            .WithEndpoint(minioConfig.EndPoint)
+            .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
+            //.WithSSL(minioConfig.Secure) // 根据配置决定是否使用 HTTPS
             .Build();
 
         // 3. 确保存储桶（Bucket）存在
-        bool found = await minio.BucketExistsAsync(new BucketExistsArgs().WithBucket(minioSetting.Bucket));
+        bool found = await minio.BucketExistsAsync(new BucketExistsArgs().WithBucket(minioConfig.Bucket));
         if (!found)
         {
-            await minio.MakeBucketAsync(new MakeBucketArgs().WithBucket(minioSetting.Bucket));
+            await minio.MakeBucketAsync(new MakeBucketArgs().WithBucket(minioConfig.Bucket));
         }
 
         // 4. 生成唯一文件名（防止重复覆盖）
@@ -45,7 +42,7 @@ public class MinioStorage : IFileStorage, ISingletonDependency
         // 5. 使用流式上传
         using var stream = file.OpenReadStream();
         var putObjectArgs = new PutObjectArgs()
-            .WithBucket(minioSetting.Bucket)
+            .WithBucket(minioConfig.Bucket)
             .WithObject(objectName)
             .WithStreamData(stream)
             .WithObjectSize(stream.Length)
@@ -58,6 +55,6 @@ public class MinioStorage : IFileStorage, ISingletonDependency
         }
         
         createFileDto.FilePath = result.ObjectName;
-        createFileDto.Domain = minioSetting.Domain.TrimEnd('/');
+        createFileDto.Domain = minioConfig.Domain.TrimEnd('/');
     }
 }

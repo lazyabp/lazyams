@@ -1,4 +1,4 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,10 +10,10 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class CustomStorage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public CustomStorage(ISettingService settingService, IHttpClientFactory httpClientFactory)
+    public CustomStorage(IConfigService settingService, IHttpClientFactory httpClientFactory)
     {
         _settingService = settingService;
         _httpClientFactory = httpClientFactory;
@@ -27,14 +27,14 @@ public class CustomStorage : IFileStorage, ISingletonDependency
     /// <returns></returns>
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var customSetting = await _settingService.GetSettingAsync<StorageCustomSettingModel>(SettingNames.StorageCustom);
+        var customConfig = await _settingService.GetConfigAsync<StorageCustomConfigModel>(ConfigNames.StorageCustom);
         
         var formFields = new Dictionary<string, string>
         {
             { "storage", createFileDto.FilePath }
         };
 
-        using (var request = new HttpRequestMessage(HttpMethod.Post, customSetting.FileUploadUrl))
+        using (var request = new HttpRequestMessage(HttpMethod.Post, customConfig.FileUploadUrl))
         {
             // 设置headers
             var headers = new Dictionary<string, string>
@@ -42,8 +42,8 @@ public class CustomStorage : IFileStorage, ISingletonDependency
                 { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0" }
             };
 
-            if (!string.IsNullOrEmpty(customSetting.Token))
-                headers.Add("Authorization", "Bearer " + customSetting.Token);
+            if (!string.IsNullOrEmpty(customConfig.Token))
+                headers.Add("Authorization", "Bearer " + customConfig.Token);
 
             foreach (KeyValuePair<string, string> pair in headers)
                 request.Headers.Add(pair.Key, pair.Value);
@@ -65,7 +65,7 @@ public class CustomStorage : IFileStorage, ISingletonDependency
                     var itemContent = new ByteArrayContent(buffer);
                     itemContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
 
-                    content.Add(itemContent, customSetting.FieldName, file.FileName);
+                    content.Add(itemContent, customConfig.FieldName, file.FileName);
                 }
 
                 request.Content = content;
@@ -84,7 +84,7 @@ public class CustomStorage : IFileStorage, ISingletonDependency
                     createFileDto.FilePath = model.Path;
                     if (!string.IsNullOrEmpty(model.Domain))
                     {
-                        customSetting.Domain = customSetting.Domain.TrimEnd('/');
+                        customConfig.Domain = customConfig.Domain.TrimEnd('/');
                     }                    
                 }
             }

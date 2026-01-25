@@ -55,9 +55,9 @@ public class MenuController : ControllerBase
 
     [Authorize(PermissionConsts.Menu.Update)]
     [HttpPost("Active/{id}")]
-    public async Task<MenuDto> Active(long id, [FromBody] ActiveDto input)
+    public Task<bool> Active(long id, [FromBody] ActiveDto input)
     {
-        return await _menuService.ActiveAsync(id, input);
+        return _menuService.ActiveAsync(id, input);
     }
 
     /// <summary>

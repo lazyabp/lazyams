@@ -20,9 +20,9 @@ public class BaseProfile : Profile
         CreateMap<UpdateRoleDto, Role>();
         CreateMap<LoginRequestDto, User>();
 
-        CreateMap<Setting, SettingDto>().ReverseMap();
-        CreateMap<CreateSettingDto, Setting>().ForMember(dest => dest.Id, opt => opt.Ignore());
-        CreateMap<UpdateSettingDto, Setting>();
+        CreateMap<Config, ConfigDto>().ReverseMap();
+        CreateMap<CreateConfigDto, Config>().ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<UpdateConfigDto, Config>();
 
         CreateMap<SocialiteUser, SocialiteUserDto>().ReverseMap();
         CreateMap<CreateSocialiteUserDto, SocialiteUser>().ForMember(dest => dest.Id, opt => opt.Ignore());

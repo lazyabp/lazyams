@@ -2,7 +2,7 @@
 
 namespace Lazy.Model.Entity;
 
-public class Setting : BaseEntity
+public class Config : BaseEntity
 {
     [Required(ErrorMessage = "The key field is required.")]
     [StringLength(128, ErrorMessage = "The key cannot exceed 128 characters.")]

@@ -31,7 +31,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         return query;
     }
 
-    public async Task<MenuDto> ActiveAsync(long id, ActiveDto input)
+    public async Task<bool> ActiveAsync(long id, ActiveDto input)
     {
         var menu = await LazyDBContext.Menus.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -40,9 +40,9 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         await LazyDBContext.SaveChangesAsync();
 
-        var menuDto = Mapper.Map<MenuDto>(menu);
+        //var menuDto = Mapper.Map<MenuDto>(menu);
 
-        return menuDto;
+        return true;
     }
 
     // Get menu by id
@@ -143,8 +143,9 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
                 Description = menu.Description,
                 OrderNum = menu.OrderNum,
                 Route = menu.Route,
-                ComponentPath = menu.ComponentPath,
+                Component = menu.Component,
                 Permission = menu.Permission,
+                IsActive = menu.IsActive,
                 Children = BuildMenuTree(menus, menu.Id)
             })
             .OrderBy(menu => menu.OrderNum)

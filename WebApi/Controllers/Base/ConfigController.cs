@@ -1,4 +1,4 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
@@ -10,11 +10,11 @@ namespace WebApi.Controllers;
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BaseService))]
 [Route("api/[controller]")]
 [ApiController]
-public class SettingController : ControllerBase
+public class ConfigController : ControllerBase
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public SettingController(ISettingService settingService)
+    public ConfigController(IConfigService settingService)
     {
         _settingService = settingService;
     }
@@ -24,16 +24,16 @@ public class SettingController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("All")]
-    public async Task<Dictionary<string, object>> GetAllPublicSettings()
+    public async Task<Dictionary<string, object>> GetAllPublicConfigs()
     {
         var keys = new List<string>();
-        keys.Add(SettingNames.Site);
-        keys.Add(SettingNames.UploadFile);
-        keys.Add(SettingNames.Member);
-        keys.Add(SettingNames.Storage);
-        keys.Add(SettingNames.SocialiteLogin);
+        keys.Add(ConfigNames.Site);
+        keys.Add(ConfigNames.UploadFile);
+        keys.Add(ConfigNames.Member);
+        keys.Add(ConfigNames.Storage);
+        keys.Add(ConfigNames.SocialiteLogin);
 
-        var items = await _settingService.GetAllSettingsAsync(keys);
+        var items = await _settingService.GetAllConfigsAsync(keys);
         var result = new Dictionary<string, object>();
         foreach (var item in items)
         {
@@ -49,11 +49,11 @@ public class SettingController : ControllerBase
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    [Authorize(PermissionConsts.Setting.Default)]
+    [Authorize(PermissionConsts.Config.Default)]
     [HttpGet("Get")]
-    public async Task<IDictionary<string, object>> GetSetting(string key)
+    public async Task<IDictionary<string, object>> GetConfig(string key)
     {
-        var setting = await _settingService.GetSettingAsync<IDictionary<string, object>>(key);
+        var setting = await _settingService.GetConfigAsync<IDictionary<string, object>>(key);
 
         return setting;
     }
@@ -64,11 +64,11 @@ public class SettingController : ControllerBase
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    [Authorize(PermissionConsts.Setting.Update)]
+    [Authorize(PermissionConsts.Config.Update)]
     [HttpPost("Set")]
-    public async Task<bool> SetSetting(string key, IDictionary<string, object> value)
+    public async Task<bool> SetConfig(string key, IDictionary<string, object> value)
     {
-        await _settingService.SetSettingAsync(key, value);
+        await _settingService.SetConfigAsync(key, value);
 
         return true;
     }

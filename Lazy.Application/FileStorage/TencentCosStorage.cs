@@ -1,7 +1,7 @@
 ﻿using COSXML;
 using COSXML.Auth;
 using COSXML.Model.Object;
-using Lazy.Shared.Settings;
+using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 
 namespace Lazy.Application.FileStorage;
@@ -11,26 +11,26 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class TencentCosStorage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public TencentCosStorage(ISettingService settingService)
+    public TencentCosStorage(IConfigService settingService)
     {
         _settingService = settingService;
     }
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var tencentSetting = await _settingService.GetSettingAsync<StorageTencentSettingModel>(SettingNames.StorageTencent);
+        var tencentConfig = await _settingService.GetConfigAsync<StorageTencentConfigModel>(ConfigNames.StorageTencent);
 
         // 2. 初始化 COS 实例配置
         var config = new CosXmlConfig.Builder()
             .IsHttps(true)  // 使用 HTTPS 上传
-            .SetRegion(tencentSetting.Region) // 示例：ap-guangzhou
+            .SetRegion(tencentConfig.Region) // 示例：ap-guangzhou
             .Build();
 
         // 3. 初始化身份验证 (SecretId, SecretKey)
         var cosCredentialProvider = new DefaultQCloudCredentialProvider(
-            tencentSetting.AccessKey, tencentSetting.SecretKey, 600); // 600秒有效期
+            tencentConfig.AccessKey, tencentConfig.SecretKey, 600); // 600秒有效期
 
         // 4. 构造 CosXmlServer
         var cosXml = new CosXmlServer(config, cosCredentialProvider);
@@ -42,7 +42,7 @@ public class TencentCosStorage : IFileStorage, ISingletonDependency
         // 6. 使用流式上传
         using var stream = file.OpenReadStream();
         var request = new PutObjectRequest(
-            tencentSetting.Bucket, // 格式：examplebucket-1250000000
+            tencentConfig.Bucket, // 格式：examplebucket-1250000000
             objectKey,
             stream
         );
@@ -52,7 +52,7 @@ public class TencentCosStorage : IFileStorage, ISingletonDependency
         if (!result.IsSuccessful())
             throw new Exception($"腾讯云上传失败：{result.httpMessage}");
 
-        createFileDto.Domain = tencentSetting.Domain;
+        createFileDto.Domain = tencentConfig.Domain;
         createFileDto.FilePath = "/" + objectKey.TrimStart('/');
     }
 }

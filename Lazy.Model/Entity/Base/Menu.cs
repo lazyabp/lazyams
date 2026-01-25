@@ -45,8 +45,8 @@ public class Menu : BaseEntityWithSoftDelete
     /// <summary>
     /// the component path for the menu.
     /// </summary>
-    [StringLength(200, ErrorMessage = "The ComponentPath cannot exceed 200 characters.")]
-    public string ComponentPath { get; set; }
+    [StringLength(200, ErrorMessage = "The Component cannot exceed 200 characters.")]
+    public string Component { get; set; }
 
     /// <summary>
     /// the parent menu ID.

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lazy.Shared.Settings;
+namespace Lazy.Shared.Configs;
 
-public class SiteSettingModel
+public class SiteConfigModel
 {
     public string AppName { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;

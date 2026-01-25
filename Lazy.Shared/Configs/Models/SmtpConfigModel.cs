@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public class SmtpSettingModel
+public class SmtpConfigModel
 {
     public string Host { get; set; } = string.Empty;
     public int Port { get; set; } = 25;

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public class UploadFileSettingModel
+public class UploadFileConfigModel
 {
     public bool ImageUploadEnabled { get; set; } = true;
     public string ImageExtensions { get; set; } = ".jpg,.jpeg,.png,.gif,.webp";

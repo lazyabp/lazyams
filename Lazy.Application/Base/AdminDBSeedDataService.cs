@@ -1,6 +1,6 @@
 ﻿using Lazy.Core.LazyAttribute;
 using Lazy.Core.Utils;
-using Lazy.Shared.Settings;
+using Lazy.Shared.Configs;
 using Newtonsoft.Json;
 
 namespace Lazy.Application;
@@ -37,43 +37,47 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
     private List<Menu> menus = new List<Menu>()
     {
         new Menu(){Id=1, Title="Rights Management", Description="Rights Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=2, Title="User", Description="User", ParentId=1, MenuType=MenuType.Menu, OrderNum=1, Route="/user", ComponentPath="/views/user/index", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=2, Title="User", Description="User", ParentId=1, MenuType=MenuType.Menu, OrderNum=1, Route="/user", Component="/views/user/index", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=3, Title="Add", Description="Add",ParentId=2, MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.User.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=4, Title="Update", Description="Update",ParentId=2, MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.User.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=5, Title="Delete", Description="Delete",ParentId=2, MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.User.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=6, Title="Role", Description="Role",ParentId=1,MenuType= MenuType.Menu, OrderNum=2,Route="/role", ComponentPath="/views/role/index", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=6, Title="Role", Description="Role",ParentId=1,MenuType= MenuType.Menu, OrderNum=2,Route="/role", Component="/views/role/index", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
         new Menu(){Id=7, Title="Add",Description="Add",ParentId=6, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Role.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=8, Title="Update",Description="Update",ParentId=6, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=9, Title="Delete",Description="Delete",ParentId=6, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=10, Title = "Menu", Description="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",ComponentPath="./pages/menu/index.jsx", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=10, Title = "Menu", Description="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",Component="/views/menu/index", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
         new Menu(){Id=11, Title="Add",Description="Add",ParentId=10, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=12, Title="Update",Description="Update",ParentId=10, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=13, Title="Delete",Description="Delete",ParentId=10, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=14, Title = "Setting", Description="Setting",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/setting",ComponentPath="./pages/setting/index.jsx", Permission=PermissionConsts.Setting.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=15, Title="Update",Description="Update",ParentId=14, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Setting.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=16, Title = "File", Description="File",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/file",ComponentPath="./pages/file/index.jsx", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=17, Title="Upload",Description="Upload",ParentId=16, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=14, Title="Config Management", Description="Config Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=15, Title = "Config", Description="Config",ParentId=14,MenuType=MenuType.Menu, OrderNum=1,Route="/config",Component="/views/config/index", Permission=PermissionConsts.Config.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=16, Title="Update",Description="Update",ParentId=15, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Config.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=17, Title="Media Management", Description="Media Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=18, Title = "File", Description="File",ParentId=17,MenuType=MenuType.Menu, OrderNum=1,Route="/file",Component="/views/file/index", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=19, Title="Upload",Description="Upload",ParentId=18, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
     };
 
-    private List<Setting> settings = new List<Setting>
+    private List<Config> configs = new List<Config>
     {
-        new Setting{Id=1, Key=SettingNames.Site, Value=JsonConvert.SerializeObject(new SiteSettingModel()) },
-        new Setting{Id=2, Key=SettingNames.UploadFile, Value=JsonConvert.SerializeObject(new UploadFileSettingModel()) },
-        new Setting{Id=3, Key=SettingNames.Member, Value=JsonConvert.SerializeObject(new MemberSettingModel()) },
-        new Setting{Id=4, Key=SettingNames.Storage, Value=JsonConvert.SerializeObject(new StorageSettingModel()) },
-        new Setting{Id=5, Key=SettingNames.StorageAliyun, Value=JsonConvert.SerializeObject(new StorageAliyunSettingModel()) },
-        new Setting{Id=6, Key=SettingNames.StorageQiniu, Value=JsonConvert.SerializeObject(new StorageQiniuSettingModel()) },
-        new Setting{Id=7, Key=SettingNames.StorageTencent, Value=JsonConvert.SerializeObject(new StorageTencentSettingModel()) },
-        new Setting{Id=8, Key=SettingNames.StorageMinio, Value=JsonConvert.SerializeObject(new StorageMinioSettingModel()) },
-        new Setting{Id=9, Key=SettingNames.StorageAwsS3, Value=JsonConvert.SerializeObject(new StorageAwsS3SettingModel()) },
-        new Setting{Id=10, Key=SettingNames.StorageCustom, Value=JsonConvert.SerializeObject(new StorageCustomSettingModel()) },
-        new Setting{Id=11, Key=SettingNames.StorageLocal, Value=JsonConvert.SerializeObject(new StorageLocalSettingModel()) },
-        new Setting{Id=12, Key=SettingNames.SocialiteLogin, Value=JsonConvert.SerializeObject(new SocialiteLoginSettingModel()) },
-        new Setting{Id=13, Key=SettingNames.SocialiteLoginWeixin, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinSettingModel()) },
-        new Setting{Id=14, Key=SettingNames.SocialiteLoginWeixinMini, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinMiniSettingModel()) },
-        new Setting{Id=15, Key=SettingNames.SocialiteLoginGoogle, Value=JsonConvert.SerializeObject(new SocialiteLoginGoogleSettingModel()) },
-        new Setting{Id=16, Key=SettingNames.Smtp, Value=JsonConvert.SerializeObject(new SmtpSettingModel()) },
-        new Setting{Id=17, Key=SettingNames.Sms, Value=JsonConvert.SerializeObject(new SmsSettingModel()) },
+        new Config{Id=1, Key=ConfigNames.Site, Value=JsonConvert.SerializeObject(new SiteConfigModel{ AppName = "Lazy AMS" }) },
+        new Config{Id=2, Key=ConfigNames.UploadFile, Value=JsonConvert.SerializeObject(new UploadFileConfigModel()) },
+        new Config{Id=3, Key=ConfigNames.Member, Value=JsonConvert.SerializeObject(new MemberConfigModel()) },
+        new Config{Id=4, Key=ConfigNames.Storage, Value=JsonConvert.SerializeObject(new StorageConfigModel()) },
+        new Config{Id=5, Key=ConfigNames.StorageAliyun, Value=JsonConvert.SerializeObject(new StorageAliyunConfigModel()) },
+        new Config{Id=6, Key=ConfigNames.StorageQiniu, Value=JsonConvert.SerializeObject(new StorageQiniuConfigModel()) },
+        new Config{Id=7, Key=ConfigNames.StorageTencent, Value=JsonConvert.SerializeObject(new StorageTencentConfigModel()) },
+        new Config{Id=8, Key=ConfigNames.StorageMinio, Value=JsonConvert.SerializeObject(new StorageMinioConfigModel()) },
+        new Config{Id=9, Key=ConfigNames.StorageAwsS3, Value=JsonConvert.SerializeObject(new StorageAwsS3ConfigModel()) },
+        new Config{Id=10, Key=ConfigNames.StorageCustom, Value=JsonConvert.SerializeObject(new StorageCustomConfigModel()) },
+        new Config{Id=11, Key=ConfigNames.StorageLocal, Value=JsonConvert.SerializeObject(new StorageLocalConfigModel()) },
+        new Config{Id=12, Key=ConfigNames.SocialiteLogin, Value=JsonConvert.SerializeObject(new SocialiteLoginConfigModel()) },
+        new Config{Id=13, Key=ConfigNames.SocialiteLoginWeixin, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinConfigModel()) },
+        new Config{Id=14, Key=ConfigNames.SocialiteLoginWeixinMini, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinMiniConfigModel()) },
+        new Config{Id=15, Key=ConfigNames.SocialiteLoginGoogle, Value=JsonConvert.SerializeObject(new SocialiteLoginGoogleConfigModel()) },
+        new Config{Id=16, Key=ConfigNames.Smtp, Value=JsonConvert.SerializeObject(new SmtpConfigModel()) },
+        new Config{Id=17, Key=ConfigNames.Sms, Value=JsonConvert.SerializeObject(new SmsConfigModel()) },
     };
 
     public async Task<bool> InitAsync()
@@ -102,9 +106,9 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
             await _dbContext.SaveChangesAsync();
         }
 
-        if (!_dbContext.Settings.Any())
+        if (!_dbContext.Configs.Any())
         {
-            await _dbContext.Settings.AddRangeAsync(settings);
+            await _dbContext.Configs.AddRangeAsync(configs);
             await _dbContext.SaveChangesAsync();
         }
 

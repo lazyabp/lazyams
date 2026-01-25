@@ -1,4 +1,4 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -10,9 +10,9 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class AwsS3Storage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public AwsS3Storage(ISettingService settingService)
+    public AwsS3Storage(IConfigService settingService)
     {
         _settingService = settingService;
     }
@@ -26,22 +26,22 @@ public class AwsS3Storage : IFileStorage, ISingletonDependency
     /// <exception cref="InvalidOperationException"></exception>
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var awsS3Setting = await _settingService.GetSettingAsync<StorageAwsS3SettingModel>(SettingNames.StorageAwsS3);
+        var awsS3Config = await _settingService.GetConfigAsync<StorageAwsS3ConfigModel>(ConfigNames.StorageAwsS3);
         
-        if (awsS3Setting == null)
+        if (awsS3Config == null)
             throw new InvalidOperationException("AWS S3配置未获取");
                 
-        var config = new AmazonS3Config { RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsS3Setting.Region) };
+        var config = new AmazonS3Config { RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsS3Config.Region) };
         createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
-        createFileDto.Domain = awsS3Setting.Domain.TrimEnd('/');
+        createFileDto.Domain = awsS3Config.Domain.TrimEnd('/');
 
-        using (var client = new AmazonS3Client(awsS3Setting.AccessKey, awsS3Setting.SecretKey, config))
+        using (var client = new AmazonS3Client(awsS3Config.AccessKey, awsS3Config.SecretKey, config))
         {
             using (var stream = file.OpenReadStream())
             {
                 var putRequest = new PutObjectRequest
                 {
-                    BucketName = awsS3Setting.Bucket,
+                    BucketName = awsS3Config.Bucket,
                     Key = createFileDto.FilePath,
                     InputStream = stream,
                     ContentType = file.ContentType

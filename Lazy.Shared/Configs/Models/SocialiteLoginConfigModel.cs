@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public class SocialiteLoginSettingModel
+public class SocialiteLoginConfigModel
 {
     public bool WeixinLogin { get; set; } = false;
 
@@ -13,20 +9,20 @@ public class SocialiteLoginSettingModel
     public bool GoogleLogin { get; set; } = false;
 }
 
-public class SocialiteLoginWeixinSettingModel
+public class SocialiteLoginWeixinConfigModel
 {
     public string AppId { get; set; } = string.Empty;
     public string AppSecret { get; set; } = string.Empty;
     public string RedirectUrl { get; set; } = string.Empty;
 }
 
-public class SocialiteLoginWeixinMiniSettingModel
+public class SocialiteLoginWeixinMiniConfigModel
 {
     public string AppId { get; set; } = string.Empty;
     public string AppSecret { get; set; } = string.Empty;
 }
 
-public class SocialiteLoginGoogleSettingModel
+public class SocialiteLoginGoogleConfigModel
 {
     public string ClientId { get; set; } = string.Empty;
     public string ClientSecret { get; set; } = string.Empty;

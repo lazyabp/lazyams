@@ -30,9 +30,9 @@ public class PermissionConsts
         public const string Delete = Default + ".Delete";
     }
 
-    public class Setting
+    public class Config
     {
-        public const string Default = PermissionManagement + ".Setting";
+        public const string Default = PermissionManagement + ".Config";
         public const string Update = Default + ".Update";
     }
 

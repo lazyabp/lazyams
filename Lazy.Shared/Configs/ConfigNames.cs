@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public static class SettingNames
+public static class ConfigNames
 {
     public const string Site = "site";
     public const string UploadFile = "uploadfile";

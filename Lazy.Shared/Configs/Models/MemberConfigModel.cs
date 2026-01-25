@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lazy.Shared.Settings;
+namespace Lazy.Shared.Configs;
 
-public class MemberSettingModel
+public class MemberConfigModel
 {
     public bool EnableRegistration { get; set; } = true;
     public bool ValidateEmail { get; set; } = false;

@@ -1,13 +1,8 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
-using Minio.DataModel;
 using Qiniu.Storage;
 using Qiniu.Util;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Lazy.Application.FileStorage;
 
@@ -16,27 +11,27 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class QiniuKodoStorage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public QiniuKodoStorage(ISettingService settingService)
+    public QiniuKodoStorage(IConfigService settingService)
     {
         _settingService = settingService;
     }
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var qiniuSetting = await _settingService.GetSettingAsync<StorageQiniuSettingModel>(SettingNames.StorageQiniu);
+        var qiniuConfig = await _settingService.GetConfigAsync<StorageQiniuConfigModel>(ConfigNames.StorageQiniu);
 
         // 2. 初始化鉴权对象
-        var mac = new Mac(qiniuSetting.AccessKey, qiniuSetting.SecretKey);
+        var mac = new Mac(qiniuConfig.AccessKey, qiniuConfig.SecretKey);
 
         // 3. 设置上传策略 (PutPolicy)
         var putPolicy = new PutPolicy
         {
             // 设置目标存储桶
-            Scope = qiniuSetting.Bucket,
+            Scope = qiniuConfig.Bucket,
             // 如果需要覆盖同名文件，可以设置如下：
-            //Scope = $"{qiniuSetting.Bucket}:{createFileDto.FileName}"
+            //Scope = $"{qiniuConfig.Bucket}:{createFileDto.FileName}"
         };
         // 设置 Token 有效期（秒）
         //putPolicy.SetExpires(3600);
@@ -46,33 +41,33 @@ public class QiniuKodoStorage : IFileStorage, ISingletonDependency
         string token = Auth.CreateUploadToken(mac, jstr);
 
         Zone zone = Zone.ZONE_CN_East; // 根据实际情况选择区域
-        if (qiniuSetting.Region == Zone.ZONE_CN_North.ToString())
+        if (qiniuConfig.Region == Zone.ZONE_CN_North.ToString())
         {
             zone = Zone.ZONE_CN_North;
         }
-        else if (qiniuSetting.Region == Zone.ZONE_CN_South.ToString())
+        else if (qiniuConfig.Region == Zone.ZONE_CN_South.ToString())
         {
             zone = Zone.ZONE_CN_South;
         }
-        else if (qiniuSetting.Region == Zone.ZONE_CN_East.ToString())
+        else if (qiniuConfig.Region == Zone.ZONE_CN_East.ToString())
         {
             zone = Zone.ZONE_CN_East;
         }
-        else if (qiniuSetting.Region == Zone.ZONE_CN_East_2.ToString())
+        else if (qiniuConfig.Region == Zone.ZONE_CN_East_2.ToString())
         {
             zone = Zone.ZONE_CN_East_2;
         }
-        else if (qiniuSetting.Region == Zone.ZONE_US_North.ToString())
+        else if (qiniuConfig.Region == Zone.ZONE_US_North.ToString())
         {
             zone = Zone.ZONE_US_North;
         }
-        else if (qiniuSetting.Region == Zone.ZONE_AS_Singapore.ToString())
+        else if (qiniuConfig.Region == Zone.ZONE_AS_Singapore.ToString())
         {
             zone = Zone.ZONE_AS_Singapore;
         }
 
         // 5. 配置上传参数（如机房区域：华东、华北等）
-        var config = new Config()
+        var config = new Qiniu.Storage.Config()
         {
             // 根据你存储桶所在的区域选择：Zone.ZONE_CN_East (华东), Zone.ZONE_CN_North (华北) 等
             Zone = zone,
@@ -92,6 +87,6 @@ public class QiniuKodoStorage : IFileStorage, ISingletonDependency
             throw new Exception($"七牛云上传失败，状态码：{result.Code}，错误信息：{result.Text}");
 
         createFileDto.FilePath = filePath;
-        createFileDto.Domain = qiniuSetting.Domain;
+        createFileDto.Domain = qiniuConfig.Domain;
     }
 }

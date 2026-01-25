@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Shared.Configs;
 
-namespace Lazy.Shared.Settings;
-
-public class StorageSettingModel
+public class StorageConfigModel
 {
     public StorageType Type { get; set; } = StorageType.Local;
 }
 
-public class StorageSettingBaseModel
+public class StorageConfigBaseModel
 {
     public string AccessKey { get; set; } = string.Empty;
     public string SecretKey { get; set; } = string.Empty;
@@ -19,27 +15,27 @@ public class StorageSettingBaseModel
     public string Domain { get; set; } = string.Empty;
 }
 
-public class StorageAliyunSettingModel : StorageSettingBaseModel
+public class StorageAliyunConfigModel : StorageConfigBaseModel
 {
 }
 
-public class StorageQiniuSettingModel : StorageSettingBaseModel
+public class StorageQiniuConfigModel : StorageConfigBaseModel
 {
 }
 
-public class StorageTencentSettingModel : StorageSettingBaseModel
+public class StorageTencentConfigModel : StorageConfigBaseModel
 {
 }
 
-public class StorageMinioSettingModel : StorageSettingBaseModel
+public class StorageMinioConfigModel : StorageConfigBaseModel
 {
 }
 
-public class StorageAwsS3SettingModel : StorageSettingBaseModel
+public class StorageAwsS3ConfigModel : StorageConfigBaseModel
 {
 }
 
-public class StorageCustomSettingModel
+public class StorageCustomConfigModel
 {
     public string Token { get; set; } = string.Empty;
     public string FileUploadUrl { get; set; } = string.Empty;
@@ -47,7 +43,7 @@ public class StorageCustomSettingModel
     public string Domain { get; set; } = string.Empty;
 }
 
-public class StorageLocalSettingModel
+public class StorageLocalConfigModel
 {
     public string UploadDir { get; set; } = "uploads";
 

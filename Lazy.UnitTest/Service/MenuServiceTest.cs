@@ -76,7 +76,7 @@ public class MenuServiceTest
             Description = "Test Description",
             OrderNum = 1,
             Route = "/test-menu",
-            ComponentPath = "/components/test-menu",
+            Component = "/components/test-menu",
             ParentId = null,
         };
 

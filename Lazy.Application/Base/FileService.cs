@@ -1,6 +1,6 @@
 ﻿using Lazy.Application.FileStorage;
 using Lazy.Core.Utils;
-using Lazy.Shared.Settings;
+using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,13 +10,13 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     IFileService, ITransientDependency
 {
     //private readonly ILazyCache _lazyCache;
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
     private readonly IServiceProvider _serviceProvider;
 
     public FileService(LazyDBContext dbContext, 
         IMapper mapper, 
         //ILazyCache lazyCache,
-        ISettingService settingService,
+        IConfigService settingService,
         IServiceProvider serviceProvider) 
         : base(dbContext, mapper)
     {
@@ -103,17 +103,17 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadImageAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
-        if (fileSetting == null)
+        var fileConfig = await _settingService.GetConfigAsync<UploadFileConfigModel>(ConfigNames.UploadFile);
+        if (fileConfig == null)
             throw new UserFriendlyException("Not found file settings!");
 
-        if (!fileSetting.ImageUploadEnabled)
+        if (!fileConfig.ImageUploadEnabled)
             throw new UserFriendlyException("Image upload is disabled!");
 
-        if (file.Length > fileSetting.ImageMaxSize)
-            throw new UserFriendlyException($"Image size cannot exceed {fileSetting.ImageMaxSize} bytes!");
+        if (file.Length > fileConfig.ImageMaxSize)
+            throw new UserFriendlyException($"Image size cannot exceed {fileConfig.ImageMaxSize} bytes!");
 
-        var allowExtensions = fileSetting.ImageExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var allowExtensions = fileConfig.ImageExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var fileExt = Path.GetExtension(file.FileName).ToLower();
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"Image format '{fileExt}' is not allowed!");
@@ -130,17 +130,17 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadVideoAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
-        if (fileSetting == null)
+        var fileConfig = await _settingService.GetConfigAsync<UploadFileConfigModel>(ConfigNames.UploadFile);
+        if (fileConfig == null)
             throw new UserFriendlyException("Not found file settings!");
 
-        if (!fileSetting.VideoUploadEnabled)
+        if (!fileConfig.VideoUploadEnabled)
             throw new UserFriendlyException("Video upload is disabled!");
 
-        if (file.Length > fileSetting.VideoMaxSize)
-            throw new UserFriendlyException($"Video size cannot exceed {fileSetting.VideoMaxSize} bytes!");
+        if (file.Length > fileConfig.VideoMaxSize)
+            throw new UserFriendlyException($"Video size cannot exceed {fileConfig.VideoMaxSize} bytes!");
 
-        var allowExtensions = fileSetting.VideoExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var allowExtensions = fileConfig.VideoExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var fileExt = Path.GetExtension(file.FileName).ToLower();
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"Video format '{fileExt}' is not allowed!");
@@ -157,17 +157,17 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     private async Task<FileDto> UploadOtherAsync(IFormFile file)
     {
         // 对文件类型和大小进行控制
-        var fileSetting = await _settingService.GetSettingAsync<UploadFileSettingModel>(SettingNames.UploadFile);
-        if (fileSetting == null)
+        var fileConfig = await _settingService.GetConfigAsync<UploadFileConfigModel>(ConfigNames.UploadFile);
+        if (fileConfig == null)
             throw new UserFriendlyException("Not found file settings!");
 
-        if (!fileSetting.FileUploadEnabled)
+        if (!fileConfig.FileUploadEnabled)
             throw new UserFriendlyException("File upload is disabled!");
 
-        if (file.Length > fileSetting.FileMaxSize)
-            throw new UserFriendlyException($"File size cannot exceed {fileSetting.FileMaxSize} bytes!");
+        if (file.Length > fileConfig.FileMaxSize)
+            throw new UserFriendlyException($"File size cannot exceed {fileConfig.FileMaxSize} bytes!");
 
-        var allowExtensions = fileSetting.FileExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var allowExtensions = fileConfig.FileExtensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var fileExt = Path.GetExtension(file.FileName).ToLower();
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"File format '{fileExt}' is not allowed!");
@@ -185,8 +185,8 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     {
         // 这里可以根据不同的存储类型实现不同的存储逻辑
         // 例如本地存储、云存储等
-        var storageSetting = await _settingService.GetSettingAsync<StorageSettingModel>(SettingNames.Storage);
-        if (storageSetting == null)
+        var storageConfig = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        if (storageConfig == null)
             throw new UserFriendlyException("Not found storage settings!");
 
         //var fileHash = "";
@@ -230,7 +230,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
             FilePath = filePath
         };
 
-        switch (storageSetting.Type)
+        switch (storageConfig.Type)
         {
             case StorageType.AliyunOss:
                 var aliyunStorage = _serviceProvider.GetRequiredService<AliyunOssStorage>();

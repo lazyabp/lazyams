@@ -1,4 +1,4 @@
-﻿using Lazy.Shared.Settings;
+﻿using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 
 namespace Lazy.Application.FileStorage;
@@ -8,20 +8,20 @@ namespace Lazy.Application.FileStorage;
 /// </summary>
 public class LocalStorage : IFileStorage, ISingletonDependency
 {
-    private readonly ISettingService _settingService;
+    private readonly IConfigService _settingService;
 
-    public LocalStorage(ISettingService settingService)
+    public LocalStorage(IConfigService settingService)
     {
         _settingService = settingService;
     }
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var localSetting = await _settingService.GetSettingAsync<StorageLocalSettingModel>(SettingNames.StorageLocal);
+        var localConfig = await _settingService.GetConfigAsync<StorageLocalConfigModel>(ConfigNames.StorageLocal);
 
         var filePath = createFileDto.FilePath.Replace('/', Path.PathSeparator);
 
-        var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", localSetting.UploadDir, filePath);
+        var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", localConfig.UploadDir, filePath);
         var directory = Path.GetDirectoryName(localPath);
         if (!Directory.Exists(directory))
         {
@@ -32,12 +32,12 @@ public class LocalStorage : IFileStorage, ISingletonDependency
         {
             await file.CopyToAsync(stream);
 
-            if (!string.IsNullOrEmpty(localSetting.UploadDir))
-                createFileDto.FilePath = $"/{localSetting.UploadDir}/" + createFileDto.FilePath;
+            if (!string.IsNullOrEmpty(localConfig.UploadDir))
+                createFileDto.FilePath = $"/{localConfig.UploadDir}/" + createFileDto.FilePath;
             else
                 createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
 
-            createFileDto.Domain = localSetting.Domain.TrimEnd('/');
+            createFileDto.Domain = localConfig.Domain.TrimEnd('/');
         }
     }
 }

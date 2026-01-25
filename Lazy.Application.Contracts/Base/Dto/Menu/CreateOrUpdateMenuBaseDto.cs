@@ -8,7 +8,7 @@ public class CreateOrUpdateMenuBaseDto : BaseEntityDto
     public string Description { get; set; }
     public int OrderNum { get; set; } = 0;
     public string Route { get; set; }
-    public string ComponentPath { get; set; }
+    public string Component { get; set; }
     public long? ParentId { get; set; }
     public bool IsActive { get; set; }
 }

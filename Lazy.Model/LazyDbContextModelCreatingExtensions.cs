@@ -17,7 +17,7 @@ public static class LazyDbContextModelCreatingExtensions
         ConfigureRoleMenu(modelBuilder);
         ConfigureUserRole(modelBuilder);
 
-        ConfigureSetting(modelBuilder);
+        ConfigureConfig(modelBuilder);
         ConfigureSocialiteUser(modelBuilder);
         ConfigureFile(modelBuilder);
         ConfigureCarousel(modelBuilder);
@@ -63,7 +63,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(cs => cs.Title).IsRequired().HasMaxLength(MenuEntityConsts.MaxTitleLength);
             b.Property(cs => cs.Permission).HasMaxLength(MenuEntityConsts.MaxPermissionLength);
             b.Property(cs => cs.Route).HasMaxLength(MenuEntityConsts.MaxRouteLength);
-            b.Property(cs => cs.ComponentPath).HasMaxLength(MenuEntityConsts.MaxComponentPathLength);
+            b.Property(cs => cs.Component).HasMaxLength(MenuEntityConsts.MaxComponentLength);
             b.Property(cs => cs.MenuType).HasConversion(
                v => v.ToString(),
                v => (MenuType)Enum.Parse(typeof(MenuType), v)
@@ -209,11 +209,11 @@ public static class LazyDbContextModelCreatingExtensions
         });
     }
 
-    private static void ConfigureSetting(ModelBuilder modelBuilder)
+    private static void ConfigureConfig(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Setting>(b =>
+        modelBuilder.Entity<Config>(b =>
         {
-            b.ToTable(TablePrefix + "Setting");
+            b.ToTable(TablePrefix + "Config");
             b.HasKey(x => x.Id);
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.Key).IsRequired().HasMaxLength(EntityConsts.MaxLength128);
