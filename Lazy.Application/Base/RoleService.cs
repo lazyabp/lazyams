@@ -145,7 +145,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
                 }
             }
 
-            permissList = [...permissList.Distinct()];
+            permissList = [.. permissList.Distinct()];
 
             await _lazyCache.SetAsync(cacheKey, permissList, 60);
         }
