@@ -63,7 +63,7 @@ public class MenuEndPointsTest : BaseTest
     {
         CreateMenuDto menu = new CreateMenuDto
         {
-            Title = title,
+            Name = title,
             Description = description,
             MenuType = menuType,
             ParentId = null
@@ -95,7 +95,7 @@ public class MenuEndPointsTest : BaseTest
         UpdateMenuDto menu = new UpdateMenuDto
         {
             Id = id,
-            Title = title,
+            Name = title,
             Description = description,
             MenuType = menuType
         };

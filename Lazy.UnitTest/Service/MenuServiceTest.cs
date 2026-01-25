@@ -38,9 +38,9 @@ public class MenuServiceTest
         {
             context.Menus.AddRange(new List<Menu>
             {
-                new Menu { Id = 1, Title = "Menu1", Description = "Desc1", MenuType = MenuType.Dir, CreatedAt = DateTime.Now, CreatedBy = 1 },
-                new Menu { Id = 2, Title = "Menu2", Description = "Desc2", MenuType = MenuType.Menu, CreatedAt = DateTime.Now, CreatedBy = 1  },
-                new Menu { Id = 3, Title = "Menu3", Description = "Desc3", MenuType = MenuType.Btn, CreatedAt = DateTime.Now, CreatedBy = 1  }
+                new Menu { Id = 1, Name = "Menu1", Description = "Desc1", MenuType = MenuType.Dir, CreatedAt = DateTime.Now, CreatedBy = 1 },
+                new Menu { Id = 2, Name = "Menu2", Description = "Desc2", MenuType = MenuType.Menu, CreatedAt = DateTime.Now, CreatedBy = 1  },
+                new Menu { Id = 3, Name = "Menu3", Description = "Desc3", MenuType = MenuType.Btn, CreatedAt = DateTime.Now, CreatedBy = 1  }
             });
             context.SaveChanges();
 
@@ -58,8 +58,8 @@ public class MenuServiceTest
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Total, Is.EqualTo(3));
             Assert.That(result.Items.Count, Is.EqualTo(3)); 
-            Assert.That(result.Items[0].Title, Is.EqualTo("Menu1")); 
-            Assert.That(result.Items[1].Title, Is.EqualTo("Menu2")); 
+            Assert.That(result.Items[0].Name, Is.EqualTo("Menu1")); 
+            Assert.That(result.Items[1].Name, Is.EqualTo("Menu2")); 
         }
     }
 
@@ -70,7 +70,7 @@ public class MenuServiceTest
         var options = GetDbContextOptions("InMemoryMenuDB_Create");
         var createMenuDto = new CreateMenuDto
         {
-            Title = "Test Menu",
+            Name = "Test Menu",
             Permission = "View",
             MenuType = MenuType.Dir,
             Description = "Test Description",
@@ -89,7 +89,7 @@ public class MenuServiceTest
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Title, Is.EqualTo(createMenuDto.Title));
+            Assert.That(result.Name, Is.EqualTo(createMenuDto.Name));
             Assert.That(result.MenuType, Is.EqualTo(createMenuDto.MenuType));
         }
     }
@@ -104,7 +104,7 @@ public class MenuServiceTest
             var menu = new Menu
             {
                 Id = 1,
-                Title = "Test Menu",
+                Name = "Test Menu",
                 Description = "Test Description",
                 MenuType = MenuType.Menu,
                 CreatedAt = DateTime.Now,
@@ -120,7 +120,7 @@ public class MenuServiceTest
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Title, Is.EqualTo(menu.Title));
+            Assert.That(result.Name, Is.EqualTo(menu.Name));
             Assert.That(result.MenuType, Is.EqualTo(menu.MenuType));
         }
     }
@@ -135,7 +135,7 @@ public class MenuServiceTest
             var menu = new Menu
             {
                 Id = 1L, 
-                Title = "Old Menu",
+                Name = "Old Menu",
                 Description = "Old Description",
                 MenuType = MenuType.Btn,
                 CreatedAt = DateTime.Now,
@@ -149,7 +149,7 @@ public class MenuServiceTest
             var service = new MenuService(context, _mapper);
             var updateDto = new UpdateMenuDto
             {
-                Title = "Updated Menu",
+                Name = "Updated Menu",
                 Description = "Updated Description",
                 MenuType = MenuType.Dir,
                 OrderNum = 2
@@ -160,7 +160,7 @@ public class MenuServiceTest
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Title, Is.EqualTo(updateDto.Title));
+            Assert.That(result.Name, Is.EqualTo(updateDto.Name));
             Assert.That(result.Description, Is.EqualTo(updateDto.Description));
             Assert.That(result.MenuType, Is.EqualTo(updateDto.MenuType));
         }
@@ -176,7 +176,7 @@ public class MenuServiceTest
             var menu = new Menu
             {
                 Id = 1L,
-                Title = "Test Menu",
+                Name = "Test Menu",
                 Description = "Test Description",
                 MenuType = MenuType.Menu,
                 CreatedAt = DateTime.Now,
@@ -204,10 +204,10 @@ public class MenuServiceTest
         {
             context.Menus.AddRange(new List<Menu>
     {
-        new Menu { Id = 1, Title = "Root Menu", ParentId = null, CreatedAt = DateTime.Now, CreatedBy = 1  },
-        new Menu { Id = 2, Title = "Child Menu 1", ParentId = 1, CreatedAt = DateTime.Now, CreatedBy = 1  },
-        new Menu { Id = 3, Title = "Child Menu 2", ParentId = 1, CreatedAt = DateTime.Now, CreatedBy = 1  },
-        new Menu { Id = 4, Title = "Sub Child Menu", ParentId = 2, CreatedAt = DateTime.Now, CreatedBy = 1  }
+        new Menu { Id = 1, Name = "Root Menu", ParentId = null, CreatedAt = DateTime.Now, CreatedBy = 1  },
+        new Menu { Id = 2, Name = "Child Menu 1", ParentId = 1, CreatedAt = DateTime.Now, CreatedBy = 1  },
+        new Menu { Id = 3, Name = "Child Menu 2", ParentId = 1, CreatedAt = DateTime.Now, CreatedBy = 1  },
+        new Menu { Id = 4, Name = "Sub Child Menu", ParentId = 2, CreatedAt = DateTime.Now, CreatedBy = 1  }
     });
             context.SaveChanges();
 
@@ -217,16 +217,16 @@ public class MenuServiceTest
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(result[0].Title, Is.EqualTo("Root Menu"));
+            Assert.That(result[0].Name, Is.EqualTo("Root Menu"));
 
             var children = result[0].Children.ToList();
             Assert.That(children.Count, Is.EqualTo(2));
-            Assert.That(children[0].Title, Is.EqualTo("Child Menu 1"));
-            Assert.That(children[1].Title, Is.EqualTo("Child Menu 2"));
+            Assert.That(children[0].Name, Is.EqualTo("Child Menu 1"));
+            Assert.That(children[1].Name, Is.EqualTo("Child Menu 2"));
 
             var subChildren = children[0].Children.ToList();
             Assert.That(subChildren.Count, Is.EqualTo(1));
-            Assert.That(subChildren[0].Title, Is.EqualTo("Sub Child Menu"));
+            Assert.That(subChildren[0].Name, Is.EqualTo("Sub Child Menu"));
         }
     }
 }

@@ -5,17 +5,23 @@ namespace Lazy.Model.Entity;
 public class Menu : BaseEntityWithSoftDelete
 {
     /// <summary>
-    /// the title of the menu.
+    /// the name of the menu.
     /// </summary>
-    [Required(ErrorMessage = "The Title field is required.")]
-    [StringLength(100, ErrorMessage = "The Title cannot exceed 100 characters.")]
-    public string Title { get; set; }
+    [Required(ErrorMessage = "The Name field is required.")]
+    [StringLength(100, ErrorMessage = "The Name cannot exceed 100 characters.")]
+    public string Name { get; set; }
 
     /// <summary>
     /// the permission associated with the menu.
     /// </summary>
-    [StringLength(100, ErrorMessage = "The Permission cannot exceed 50 characters.")]
+    [StringLength(100, ErrorMessage = "The Permission cannot exceed 100 characters.")]
     public string Permission { get; set; }
+
+    /// <summary>
+    /// the icon of the menu.
+    /// </summary>
+    [StringLength(100, ErrorMessage = "The Icon cannot exceed 100 characters.")]
+    public string Icon { get; set; }
 
     /// <summary>
     /// the type of the menu.

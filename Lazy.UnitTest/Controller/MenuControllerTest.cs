@@ -22,8 +22,8 @@ public class MenuControllerTest
         var input = new MenuPagedResultRequestDto();
         var menus = new List<MenuDto>
         {
-            new MenuDto { Id = 1, Title = "Menu1", Description = "Description1", MenuType = MenuType.Dir },
-            new MenuDto { Id = 2, Title = "Menu2", Description = "Description2", MenuType = MenuType.Menu }
+            new MenuDto { Id = 1, Name = "Menu1", Description = "Description1", MenuType = MenuType.Dir },
+            new MenuDto { Id = 2, Name = "Menu2", Description = "Description2", MenuType = MenuType.Menu }
         };
         var pagedResult = new PagedResultDto<MenuDto>(menus.Count, menus);
 
@@ -45,11 +45,11 @@ public class MenuControllerTest
         // Arrange
         var input = new CreateMenuDto
         {
-            Title = "New Menu",
+            Name = "New Menu",
             Description = "Description for new menu",
             MenuType = MenuType.Menu
         };
-        var createdMenu = new MenuDto { Id = 1, Title = "New Menu" };
+        var createdMenu = new MenuDto { Id = 1, Name = "New Menu" };
 
         _menuServiceMock.Setup(service => service.CreateAsync(input)).ReturnsAsync(createdMenu);
 
@@ -68,7 +68,7 @@ public class MenuControllerTest
         var input = new UpdateMenuDto
         {
             Id = 1,
-            Title = "Updated Menu",
+            Name = "Updated Menu",
             Description = "Updated Description",
             MenuType = MenuType.Dir
         };
@@ -76,7 +76,7 @@ public class MenuControllerTest
         var menu = new MenuDto
         {
             Id = 1,
-            Title = "Updated Menu",
+            Name = "Updated Menu",
             Description = "Updated Description",
             MenuType = MenuType.Menu
         };
@@ -102,7 +102,7 @@ public class MenuControllerTest
         var existingMenu = new MenuDto
         {
             Id = menuId,
-            Title = "Sample Menu",
+            Name = "Sample Menu",
             Description = "Sample Description",
             MenuType = MenuType.Menu
         };
@@ -128,7 +128,7 @@ public class MenuControllerTest
         var menu = new MenuDto
         {
             Id = menuId,
-            Title = "Menu1",
+            Name = "Menu1",
             Description = "Description1",
             MenuType = MenuType.Menu
         };
@@ -141,7 +141,7 @@ public class MenuControllerTest
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Id, Is.EqualTo(menuId));
-        Assert.That(result.Title, Is.EqualTo("Menu1"));
+        Assert.That(result.Name, Is.EqualTo("Menu1"));
         _menuServiceMock.Verify(service => service.GetAsync(menuId), Times.Once);
     }
 
@@ -153,12 +153,12 @@ public class MenuControllerTest
     new MenuDto
     {
         Id = 1,
-        Title = "Root Menu",
+        Name = "Root Menu",
         ParentId = null,
         Children = new List<MenuDto>
         {
-            new MenuDto { Id = 2, Title = "Child Menu 1", ParentId = 1 },
-            new MenuDto { Id = 3, Title = "Child Menu 2", ParentId = 1 }
+            new MenuDto { Id = 2, Name = "Child Menu 1", ParentId = 1 },
+            new MenuDto { Id = 3, Name = "Child Menu 2", ParentId = 1 }
         }
     }
 };
@@ -172,12 +172,12 @@ public class MenuControllerTest
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Items.Count, Is.EqualTo(1));
-        Assert.That(result.Items[0].Title, Is.EqualTo("Root Menu"));
+        Assert.That(result.Items[0].Name, Is.EqualTo("Root Menu"));
 
         var children = result.Items[0].Children.ToList();
         Assert.That(children.Count, Is.EqualTo(2));
-        Assert.That(children[0].Title, Is.EqualTo("Child Menu 1"));
-        Assert.That(children[1].Title, Is.EqualTo("Child Menu 2"));
+        Assert.That(children[0].Name, Is.EqualTo("Child Menu 1"));
+        Assert.That(children[1].Name, Is.EqualTo("Child Menu 2"));
     }
 
 
