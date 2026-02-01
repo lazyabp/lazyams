@@ -8,5 +8,7 @@ public class Config : BaseEntity
     [StringLength(128, ErrorMessage = "The key cannot exceed 128 characters.")]
     public string Key { get; set; }
 
+    public string TypeName { get; set; }
+
     public string Value { get; set; }
 }

@@ -8,7 +8,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// Minio云存储
 /// </summary>
-public class MinioStorage : IFileStorage, ISingletonDependency
+public class MinioStorage : IMinioStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -55,6 +55,6 @@ public class MinioStorage : IFileStorage, ISingletonDependency
         }
         
         createFileDto.FilePath = result.ObjectName;
-        createFileDto.Domain = minioConfig.Domain.TrimEnd('/');
+        createFileDto.BaseUrl = minioConfig.BaseUrl.TrimEnd('/');
     }
 }

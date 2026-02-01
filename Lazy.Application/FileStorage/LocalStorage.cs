@@ -6,7 +6,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 本地文件存储
 /// </summary>
-public class LocalStorage : IFileStorage, ISingletonDependency
+public class LocalStorage : ILocalStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -19,7 +19,7 @@ public class LocalStorage : IFileStorage, ISingletonDependency
     {
         var localConfig = await _settingService.GetConfigAsync<StorageLocalConfigModel>(ConfigNames.StorageLocal);
 
-        var filePath = createFileDto.FilePath.Replace('/', Path.PathSeparator);
+        var filePath = createFileDto.FilePath.Replace('/', Path.DirectorySeparatorChar);
 
         var localPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", localConfig.UploadDir, filePath);
         var directory = Path.GetDirectoryName(localPath);
@@ -37,7 +37,7 @@ public class LocalStorage : IFileStorage, ISingletonDependency
             else
                 createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
 
-            createFileDto.Domain = localConfig.Domain.TrimEnd('/');
+            createFileDto.BaseUrl = localConfig.BaseUrl.TrimEnd('/');
         }
     }
 }

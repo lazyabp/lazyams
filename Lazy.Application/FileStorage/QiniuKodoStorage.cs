@@ -9,7 +9,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 七牛云Kodo存储
 /// </summary>
-public class QiniuKodoStorage : IFileStorage, ISingletonDependency
+public class QiniuKodoStorage : IQiniuKodoStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -87,6 +87,6 @@ public class QiniuKodoStorage : IFileStorage, ISingletonDependency
             throw new Exception($"七牛云上传失败，状态码：{result.Code}，错误信息：{result.Text}");
 
         createFileDto.FilePath = filePath;
-        createFileDto.Domain = qiniuConfig.Domain;
+        createFileDto.BaseUrl = qiniuConfig.BaseUrl;
     }
 }

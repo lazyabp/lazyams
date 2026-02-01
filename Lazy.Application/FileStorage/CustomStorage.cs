@@ -8,7 +8,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 自定义文件存储
 /// </summary>
-public class CustomStorage : IFileStorage, ISingletonDependency
+public class CustomStorage : ICustomStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -34,7 +34,7 @@ public class CustomStorage : IFileStorage, ISingletonDependency
             { "storage", createFileDto.FilePath }
         };
 
-        using (var request = new HttpRequestMessage(HttpMethod.Post, customConfig.FileUploadUrl))
+        using (var request = new HttpRequestMessage(HttpMethod.Post, customConfig.EndPoint))
         {
             // 设置headers
             var headers = new Dictionary<string, string>
@@ -84,7 +84,7 @@ public class CustomStorage : IFileStorage, ISingletonDependency
                     createFileDto.FilePath = model.Path;
                     if (!string.IsNullOrEmpty(model.Domain))
                     {
-                        customConfig.Domain = customConfig.Domain.TrimEnd('/');
+                        customConfig.BaseUrl = customConfig.BaseUrl.TrimEnd('/');
                     }                    
                 }
             }

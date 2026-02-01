@@ -8,7 +8,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 通过Aws3兼容云存储
 /// </summary>
-public class AwsS3Storage : IFileStorage, ISingletonDependency
+public class AwsS3Storage : IAwsS3Storage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -33,7 +33,7 @@ public class AwsS3Storage : IFileStorage, ISingletonDependency
                 
         var config = new AmazonS3Config { RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsS3Config.Region) };
         createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
-        createFileDto.Domain = awsS3Config.Domain.TrimEnd('/');
+        createFileDto.BaseUrl = awsS3Config.BaseUrl.TrimEnd('/');
 
         using (var client = new AmazonS3Client(awsS3Config.AccessKey, awsS3Config.SecretKey, config))
         {

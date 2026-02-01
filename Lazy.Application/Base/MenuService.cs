@@ -2,8 +2,15 @@
 
 public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedResultRequestDto, CreateMenuDto, UpdateMenuDto>, IMenuService, ITransientDependency
 {
-    public MenuService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    private readonly ILazyTaggedCache _cache;
+    private readonly string cacheTag = "menu";
+
+    public MenuService(
+        LazyDBContext dbContext, 
+        IMapper mapper,
+        ILazyTaggedCache cache) : base(dbContext, mapper)
     {
+        _cache = cache;
     }
 
     protected override IQueryable<Menu> CreateFilteredQuery(MenuPagedResultRequestDto input)
@@ -41,6 +48,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         await LazyDBContext.SaveChangesAsync();
 
         //var menuDto = Mapper.Map<MenuDto>(menu);
+        await _cache.RemoveByTagAsync(cacheTag);
 
         return true;
     }
@@ -51,11 +59,18 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         if (!IsMenuExist(id))
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
 
-        var menu = await base.GetAsync(id);
+        var key = $"menu:{id}";
+        var menu = await _cache.GetAsync<MenuDto>(key);
+        if (menu == null)
+        {
+            menu = await base.GetAsync(id);
 
-        var allMenus = await GetAllMenusAsync();
+            if (menu != null)
+                await _cache.SetAsync(key, menu, tag: cacheTag);
+        }
 
-        menu.Children = BuildMenuTree(allMenus, menu.Id);
+        //var allMenus = await GetAllMenusAsync();
+        //menu.Children = BuildMenuTree(allMenus, menu.Id);
 
         return menu;
     }
@@ -72,6 +87,9 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         var entity = MapToEntity(input);
         GetDbSet().Add(entity);
         await LazyDBContext.SaveChangesAsync();
+
+        await _cache.RemoveByTagAsync(cacheTag);
+
         return MapToGetOutputDto(entity);
     }
 
@@ -81,7 +99,10 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         if (!IsMenuExist(id))
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
 
-        return await base.UpdateAsync(id, input);
+        var result = await base.UpdateAsync(id, input);
+        await _cache.RemoveByTagAsync(cacheTag);
+
+        return result;
     }
 
     // Delete a menu
@@ -94,6 +115,8 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             throw new UserFriendlyException($"Menu with ID {id} has child menus", "Menu has child menus");
 
         await base.DeleteAsync(id);
+
+        await _cache.RemoveByTagAsync(cacheTag);
     }
 
     // Get menu tree
@@ -119,14 +142,24 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     // Get all menus
     private async Task<List<MenuDto>> GetAllMenusAsync()
     {
-        var input = new MenuPagedResultRequestDto
-        {
-            PageSize = int.MaxValue,
-            PageIndex = 1
-        };
+        var key = "menu:all";
 
-        var result = await GetListAsync(input);
-        return result.Items.ToList();
+        var items = await _cache.GetAsync<List<MenuDto>>(key);
+        if (items == null)
+        {
+            var input = new MenuPagedResultRequestDto
+            {
+                PageSize = int.MaxValue,
+                PageIndex = 1
+            };
+
+            var result = await GetListAsync(input);
+            items = result.Items.ToList();
+
+            await _cache.SetAsync(key, items, tag: cacheTag);
+        }
+
+        return items;
     }
 
     // Build menu tree

@@ -1,4 +1,9 @@
-﻿namespace Lazy.Application;
+﻿using Lazy.Core.Utils;
+using StackExchange.Redis;
+using System.Collections.Generic;
+using System.Reflection;
+
+namespace Lazy.Application;
 
 public class ConfigService : CrudService<Config, ConfigDto, ConfigDto, long, FilterPagedResultRequestDto, CreateConfigDto, UpdateConfigDto>,
     IConfigService, ITransientDependency
@@ -55,8 +60,9 @@ public class ConfigService : CrudService<Config, ConfigDto, ConfigDto, long, Fil
         var setting = await LazyDBContext.Configs.FirstOrDefaultAsync(x => x.Key == key);
         if (setting == null)
             throw new UserFriendlyException($"Config with key '{key}' not found.");
+        var resultValue = DynamicObjectCreator.CreateObjectFromDictionary(setting.TypeName, value);
 
-        setting.Value = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+        setting.Value = Newtonsoft.Json.JsonConvert.SerializeObject(resultValue);
         LazyDBContext.Configs.Update(setting);
 
         await LazyDBContext.SaveChangesAsync();

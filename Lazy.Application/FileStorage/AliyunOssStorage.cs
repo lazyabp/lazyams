@@ -7,7 +7,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 阿里云OSS存储
 /// </summary>
-public class AliyunOssStorage : IFileStorage, ISingletonDependency
+public class AliyunOssStorage : IAliyunOssStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -31,7 +31,7 @@ public class AliyunOssStorage : IFileStorage, ISingletonDependency
         using (var stream = file.OpenReadStream())
         {
             createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
-            createFileDto.Domain = aliyunOssConfig.Domain.TrimEnd('/');
+            createFileDto.BaseUrl = aliyunOssConfig.BaseUrl.TrimEnd('/');
 
             var putObjectRequest = new PutObjectRequest(aliyunOssConfig.Bucket, createFileDto.FilePath, stream);
             var result = client.PutObject(putObjectRequest);

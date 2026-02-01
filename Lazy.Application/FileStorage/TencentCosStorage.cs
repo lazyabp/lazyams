@@ -9,7 +9,7 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 腾讯云cos存储
 /// </summary>
-public class TencentCosStorage : IFileStorage, ISingletonDependency
+public class TencentCosStorage : ITencentCosStorage, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
@@ -52,7 +52,7 @@ public class TencentCosStorage : IFileStorage, ISingletonDependency
         if (!result.IsSuccessful())
             throw new Exception($"腾讯云上传失败：{result.httpMessage}");
 
-        createFileDto.Domain = tencentConfig.Domain;
+        createFileDto.BaseUrl = tencentConfig.BaseUrl;
         createFileDto.FilePath = "/" + objectKey.TrimStart('/');
     }
 }

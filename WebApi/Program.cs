@@ -181,7 +181,7 @@ public class Program
             var app = builder.Build();
 
 
-
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(defaultPolicy);
             app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -197,7 +197,6 @@ public class Program
             app.UseAuthentication();
             app.UseMiddleware<AuthLoggingMiddleware>();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

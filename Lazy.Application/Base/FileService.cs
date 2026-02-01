@@ -1,4 +1,5 @@
 ﻿using Lazy.Application.FileStorage;
+using Lazy.Core.Extensions;
 using Lazy.Core.Utils;
 using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
@@ -88,7 +89,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
 
         var fileMd5 = await FileUtil.Md5Async(file);
         var dto = await StorageFileAsync(file, FileType.Avatar, fileMd5);
-        var avatarUrl = dto.Domain + dto.FilePath;
+        var avatarUrl = dto.BaseUrl + dto.FilePath;
 
         var user = await LazyDBContext.Users.FindAsync(CurrentUser.Id);
         if (user != null)
@@ -223,7 +224,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
             FileSize = (int)file.Length,
             FileExt = fileExt,
             FileType = fileType, // 默认类型，可根据需要调整
-            Storage = StorageType.Local, // 默认存储类型，可根据需要调整
+            Storage = storageConfig.Type, // 默认存储类型，可根据需要调整
             //Domain = domain,
             FileMd5 = fileMd5,
             //FileHash = fileHash, // 计算文件哈希值的逻辑可以在这里添加
@@ -233,33 +234,38 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         switch (storageConfig.Type)
         {
             case StorageType.AliyunOss:
-                var aliyunStorage = _serviceProvider.GetRequiredService<AliyunOssStorage>();
+                var aliyunStorage = _serviceProvider.GetRequiredService<IAliyunOssStorage>();
                 await aliyunStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.QiniuKodo:
-                var qiniuStorage = _serviceProvider.GetRequiredService<QiniuKodoStorage>();
+                var qiniuStorage = _serviceProvider.GetRequiredService<IQiniuKodoStorage>();
                 await qiniuStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.TencentCos:
-                var tencentStorage = _serviceProvider.GetRequiredService<TencentCosStorage>();
+                var tencentStorage = _serviceProvider.GetRequiredService<ITencentCosStorage>();
                 await tencentStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Minio:
-                var minioStorage = _serviceProvider.GetRequiredService<MinioStorage>();
+                var minioStorage = _serviceProvider.GetRequiredService<IMinioStorage>();
                 await minioStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.AwsS3:
-                var awsS3Storage = _serviceProvider.GetRequiredService<AwsS3Storage>();
+                var awsS3Storage = _serviceProvider.GetRequiredService<IAwsS3Storage>();
                 await awsS3Storage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Custom:
-                var customStorage = _serviceProvider.GetRequiredService<CustomStorage>();
+                var customStorage = _serviceProvider.GetRequiredService<ICustomStorage>();
                 await customStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Local:
             default:
-                var localStorage = _serviceProvider.GetRequiredService<LocalStorage>();
+                var localStorage = _serviceProvider.GetRequiredService<ILocalStorage>();                
                 await localStorage.StorageAsync(file, fileCreateDto);
+                if (string.IsNullOrEmpty(fileCreateDto.BaseUrl))
+                {
+                    var accessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                    fileCreateDto.BaseUrl = accessor.HttpContext?.Request.GetBaseUrl();
+                }
                 break;
         }
         

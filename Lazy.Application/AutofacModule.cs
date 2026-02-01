@@ -9,28 +9,10 @@ public class AutofacModule : Autofac.Module
 {
     protected override void Load(ContainerBuilder builder)
     {
-        
-        //builder.RegisterType<PermissionChecker>().As<IPermissionChecker>().InstancePerDependency();
-        //builder.RegisterType<AdminDBSeedDataService>().As<IDBSeedDataService>().InstancePerDependency();
-        //builder.RegisterType<LazyDBSeedDataService>().As<IDBSeedDataService>().InstancePerDependency();
-        //builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
-        //builder.RegisterType<CategoryService>().As<ICategoryService>().InstancePerDependency();
         builder
             .RegisterType<AuthenticationService>()
             .As<IAuthenticationService>()
             .InstancePerDependency();
-        //var assemblys = Assembly.GetExecutingAssembly();
-        //builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ITransientDependency>()).
-        //    AsImplementedInterfaces().
-        //    InstancePerDependency();
-
-        //builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<IScopedDependency>()).
-        //   AsImplementedInterfaces().
-        //   InstancePerLifetimeScope();
-
-        //builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ISingletonDependency>()).
-        //   AsImplementedInterfaces().
-        //   SingleInstance();
 
 
         var dependencyContext = DependencyContext.Default;
@@ -53,16 +35,19 @@ public class AutofacModule : Autofac.Module
             }
         }
         var assemblys = assemblyList.ToArray();
-        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ITransientDependency>()).
-            AsImplementedInterfaces().
-            InstancePerDependency().PropertiesAutowired();
+        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ITransientDependency>())
+            .AsImplementedInterfaces()
+            .InstancePerDependency()
+            .PropertiesAutowired();
 
-        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<IScopedDependency>()).
-           AsImplementedInterfaces().
-           InstancePerLifetimeScope().PropertiesAutowired(); 
+        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<IScopedDependency>())
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope()
+            .PropertiesAutowired(); 
 
-        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ISingletonDependency>()).
-           AsImplementedInterfaces().
-           SingleInstance().PropertiesAutowired(); 
+        builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ISingletonDependency>())
+            .AsImplementedInterfaces()
+            .SingleInstance()
+            .PropertiesAutowired(); 
     }
 }

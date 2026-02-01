@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Lazy.Core.Caching;
 using Lazy.Model.DBContext;
 using Lazy.Model.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,9 @@ namespace Lazy.UnitTest.Service;
 public class MenuServiceTest
 {
     private readonly IMapper _mapper;
+    private readonly ILazyTaggedCache _cache;
 
-    public MenuServiceTest()
+    public MenuServiceTest(ILazyTaggedCache cache)
     {
         var config = new MapperConfiguration(cfg =>
         {
@@ -20,6 +22,7 @@ public class MenuServiceTest
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
         }, null);
         _mapper = config.CreateMapper();
+        _cache = cache;
     }
 
     private DbContextOptions<LazyDBContext> GetDbContextOptions(string dbName)
@@ -34,6 +37,7 @@ public class MenuServiceTest
     {
         // Arrange
         var options = GetDbContextOptions("InMemoryMenuDB_Paged");
+
         using (var context = new LazyDBContext(options))
         {
             context.Menus.AddRange(new List<Menu>
@@ -44,7 +48,7 @@ public class MenuServiceTest
             });
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
             var filterInput = new MenuPagedResultRequestDto
             {
                 PageIndex = 1,
@@ -82,7 +86,7 @@ public class MenuServiceTest
 
         using (var context = new LazyDBContext(options))
         {
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
 
             // Act
             var result = await service.CreateAsync(createMenuDto);
@@ -113,7 +117,7 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
 
             // Act
             var result = await service.GetAsync(1);
@@ -146,7 +150,7 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
             var updateDto = new UpdateMenuDto
             {
                 Name = "Updated Menu",
@@ -185,7 +189,7 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
 
             // Act
             await service.DeleteAsync(1);
@@ -211,7 +215,7 @@ public class MenuServiceTest
     });
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper);
+            var service = new MenuService(context, _mapper, _cache);
 
             var result = await service.GetMenuTreeAsync();
 

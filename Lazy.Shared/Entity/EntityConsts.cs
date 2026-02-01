@@ -6,11 +6,15 @@ namespace Lazy.Shared.Entity;
 
 public static class EntityConsts
 {
+    public const int MaxLength16 = 16;
+
     public const int MaxLength32 = 32;
 
     public const int MaxLength64 = 64;
 
     public const int MaxLength128 = 128;
+
+    public const int MaxLength10 = 10;
 
     public const int MaxLength50 = 50;
 

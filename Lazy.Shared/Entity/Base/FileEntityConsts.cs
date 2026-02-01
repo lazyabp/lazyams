@@ -6,7 +6,7 @@ namespace Lazy.Shared.Entity;
 
 public static class FileEntityConsts
 {
-    public const int MaxDomainLength = 50;
+    public const int MaxBaseUrlLength = 100;
     public const int MaxMimeTypeLength = 100;
     public const int MaxFileExtLength = 30;
     public const int MaxFileMd5Length = 32;

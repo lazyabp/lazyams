@@ -39,10 +39,10 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Avatar).HasMaxLength(UserEntityConsts.MaxAvatarLength);
             b.Property(x => x.Access).HasConversion(
                 v => v.ToString(),
-                v => (Access)Enum.Parse(typeof(Access), v));
+                v => (Access)Enum.Parse(typeof(Access), v)).HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.Gender).HasConversion(
                 v => v.ToString(),
-                v => (Gender)Enum.Parse(typeof(Gender), v));
+                v => (Gender)Enum.Parse(typeof(Gender), v)).HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.IsAdministrator).IsRequired().HasDefaultValue(false);
             b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
             b.Property(x => x.Address).HasMaxLength(UserEntityConsts.MaxAddressLength);
@@ -153,7 +153,7 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired();
             b.Property(x => x.Description)
                 .IsRequired(false);
-            b.HasIndex(x => x.Position).IsUnique();
+            b.HasIndex(x => x.Position);
             b.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(x => x.CreatedBy);
@@ -193,11 +193,11 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.Storage).HasConversion(
                 v => v.ToString(),
-                v => (StorageType)Enum.Parse(typeof(StorageType), v));
+                v => (StorageType)Enum.Parse(typeof(StorageType), v)).HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.FileType).HasConversion(
                 v => v.ToString(),
-                v => (FileType)Enum.Parse(typeof(FileType), v));
-            b.Property(x => x.Domain).HasMaxLength(FileEntityConsts.MaxDomainLength);
+                v => (FileType)Enum.Parse(typeof(FileType), v)).HasMaxLength(EntityConsts.MaxLength32);
+            b.Property(x => x.BaseUrl).HasMaxLength(FileEntityConsts.MaxBaseUrlLength);
             b.Property(x => x.MimeType).HasMaxLength(FileEntityConsts.MaxMimeTypeLength);
             b.Property(x => x.FileExt).HasMaxLength(FileEntityConsts.MaxFileExtLength);
             b.Property(x => x.FileMd5).HasMaxLength(FileEntityConsts.MaxFileMd5Length);
@@ -218,6 +218,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.HasKey(x => x.Id);
             b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.Key).IsRequired().HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.TypeName).IsRequired().HasMaxLength(EntityConsts.MaxLength200);
             b.Property(x => x.Value).HasColumnType("text");
             b.HasKey(s => s.Key);
         });

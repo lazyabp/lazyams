@@ -12,7 +12,7 @@ public class StorageConfigBaseModel
     public string Bucket { get; set; } = string.Empty;
     public string EndPoint { get; set; } = string.Empty;
     public string Region { get; set; } = string.Empty;
-    public string Domain { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
 }
 
 public class StorageAliyunConfigModel : StorageConfigBaseModel
@@ -38,14 +38,14 @@ public class StorageAwsS3ConfigModel : StorageConfigBaseModel
 public class StorageCustomConfigModel
 {
     public string Token { get; set; } = string.Empty;
-    public string FileUploadUrl { get; set; } = string.Empty;
+    public string EndPoint { get; set; } = string.Empty;
     public string FieldName { get; set; } = "file";
-    public string Domain { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
 }
 
 public class StorageLocalConfigModel
 {
     public string UploadDir { get; set; } = "uploads";
 
-    public string Domain { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
 }

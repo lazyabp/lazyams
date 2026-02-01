@@ -8,7 +8,7 @@ public class File : BaseEntityWithSoftDelete
 {
     public StorageType Storage { get; set; }
 
-    public string Domain { get; set; }
+    public string BaseUrl { get; set; }
 
     public FileType FileType { get; set; }
 

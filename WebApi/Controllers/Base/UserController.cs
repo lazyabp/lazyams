@@ -117,6 +117,10 @@ public class UserController : ControllerBase
         return data;
     }
 
+    /// <summary>
+    /// 当前登录用户信息
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("Info")]
     public async Task<UserWithRoleIdsDto> GetUserInfo()
     {
