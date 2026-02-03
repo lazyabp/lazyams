@@ -7,7 +7,7 @@ namespace Lazy.Shared.Enum
     public enum SmsProvider
     {
         Twilio = 0,
-        Tencent = 1,
-        Alibaba = 2,
+        Alibaba = 1,
+        Tencent = 2,
     }
 }
