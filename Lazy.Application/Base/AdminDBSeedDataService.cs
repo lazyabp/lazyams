@@ -65,19 +65,9 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
         new Config{Id=2, Key=ConfigNames.UploadFile, TypeName = typeof(UploadFileConfigModel).FullName, Value=JsonConvert.SerializeObject(new UploadFileConfigModel()) },
         new Config{Id=3, Key=ConfigNames.Member, TypeName = typeof(MemberConfigModel).FullName, Value=JsonConvert.SerializeObject(new MemberConfigModel()) },
         new Config{Id=4, Key=ConfigNames.Storage, TypeName = typeof(StorageConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageConfigModel()) },
-        new Config{Id=5, Key=ConfigNames.StorageAliyun,TypeName = typeof(StorageAliyunConfigModel).FullName,  Value=JsonConvert.SerializeObject(new StorageAliyunConfigModel()) },
-        new Config{Id=6, Key=ConfigNames.StorageQiniu, TypeName = typeof(StorageQiniuConfigModel).FullName,  Value=JsonConvert.SerializeObject(new StorageQiniuConfigModel()) },
-        new Config{Id=7, Key=ConfigNames.StorageTencent, TypeName = typeof(StorageTencentConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageTencentConfigModel()) },
-        new Config{Id=8, Key=ConfigNames.StorageMinio, TypeName = typeof(StorageMinioConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageMinioConfigModel()) },
-        new Config{Id=9, Key=ConfigNames.StorageAwsS3, TypeName = typeof(StorageAwsS3ConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageAwsS3ConfigModel()) },
-        new Config{Id=10, Key=ConfigNames.StorageCustom, TypeName = typeof(StorageCustomConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageCustomConfigModel()) },
-        new Config{Id=11, Key=ConfigNames.StorageLocal, TypeName = typeof(StorageLocalConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageLocalConfigModel()) },
-        new Config{Id=12, Key=ConfigNames.SocialiteLogin, TypeName = typeof(SocialiteLoginConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginConfigModel()) },
-        new Config{Id=13, Key=ConfigNames.SocialiteLoginWeixin, TypeName = typeof(SocialiteLoginWeixinConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinConfigModel()) },
-        new Config{Id=14, Key=ConfigNames.SocialiteLoginWeixinMini, TypeName = typeof(SocialiteLoginWeixinMiniConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginWeixinMiniConfigModel()) },
-        new Config{Id=15, Key=ConfigNames.SocialiteLoginGoogle, TypeName = typeof(SocialiteLoginGoogleConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginGoogleConfigModel()) },
-        new Config{Id=16, Key=ConfigNames.Smtp, TypeName = typeof(SmtpConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmtpConfigModel()) },
-        new Config{Id=17, Key=ConfigNames.Sms, TypeName = typeof(SmsConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmsConfigModel()) },
+        new Config{Id=5, Key=ConfigNames.SocialiteLogin, TypeName = typeof(SocialiteLoginConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginConfigModel()) },
+        new Config{Id=6, Key=ConfigNames.Smtp, TypeName = typeof(SmtpConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmtpConfigModel()) },
+        new Config{Id=7, Key=ConfigNames.Sms, TypeName = typeof(SmsConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmsConfigModel()) },
     };
 
     public async Task<bool> InitAsync()

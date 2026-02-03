@@ -17,7 +17,10 @@ public class LocalStorage : ILocalStorage, ISingletonDependency
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var localConfig = await _settingService.GetConfigAsync<StorageLocalConfigModel>(ConfigNames.StorageLocal);
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var localConfig = storage.Local;
+        if (localConfig == null)
+            throw new Exception("存储失败：未正确配置文件存储服务");
 
         var filePath = createFileDto.FilePath.Replace('/', Path.DirectorySeparatorChar);
 

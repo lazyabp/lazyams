@@ -18,10 +18,11 @@ public class AliyunOssStorage : IAliyunOssStorage, ISingletonDependency
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var aliyunOssConfig = await _settingService.GetConfigAsync<StorageAliyunConfigModel>(ConfigNames.StorageAliyun);
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var aliyunOssConfig = storage.Aliyun;
 
         if (aliyunOssConfig == null)
-            throw new InvalidOperationException("阿里云OSS配置未获取");
+            throw new InvalidOperationException("阿里OSS存储失败：未正确配置文件存储服务");
 
         if (file == null || file.Length == 0)
             throw new ArgumentException("上传文件不能为空");

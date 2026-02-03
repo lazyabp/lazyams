@@ -35,7 +35,8 @@ public class SocialiteUserController : ControllerBase
     [HttpGet("Weixin/Login")]
     public async Task<SocialiteLoginWeixinConfigModel> WexinLogin()
     {
-        var weixinConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinConfigModel>(ConfigNames.SocialiteLoginWeixin);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var weixinConfig = config.WeixinConfig;
         weixinConfig.AppSecret = null; // 保护敏感信息
 
         return weixinConfig;
@@ -48,7 +49,8 @@ public class SocialiteUserController : ControllerBase
     [HttpGet("WeixinMini/Login")]
     public async Task<SocialiteLoginWeixinMiniConfigModel> WeixinMiniLogin()
     {
-        var weixinMiniConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinMiniConfigModel>(ConfigNames.SocialiteLoginWeixinMini);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var weixinMiniConfig = config.WeixinMiniConfig;
         weixinMiniConfig.AppSecret = null; // 保护敏感信息
 
         return weixinMiniConfig;
@@ -61,7 +63,8 @@ public class SocialiteUserController : ControllerBase
     [HttpGet("Google/Login")]
     public async Task<SocialiteLoginGoogleConfigModel> GoogleLogin()
     {
-        var googleConfig = await _settingService.GetConfigAsync<SocialiteLoginGoogleConfigModel>(ConfigNames.SocialiteLoginGoogle);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var googleConfig = config.GoogleConfig;
         googleConfig.ClientSecret = null; // 保护敏感信息
 
         return googleConfig;
@@ -78,7 +81,8 @@ public class SocialiteUserController : ControllerBase
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("用户拒绝授权");
 
-        var weixinConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinConfigModel>(ConfigNames.SocialiteLoginWeixin);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var weixinConfig = config.WeixinConfig;
 
         // 1. 获取 HttpClient
         using var client = _httpClientFactory.CreateClient();
@@ -122,7 +126,8 @@ public class SocialiteUserController : ControllerBase
         if (!string.IsNullOrEmpty(info.IV) && !string.IsNullOrEmpty(info.EncryptedData))
             throw new UserFriendlyException("登录信息无效");
 
-        var weixinMiniConfig = await _settingService.GetConfigAsync<SocialiteLoginWeixinMiniConfigModel>(ConfigNames.SocialiteLoginWeixinMini);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var weixinMiniConfig = config.WeixinMiniConfig;
 
         // 1. 构造微信 API 请求 URL
         var url = $"https://api.weixin.qq.com/sns/jscode2session?" +
@@ -199,7 +204,8 @@ public class SocialiteUserController : ControllerBase
         if (string.IsNullOrEmpty(code))
             throw new UserFriendlyException("Invalid code");
 
-        var googleConfig = await _settingService.GetConfigAsync<SocialiteLoginGoogleConfigModel>(ConfigNames.SocialiteLoginGoogle);
+        var config = await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(ConfigNames.SocialiteLogin);
+        var googleConfig = config.GoogleConfig;
 
         // 1. 创建 HttpClient
         using var client = _httpClientFactory.CreateClient();

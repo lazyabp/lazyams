@@ -27,8 +27,11 @@ public class CustomStorage : ICustomStorage, ISingletonDependency
     /// <returns></returns>
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var customConfig = await _settingService.GetConfigAsync<StorageCustomConfigModel>(ConfigNames.StorageCustom);
-        
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var customConfig = storage.Custom;
+        if (customConfig == null)
+            throw new Exception("存储失败：未正确配置文件存储服务");
+
         var formFields = new Dictionary<string, string>
         {
             { "storage", createFileDto.FilePath }

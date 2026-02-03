@@ -20,7 +20,10 @@ public class TencentCosStorage : ITencentCosStorage, ISingletonDependency
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var tencentConfig = await _settingService.GetConfigAsync<StorageTencentConfigModel>(ConfigNames.StorageTencent);
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var tencentConfig = storage.Tencent;
+        if (tencentConfig == null)
+            throw new Exception("腾讯COS存储失败：未正确配置文件存储服务");
 
         // 2. 初始化 COS 实例配置
         var config = new CosXmlConfig.Builder()

@@ -7,6 +7,19 @@ public class SocialiteLoginConfigModel
     public bool WeixinMiniLogin { get; set; } = false;
 
     public bool GoogleLogin { get; set; } = false;
+
+    public SocialiteLoginWeixinConfigModel WeixinConfig { get; set; }
+
+    public SocialiteLoginWeixinMiniConfigModel WeixinMiniConfig { get; set; }
+
+    public SocialiteLoginGoogleConfigModel GoogleConfig { get; set; }
+
+    public SocialiteLoginConfigModel()
+    {
+        WeixinConfig = new SocialiteLoginWeixinConfigModel();
+        WeixinMiniConfig = new SocialiteLoginWeixinMiniConfigModel();
+        GoogleConfig = new SocialiteLoginGoogleConfigModel();
+    }
 }
 
 public class SocialiteLoginWeixinConfigModel

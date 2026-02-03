@@ -20,7 +20,10 @@ public class QiniuKodoStorage : IQiniuKodoStorage, ISingletonDependency
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var qiniuConfig = await _settingService.GetConfigAsync<StorageQiniuConfigModel>(ConfigNames.StorageQiniu);
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var qiniuConfig = storage.Qiniu;
+        if (qiniuConfig == null)
+            throw new Exception("存储失败：未正确配置文件存储服务");
 
         // 2. 初始化鉴权对象
         var mac = new Mac(qiniuConfig.AccessKey, qiniuConfig.SecretKey);

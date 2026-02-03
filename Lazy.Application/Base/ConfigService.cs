@@ -1,7 +1,5 @@
 ﻿using Lazy.Core.Utils;
-using StackExchange.Redis;
-using System.Collections.Generic;
-using System.Reflection;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Lazy.Application;
 
@@ -55,6 +53,18 @@ public class ConfigService : CrudService<Config, ConfigDto, ConfigDto, long, Fil
         return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(setting.Value);
     }
 
+    public async Task SetConfigAsync<T>(string key, T value)
+    {
+        var setting = await LazyDBContext.Configs.FirstOrDefaultAsync(x => x.Key == key);
+        if (setting == null)
+            throw new UserFriendlyException($"Config with key '{key}' not found.");
+
+        setting.Value = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+        LazyDBContext.Configs.Update(setting);
+
+        await LazyDBContext.SaveChangesAsync();
+    }
+
     public async Task SetConfigAsync(string key, IDictionary<string, object> value)
     {
         var setting = await LazyDBContext.Configs.FirstOrDefaultAsync(x => x.Key == key);
@@ -63,6 +73,18 @@ public class ConfigService : CrudService<Config, ConfigDto, ConfigDto, long, Fil
         var resultValue = DynamicObjectCreator.CreateObjectFromDictionary(setting.TypeName, value);
 
         setting.Value = Newtonsoft.Json.JsonConvert.SerializeObject(resultValue);
+        LazyDBContext.Configs.Update(setting);
+
+        await LazyDBContext.SaveChangesAsync();
+    }
+
+    public async Task SetConfigAsync(ConfigDto config)
+    {
+        var setting = await LazyDBContext.Configs.FirstOrDefaultAsync(x => x.Key == config.Key);
+        if (setting == null)
+            throw new UserFriendlyException($"Config with key '{config.Key}' not found.");
+
+        setting.Value = config.Value;
         LazyDBContext.Configs.Update(setting);
 
         await LazyDBContext.SaveChangesAsync();

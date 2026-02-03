@@ -19,7 +19,10 @@ public class MinioStorage : IMinioStorage, ISingletonDependency
 
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var minioConfig = await _settingService.GetConfigAsync<StorageMinioConfigModel>(ConfigNames.StorageMinio);
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var minioConfig = storage.Minio;
+        if (minioConfig == null)
+            throw new Exception("存储失败：未正确配置文件存储服务");
 
         // 2. 初始化 Minio 客户端
         var minio = new MinioClient()

@@ -26,8 +26,11 @@ public class AwsS3Storage : IAwsS3Storage, ISingletonDependency
     /// <exception cref="InvalidOperationException"></exception>
     public async Task StorageAsync(IFormFile file, CreateFileDto createFileDto)
     {
-        var awsS3Config = await _settingService.GetConfigAsync<StorageAwsS3ConfigModel>(ConfigNames.StorageAwsS3);
-        
+        var storage = await _settingService.GetConfigAsync<StorageConfigModel>(ConfigNames.Storage);
+        var awsS3Config = storage.AwsS3;
+        if (awsS3Config == null)
+            throw new Exception("存储失败：未正确配置文件存储服务");
+
         if (awsS3Config == null)
             throw new InvalidOperationException("AWS S3配置未获取");
                 

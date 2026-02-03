@@ -32,58 +32,18 @@ public class ConfigController : ControllerBase
             new ConfigKeyDto{ Key = ConfigNames.Site, Title = "基本", Description = "系统基本信息配置" },
             new ConfigKeyDto{ Key = ConfigNames.UploadFile, Title = "文件上传", Description = "文件上传配置" },
             new ConfigKeyDto{ Key = ConfigNames.Member, Title = "会员", Description = "会员基本信息配置" },
-            new ConfigKeyDto{ Key = ConfigNames.Storage, Title = "文件存储", Description = "文件存储配置",
-                Children = new List<ConfigKeyDto>
-                {
-                    new ConfigKeyDto{ Key = ConfigNames.StorageLocal, Title = "本地", Description = "本地文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageAliyun, Title = "阿里云", Description = "阿里OSS文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageQiniu, Title = "七牛云", Description = "七牛KODO文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageTencent, Title = "腾讯", Description = "腾讯COS文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageMinio, Title = "Minio", Description = "Minio文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageAwsS3, Title = "亚马逊云", Description = "亚马逊云S3文件存储" },
-                    new ConfigKeyDto{ Key = ConfigNames.StorageCustom, Title = "自定义", Description = "自定义文件存储" }
-                }
-            },
-            new ConfigKeyDto{ Key = ConfigNames.SocialiteLogin, Title = "社媒登录", Description = "社媒登录配置",
-                Children = new List<ConfigKeyDto>
-                {
-                    new ConfigKeyDto{ Key = ConfigNames.SocialiteLoginWeixin, Title = "微信登录", Description = "微信扫码登录" },
-                    new ConfigKeyDto{ Key = ConfigNames.SocialiteLoginWeixinMini, Title = "微信小程序", Description = "微信小程序授权登录" },
-                    new ConfigKeyDto{ Key = ConfigNames.SocialiteLoginGoogle, Title = "Google登录", Description = "Google OAuth2登录" },
-                }
-            },
+            new ConfigKeyDto{ Key = ConfigNames.Storage, Title = "文件存储", Description = "文件存储配置" },
+            new ConfigKeyDto{ Key = ConfigNames.SocialiteLogin, Title = "社媒登录", Description = "社媒登录配置" },
             new ConfigKeyDto{ Key = ConfigNames.Smtp, Title = "邮局", Description = "邮件发送置" },
             new ConfigKeyDto{ Key = ConfigNames.Sms, Title = "短信", Description = "短信验证配置" },
         };
     }
 
     /// <summary>
-    /// 文件存储类型
-    /// </summary>
-    /// <returns></returns>
-    [Authorize]
-    [HttpGet("GetStorageTypes")]
-    public Dictionary<string, string> GetStorageTypes()
-    {
-        var result = new Dictionary<string, string>()
-        {
-            { StorageType.Local.ToString(), ConfigNames.StorageLocal },
-            { StorageType.AliyunOss.ToString(), ConfigNames.StorageAliyun },
-            { StorageType.QiniuKodo.ToString(), ConfigNames.StorageQiniu },
-            { StorageType.TencentCos.ToString(), ConfigNames.StorageTencent },
-            { StorageType.Minio.ToString(), ConfigNames.StorageMinio },
-            { StorageType.AwsS3.ToString(), ConfigNames.StorageAwsS3 },
-            { StorageType.Custom.ToString(), ConfigNames.StorageCustom }
-        };
-
-        return result;
-    }
-
-    /// <summary>
     /// 获取所有公开的配置信息
     /// </summary>
     /// <returns></returns>
-    [HttpGet("All")]
+    [HttpGet("GetAll")]
     public async Task<Dictionary<string, object>> GetAllPublicConfigs()
     {
         var keys = new List<string>();
@@ -97,8 +57,30 @@ public class ConfigController : ControllerBase
         var result = new Dictionary<string, object>();
         foreach (var item in items)
         {
-            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.Value);
-            result[item.Key] = data;
+            switch(item.Key)
+            {
+                case ConfigNames.Storage:
+                    var storage = JsonConvert.DeserializeObject<StorageConfigModel>(item.Value);
+                    storage.Aliyun = null;
+                    storage.Qiniu = null;
+                    storage.Tencent = null;
+                    storage.Minio = null;
+                    storage.AwsS3 = null;
+                    storage.Custom = null;
+                    storage.Local = null;
+                    result[item.Key] = storage;
+                    break;
+                case ConfigNames.SocialiteLogin:
+                    var login = JsonConvert.DeserializeObject<SocialiteLoginConfigModel>(item.Value);
+                    login.WeixinConfig = null;
+                    login.WeixinMiniConfig = null;
+                    login.GoogleConfig = null;
+                    result[item.Key] = login;
+                    break;
+                default:
+                    result[item.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.Value);
+                    break;
+            }
         }
 
         return result;
@@ -111,11 +93,17 @@ public class ConfigController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Config.Default)]
     [HttpGet("Get")]
-    public async Task<IDictionary<string, object>> GetConfig(string key)
+    public async Task<object> GetConfig(string key)
     {
-        var setting = await _settingService.GetConfigAsync<IDictionary<string, object>>(key);
-
-        return setting;
+        switch (key)
+        {
+            case ConfigNames.Storage:
+                return await _settingService.GetConfigAsync<StorageConfigModel>(key);
+            case ConfigNames.SocialiteLogin:
+                return await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(key);
+            default:
+                return await _settingService.GetConfigAsync<Dictionary<string, object>>(key);
+        }
     }
 
     /// <summary>
@@ -126,9 +114,23 @@ public class ConfigController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Config.Update)]
     [HttpPost("Set")]
-    public async Task<bool> SetConfig(string key, IDictionary<string, object> value)
+    public async Task<bool> SetConfig(string key, object value)
     {
-        await _settingService.SetConfigAsync(key, value);
+        switch (key)
+        {
+            case ConfigNames.Storage:
+                var storage = JsonConvert.DeserializeObject<StorageConfigModel>(value.ToString());
+                await _settingService.SetConfigAsync(key, storage);
+                break;
+            case ConfigNames.SocialiteLogin:
+                var socialite = JsonConvert.DeserializeObject<SocialiteLoginConfigModel>(value.ToString());
+                await _settingService.SetConfigAsync(key, socialite);
+                break;
+            default:
+                var config = JsonConvert.DeserializeObject<IDictionary<string, object>>(value.ToString());
+                await _settingService.SetConfigAsync(key, config);
+                break;
+        }
 
         return true;
     }
