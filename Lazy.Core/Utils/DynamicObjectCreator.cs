@@ -104,7 +104,7 @@ namespace Lazy.Core.Utils
             foreach (var kvp in propertyValues)
             {
                 string propertyName = kvp.Key;
-                object value = kvp.Value;
+                object value = kvp.Value.ToString();
 
                 // 查找属性
                 PropertyInfo property = type.GetProperty(propertyName);

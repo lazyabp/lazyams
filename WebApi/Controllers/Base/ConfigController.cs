@@ -63,13 +63,18 @@ public class ConfigController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpGet("GetStorageTypes")]
-    public Dictionary<int, string> GetStorageTypes()
+    public Dictionary<string, string> GetStorageTypes()
     {
-        var result = new Dictionary<int, string>();
-        foreach(StorageType type in Enum.GetValues(typeof(StorageType)))
+        var result = new Dictionary<string, string>()
         {
-            result.Add((int)type, type.ToString());
-        }
+            { StorageType.Local.ToString(), ConfigNames.StorageLocal },
+            { StorageType.AliyunOss.ToString(), ConfigNames.StorageAliyun },
+            { StorageType.QiniuKodo.ToString(), ConfigNames.StorageQiniu },
+            { StorageType.TencentCos.ToString(), ConfigNames.StorageTencent },
+            { StorageType.Minio.ToString(), ConfigNames.StorageMinio },
+            { StorageType.AwsS3.ToString(), ConfigNames.StorageAwsS3 },
+            { StorageType.Custom.ToString(), ConfigNames.StorageCustom }
+        };
 
         return result;
     }
