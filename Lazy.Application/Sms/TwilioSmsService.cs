@@ -1,4 +1,5 @@
 ﻿using Lazy.Shared.Configs;
+using Microsoft.Extensions.Logging;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -8,10 +9,12 @@ namespace Lazy.Application.Sms;
 public class TwilioSmsService : ITwilioSmsService, ISingletonDependency
 {
     private readonly IConfigService _configService;
+    private readonly ILogger<TwilioSmsService> _logger;
 
-    public TwilioSmsService(IConfigService configService)
+    public TwilioSmsService(IConfigService configService, ILogger<TwilioSmsService> logger)
     {
         _configService = configService;
+        _logger = logger;
     }
 
     public async Task<bool> SendAsync(string toPhoneNumber, string message)
@@ -39,7 +42,7 @@ public class TwilioSmsService : ITwilioSmsService, ISingletonDependency
         }
         catch (Exception ex)
         {
-            // 在此处记录异常日志
+            _logger.LogError(ex, $"Twilio发送短信失败：{toPhoneNumber}");
             return false;
         }
     }

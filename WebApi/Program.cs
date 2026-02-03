@@ -88,22 +88,6 @@ public class Program
                 });
             });
 
-            //Config AWS S3 Service
-            //Config AWS S3 Service
-            //DotNetEnv.Env.Load();
-            //var awsConfig = new AwsS3Config
-            //{
-            //    AccessKeyId = builder.Configuration["AwsConfig:AccessKeyId"],
-            //    SecretAccessKey = builder.Configuration["AwsConfig:SecretAccessKey"],
-            //    BucketName = builder.Configuration["AwsConfig:BucketName"],
-            //    Region = builder.Configuration["AwsConfig:Region"]
-            //};
-
-            //builder.Services.AddSingleton(awsConfig);
-            //builder.Services.AddScoped<IFileUploadService, FileUploadService>();//use autofac DI later when having a deeper understanding of other ID methods.
-            // Config AWS S3 service to Avatar
-            // builder.Services.AddScoped<IAvatarService, AvatarService>();
-
             //Add JWT Authentication
             builder
                 .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -1,5 +1,6 @@
 ﻿using Lazy.Shared.Configs;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace Lazy.Application.Mailer;
@@ -7,10 +8,12 @@ namespace Lazy.Application.Mailer;
 public class SmtpService : ISmtpService, ISingletonDependency
 {
     private readonly IConfigService _configService;
+    private readonly ILogger<SmtpService> _logger;
 
-    public SmtpService(IConfigService configService)
+    public SmtpService(IConfigService configService, ILogger<SmtpService> logger)
     {
         _configService = configService;
+        _logger = logger;
     }
 
     public async Task<bool> SendAsync(string to, string subject, string body, bool isHtml = true)
@@ -40,7 +43,8 @@ public class SmtpService : ISmtpService, ISingletonDependency
         }
         catch (Exception ex)
         {
-            // 建议记录日志
+            _logger.LogError(ex, $"SMTP发送邮件失败: {to}");
+
             return false;
         }
     }

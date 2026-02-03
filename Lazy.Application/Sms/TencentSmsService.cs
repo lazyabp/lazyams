@@ -1,4 +1,5 @@
 ﻿using Lazy.Shared.Configs;
+using Microsoft.Extensions.Logging;
 using TencentCloud.Common;
 using TencentCloud.Common.Profile;
 using TencentCloud.Sms.V20210111;
@@ -9,10 +10,12 @@ namespace Lazy.Application.Sms;
 public class TencentSmsService : ITencentSmsService, ISingletonDependency
 {
     private readonly IConfigService _configService;
+    private readonly ILogger<TencentSmsService> _logger;
 
-    public TencentSmsService(IConfigService configService)
+    public TencentSmsService(IConfigService configService, ILogger<TencentSmsService> logger)
     {
         _configService = configService;
+        _logger = logger;
     }
 
     public async Task<bool> SendAsync(string toPhoneNumber, string message)
@@ -58,7 +61,7 @@ public class TencentSmsService : ITencentSmsService, ISingletonDependency
         }
         catch (Exception ex)
         {
-            // 建议记录日志
+            _logger.LogError(ex, $"腾讯发送短信失败：{toPhoneNumber}");
             return false;
         }
     }

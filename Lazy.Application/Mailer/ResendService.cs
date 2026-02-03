@@ -1,4 +1,5 @@
 ﻿using Lazy.Shared.Configs;
+using Microsoft.Extensions.Logging;
 using Resend;
 
 namespace Lazy.Application.Mailer;
@@ -7,11 +8,13 @@ public class ResendService : IResendService, ISingletonDependency
 {
     private readonly IConfigService _configService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<ResendService> _logger;
 
-    public ResendService(IConfigService configService, IHttpClientFactory httpClientFactory)
+    public ResendService(IConfigService configService, IHttpClientFactory httpClientFactory, ILogger<ResendService> logger)
     {
         _configService = configService;
         _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     public async Task<bool> SendAsync(string to, string subject, string body, bool isHtml = true)
@@ -47,7 +50,8 @@ public class ResendService : IResendService, ISingletonDependency
         }
         catch (Exception ex)
         {
-            // 建议记录日志
+            _logger.LogError(ex, $"Resend发送邮件失败: {to}");
+
             return false;
         }
     }

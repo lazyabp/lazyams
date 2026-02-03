@@ -1,14 +1,18 @@
-﻿using Lazy.Shared.Configs;
+﻿using Lazy.Application.Mailer;
+using Lazy.Shared.Configs;
+using Microsoft.Extensions.Logging;
 
 namespace Lazy.Application.Sms;
 
 public class AlibabaSmsService : IAlibabaSmsService, ISingletonDependency
 {
     private readonly IConfigService _configService;
+    private readonly ILogger<AlibabaSmsService> _logger;
 
-    public AlibabaSmsService(IConfigService configService)
+    public AlibabaSmsService(IConfigService configService, ILogger<AlibabaSmsService> logger)
     {
         _configService = configService;
+        _logger = logger;
     }
 
     public async Task<bool> SendAsync(string toPhoneNumber, string message)
@@ -44,7 +48,7 @@ public class AlibabaSmsService : IAlibabaSmsService, ISingletonDependency
         }
         catch (Exception ex)
         {
-            // 建议记录日志
+            _logger.LogError(ex, $"阿里巴巴发送短信失败：{toPhoneNumber}");
             return false;
         }
     }
