@@ -34,7 +34,7 @@ public class ConfigController : ControllerBase
             new ConfigKeyDto{ Key = ConfigNames.Member, Title = "会员", Description = "会员基本信息配置" },
             new ConfigKeyDto{ Key = ConfigNames.Storage, Title = "文件存储", Description = "文件存储配置" },
             new ConfigKeyDto{ Key = ConfigNames.SocialiteLogin, Title = "社媒登录", Description = "社媒登录配置" },
-            new ConfigKeyDto{ Key = ConfigNames.Smtp, Title = "邮局", Description = "邮件发送置" },
+            new ConfigKeyDto{ Key = ConfigNames.Mailer, Title = "邮局", Description = "邮件发送置" },
             new ConfigKeyDto{ Key = ConfigNames.Sms, Title = "短信", Description = "短信验证配置" },
         };
     }
@@ -77,6 +77,19 @@ public class ConfigController : ControllerBase
                     login.GoogleConfig = null;
                     result[item.Key] = login;
                     break;
+                case ConfigNames.Mailer:
+                    var mailer = JsonConvert.DeserializeObject<MailerConfigModel>(item.Value);
+                    mailer.Smtp = new SmtpConfigModel();
+                    mailer.Resend = new ResendConfigModel();
+                    result[item.Key] = mailer;
+                    break;
+                case ConfigNames.Sms:
+                    var sms = JsonConvert.DeserializeObject<SmsConfigModel>(item.Value);
+                    sms.Alibaba = new AlibabaSmsConfigModel();
+                    sms.Tencent = new TencentSmsConfigModel();
+                    sms.Twilio = new TwilioSmsConfigModel();
+                    result[item.Key] = sms;
+                    break;
                 default:
                     result[item.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.Value);
                     break;
@@ -101,6 +114,10 @@ public class ConfigController : ControllerBase
                 return await _settingService.GetConfigAsync<StorageConfigModel>(key);
             case ConfigNames.SocialiteLogin:
                 return await _settingService.GetConfigAsync<SocialiteLoginConfigModel>(key);
+            case ConfigNames.Mailer:
+                return await _settingService.GetConfigAsync<MailerConfigModel>(key);
+            case ConfigNames.Sms:
+                return await _settingService.GetConfigAsync<SmsConfigModel>(key);
             default:
                 return await _settingService.GetConfigAsync<Dictionary<string, object>>(key);
         }
@@ -125,6 +142,14 @@ public class ConfigController : ControllerBase
             case ConfigNames.SocialiteLogin:
                 var socialite = JsonConvert.DeserializeObject<SocialiteLoginConfigModel>(value.ToString());
                 await _settingService.SetConfigAsync(key, socialite);
+                break;
+            case ConfigNames.Mailer:
+                var mailer = JsonConvert.DeserializeObject<MailerConfigModel>(value.ToString());
+                await _settingService.SetConfigAsync(key, mailer);
+                break;
+            case ConfigNames.Sms:
+                var sms = JsonConvert.DeserializeObject<SmsConfigModel>(value.ToString());
+                await _settingService.SetConfigAsync(key, sms);
                 break;
             default:
                 var config = JsonConvert.DeserializeObject<IDictionary<string, object>>(value.ToString());

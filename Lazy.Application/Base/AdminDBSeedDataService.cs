@@ -66,7 +66,7 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
         new Config{Id=3, Key=ConfigNames.Member, TypeName = typeof(MemberConfigModel).FullName, Value=JsonConvert.SerializeObject(new MemberConfigModel()) },
         new Config{Id=4, Key=ConfigNames.Storage, TypeName = typeof(StorageConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageConfigModel()) },
         new Config{Id=5, Key=ConfigNames.SocialiteLogin, TypeName = typeof(SocialiteLoginConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginConfigModel()) },
-        new Config{Id=6, Key=ConfigNames.Smtp, TypeName = typeof(SmtpConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmtpConfigModel()) },
+        new Config{Id=6, Key=ConfigNames.Mailer, TypeName = typeof(MailerConfigModel).FullName, Value=JsonConvert.SerializeObject(new MailerConfigModel()) },
         new Config{Id=7, Key=ConfigNames.Sms, TypeName = typeof(SmsConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmsConfigModel()) },
     };
 

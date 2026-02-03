@@ -20,7 +20,7 @@ public static class ConfigNames
     //public const string SocialiteLoginWeixinMini = "socialitelogin.weixinmini";
     //public const string SocialiteLoginGoogle = "socialitelogin.google";
 
-    public const string Smtp = "smtp";
+    public const string Mailer = "mailer";
 
     public const string Sms = "sms";
 }

@@ -1,5 +1,4 @@
-﻿using Amazon.S3.Model;
-using Lazy.Core.DependencyInjection;
+﻿using Lazy.Core.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Lazy.Core.Caching
