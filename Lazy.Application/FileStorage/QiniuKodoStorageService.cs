@@ -9,11 +9,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 七牛云Kodo存储
 /// </summary>
-public class QiniuKodoStorage : IQiniuKodoStorage, ISingletonDependency
+public class QiniuKodoStorageService : IQiniuKodoStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public QiniuKodoStorage(IConfigService settingService)
+    public QiniuKodoStorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

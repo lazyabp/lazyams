@@ -234,32 +234,32 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         switch (storageConfig.Type)
         {
             case StorageType.AliyunOss:
-                var aliyunStorage = _serviceProvider.GetRequiredService<IAliyunOssStorage>();
+                var aliyunStorage = _serviceProvider.GetRequiredService<IAliyunOssStorageService>();
                 await aliyunStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.QiniuKodo:
-                var qiniuStorage = _serviceProvider.GetRequiredService<IQiniuKodoStorage>();
+                var qiniuStorage = _serviceProvider.GetRequiredService<IQiniuKodoStorageService>();
                 await qiniuStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.TencentCos:
-                var tencentStorage = _serviceProvider.GetRequiredService<ITencentCosStorage>();
+                var tencentStorage = _serviceProvider.GetRequiredService<ITencentCosStorageService>();
                 await tencentStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Minio:
-                var minioStorage = _serviceProvider.GetRequiredService<IMinioStorage>();
+                var minioStorage = _serviceProvider.GetRequiredService<IMinioStorageService>();
                 await minioStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.AwsS3:
-                var awsS3Storage = _serviceProvider.GetRequiredService<IAwsS3Storage>();
+                var awsS3Storage = _serviceProvider.GetRequiredService<IAwsS3StorageService>();
                 await awsS3Storage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Custom:
-                var customStorage = _serviceProvider.GetRequiredService<ICustomStorage>();
+                var customStorage = _serviceProvider.GetRequiredService<ICustomStorageService>();
                 await customStorage.StorageAsync(file, fileCreateDto);
                 break;
             case StorageType.Local:
             default:
-                var localStorage = _serviceProvider.GetRequiredService<ILocalStorage>();                
+                var localStorage = _serviceProvider.GetRequiredService<ILocalStorageService>();                
                 await localStorage.StorageAsync(file, fileCreateDto);
                 if (string.IsNullOrEmpty(fileCreateDto.BaseUrl))
                 {

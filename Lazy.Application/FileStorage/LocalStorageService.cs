@@ -6,11 +6,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 本地文件存储
 /// </summary>
-public class LocalStorage : ILocalStorage, ISingletonDependency
+public class LocalStorageService : ILocalStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public LocalStorage(IConfigService settingService)
+    public LocalStorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

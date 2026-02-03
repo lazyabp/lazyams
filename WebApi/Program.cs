@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DotNetEnv;
 using Lazy.Core;
 using Lazy.Core.Authorization;
 using Lazy.Core.LazyAttribute;
@@ -180,6 +181,11 @@ public class Program
 
             var app = builder.Build();
 
+            // 全局上下文信息
+            GlobalContext.HostingEnvironment = app.Environment;
+            GlobalContext.Services = builder.Services;
+            GlobalContext.Configuration = app.Configuration;
+            GlobalContext.ServiceProvider = app.Services;
 
             app.UseStaticFiles();
             app.UseRouting();

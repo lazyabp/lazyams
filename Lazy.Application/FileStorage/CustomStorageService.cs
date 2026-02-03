@@ -8,12 +8,12 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 自定义文件存储
 /// </summary>
-public class CustomStorage : ICustomStorage, ISingletonDependency
+public class CustomStorageService : ICustomStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public CustomStorage(IConfigService settingService, IHttpClientFactory httpClientFactory)
+    public CustomStorageService(IConfigService settingService, IHttpClientFactory httpClientFactory)
     {
         _settingService = settingService;
         _httpClientFactory = httpClientFactory;

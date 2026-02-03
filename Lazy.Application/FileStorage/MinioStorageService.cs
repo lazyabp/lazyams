@@ -8,11 +8,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// Minio云存储
 /// </summary>
-public class MinioStorage : IMinioStorage, ISingletonDependency
+public class MinioStorageService : IMinioStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public MinioStorage(IConfigService settingService)
+    public MinioStorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

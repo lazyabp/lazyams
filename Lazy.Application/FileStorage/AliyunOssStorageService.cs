@@ -7,11 +7,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 阿里云OSS存储
 /// </summary>
-public class AliyunOssStorage : IAliyunOssStorage, ISingletonDependency
+public class AliyunOssStorageService : IAliyunOssStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public AliyunOssStorage(IConfigService settingService)
+    public AliyunOssStorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

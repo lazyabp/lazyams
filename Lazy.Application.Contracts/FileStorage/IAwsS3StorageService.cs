@@ -4,6 +4,6 @@ using System.Text;
 
 namespace Lazy.Application.FileStorage;
 
-public interface IAwsS3Storage : IFileStorage
+public interface IAwsS3StorageService : IFileStorageService
 {
 }

@@ -9,11 +9,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 腾讯云cos存储
 /// </summary>
-public class TencentCosStorage : ITencentCosStorage, ISingletonDependency
+public class TencentCosStorageService : ITencentCosStorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public TencentCosStorage(IConfigService settingService)
+    public TencentCosStorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

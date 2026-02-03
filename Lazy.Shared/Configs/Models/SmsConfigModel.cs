@@ -37,6 +37,7 @@ public class TencentSmsConfigModel
     public string SecretId { get; set; }
     public string SecretKey { get; set; }
     public string SmsSdkAppId { get; set; } = "1400XXXXXX";
+    public string Region { get; set; } = "ap-guangzhou";
     public string SignName { get; set; }
     public string TemplateId { get; set; }
 }

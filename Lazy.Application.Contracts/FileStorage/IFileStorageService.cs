@@ -2,7 +2,7 @@
 
 namespace Lazy.Application.FileStorage;
 
-public interface IFileStorage
+public interface IFileStorageService
 {
     Task StorageAsync(IFormFile file, CreateFileDto createFileDto);
 }

@@ -8,11 +8,11 @@ namespace Lazy.Application.FileStorage;
 /// <summary>
 /// 通过Aws3兼容云存储
 /// </summary>
-public class AwsS3Storage : IAwsS3Storage, ISingletonDependency
+public class AwsS3StorageService : IAwsS3StorageService, ISingletonDependency
 {
     private readonly IConfigService _settingService;
 
-    public AwsS3Storage(IConfigService settingService)
+    public AwsS3StorageService(IConfigService settingService)
     {
         _settingService = settingService;
     }

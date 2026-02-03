@@ -4,6 +4,6 @@ using System.Text;
 
 namespace Lazy.Application.FileStorage;
 
-public interface ICustomStorage : IFileStorage
+public interface ILocalStorageService : IFileStorageService
 {
 }
