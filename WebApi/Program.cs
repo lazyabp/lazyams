@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using DotNetEnv;
 using Lazy.Core;
 using Lazy.Core.Authorization;
 using Lazy.Core.LazyAttribute;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.WebEncoders;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NLog.Web;
-using Resend;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
