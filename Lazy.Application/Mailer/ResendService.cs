@@ -1,8 +1,16 @@
 ﻿using Lazy.Shared.Configs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Resend;
 
 namespace Lazy.Application.Mailer;
+
+public class ManualSnapshot<T> : IOptionsSnapshot<T> where T : class, new()
+{
+    public ManualSnapshot(T value) => Value = value;
+    public T Value { get; }
+    public T Get(string name) => Value;
+}
 
 public class ResendService : IResendService, ISingletonDependency
 {
@@ -28,8 +36,10 @@ public class ResendService : IResendService, ISingletonDependency
             ApiToken = config.Resend.ApiToken
         };
 
+        var snapshot = new ManualSnapshot<ResendClientOptions>(options);
+
         using var httpClient = _httpClientFactory.CreateClient();
-        var resend = new ResendClient((Microsoft.Extensions.Options.IOptionsSnapshot<ResendClientOptions>)Microsoft.Extensions.Options.Options.Create(options), httpClient);
+        var resend = new ResendClient(snapshot, httpClient);
 
         // 构建邮件内容
         var message = new EmailMessage();

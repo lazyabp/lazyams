@@ -1,4 +1,6 @@
-﻿using Lazy.Shared.Configs;
+﻿using Lazy.Application.Mailer;
+using Lazy.Application.Sms;
+using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
@@ -158,5 +160,43 @@ public class ConfigController : ControllerBase
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// 邮局配置测试
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Config.Update)]
+    [HttpPost("TestMailer")]
+    public async Task<bool> TestMailer(SendMailerDto input)
+    {
+        if (string.IsNullOrEmpty(input.To))
+            return false;
+
+        if (string.IsNullOrEmpty(input.Subject))
+            input.Subject = "测试邮件";
+
+        if (string.IsNullOrEmpty(input.Body))
+            input.Body = "这是一封测试邮件，如果你有收到，说明邮局配置正常！";
+
+        return await MailerFactory.SendAsync(input.To, input.Subject, input.Body, input.IsHtml);
+    }
+
+    /// <summary>
+    /// 短信配置测试
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.Config.Update)]
+    [HttpPost("TestSms")]
+    public async Task<bool> TestSms(SendSmsDto input)
+    {
+        if (string.IsNullOrEmpty(input.PhoneNumber))
+            return false;
+
+        if (string.IsNullOrEmpty(input.Message))
+            input.Message = "520168";
+
+        return await SmsFactory.SendAsync(input.PhoneNumber, input.Message);
     }
 }

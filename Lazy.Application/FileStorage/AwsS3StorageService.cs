@@ -33,8 +33,14 @@ public class AwsS3StorageService : IAwsS3StorageService, ISingletonDependency
 
         if (awsS3Config == null)
             throw new InvalidOperationException("AWS S3配置未获取");
-                
-        var config = new AmazonS3Config { RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsS3Config.Region) };
+
+        var config = new AmazonS3Config
+        {
+            ServiceURL = awsS3Config.EndPoint,
+            AuthenticationRegion = awsS3Config.Region,
+            ForcePathStyle = true
+        };
+
         createFileDto.FilePath = "/" + createFileDto.FilePath.TrimStart('/');
         createFileDto.BaseUrl = awsS3Config.BaseUrl.TrimEnd('/');
 
@@ -47,14 +53,14 @@ public class AwsS3StorageService : IAwsS3StorageService, ISingletonDependency
                     BucketName = awsS3Config.Bucket,
                     Key = createFileDto.FilePath,
                     InputStream = stream,
-                    ContentType = file.ContentType
+                    ContentType = file.ContentType,
+                    DisablePayloadSigning = true,
+                    //ChecksumAlgorithm = ChecksumAlgorithm.NONE
                 };
 
                 var result = await client.PutObjectAsync(putRequest);
-                if (result.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                    throw new Exception("AWS S3上传文件失败");
-
-                createFileDto.FileHash = result.ChecksumSHA1;
+                if (result.HttpStatusCode is not (System.Net.HttpStatusCode.OK or System.Net.HttpStatusCode.NoContent))
+                    throw new Exception($"上传失败，状态码：{result.HttpStatusCode}");
             }
         }
     }
