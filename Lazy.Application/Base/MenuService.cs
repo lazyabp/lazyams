@@ -84,6 +84,15 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     // Create a new menu
     public override async Task<MenuDto> CreateAsync(CreateMenuDto input)
     {
+        if (input.ParentId.HasValue)
+        {
+            var parent = await LazyDBContext.Menus.FirstAsync(q => q.Id == input.ParentId);
+            if (parent.MenuType == MenuType.Btn)
+            {
+                throw new UserFriendlyException($"Invalid parent.");
+            }
+        }
+
         var entity = MapToEntity(input);
         GetDbSet().Add(entity);
         await LazyDBContext.SaveChangesAsync();
@@ -98,6 +107,15 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     {
         if (!IsMenuExist(id))
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
+
+        if (input.ParentId.HasValue)
+        {
+            var parent = await LazyDBContext.Menus.FirstAsync(q => q.Id == input.ParentId);
+            if (parent.MenuType == MenuType.Btn)
+            {
+                throw new UserFriendlyException($"Invalid parent.");
+            }
+        }
 
         var result = await base.UpdateAsync(id, input);
         await _cache.RemoveByTagAsync(cacheTag);
