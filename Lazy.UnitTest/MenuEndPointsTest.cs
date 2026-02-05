@@ -57,14 +57,14 @@ public class MenuEndPointsTest : BaseTest
     [Order(3)]
     [Test, Sequential]
     public async Task TestAddAsync(
-        [Values("Menu1", "Menu2")] string title,
-        [Values("Description1", "Description2")] string description,
+        [Values("Menu1", "Menu2")] string name,
+        [Values("Title1", "Title2")] string title,
         [Values(MenuType.Dir, MenuType.Menu)] MenuType menuType)
     {
         CreateMenuDto menu = new CreateMenuDto
         {
-            Name = title,
-            Description = description,
+            Name = name,
+            Title = title,
             MenuType = menuType,
             ParentId = null
         };
@@ -88,15 +88,15 @@ public class MenuEndPointsTest : BaseTest
     [Test, Sequential]
     public async Task TestUpdateAsync(
         [Values(1, 2)] long id,
-        [Values("Updated Menu1", "Updated Menu2")] string title,
-        [Values("Updated Description1", "Updated Description2")] string description,
+        [Values("Updated Menu1", "Updated Menu2")] string name,
+        [Values("Updated Title1", "Updated Title2")] string title,
         [Values(MenuType.Menu, MenuType.Btn)] MenuType menuType)
     {
         UpdateMenuDto menu = new UpdateMenuDto
         {
             Id = id,
-            Name = title,
-            Description = description,
+            Name = name,
+            Title = title,
             MenuType = menuType
         };
 

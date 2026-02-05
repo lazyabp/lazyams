@@ -33,7 +33,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             query = query.Where(x => x.IsActive == input.IsActive);
 
         if (!string.IsNullOrEmpty(input.Filter))
-            query = query.Where(x => x.Name.Contains(input.Filter) || x.Description.Contains(input.Filter));
+            query = query.Where(x => x.Name.Contains(input.Filter) || x.Title.Contains(input.Filter));
 
         return query;
     }
@@ -189,10 +189,10 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             {
                 Id = menu.Id,
                 Name = menu.Name,
+                Title = menu.Title,
                 Icon = menu.Icon,
                 ParentId = menu.ParentId,
                 MenuType = menu.MenuType,
-                Description = menu.Description,
                 OrderNum = menu.OrderNum,
                 Route = menu.Route,
                 Component = menu.Component,

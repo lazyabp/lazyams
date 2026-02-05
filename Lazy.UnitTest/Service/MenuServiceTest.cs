@@ -42,9 +42,9 @@ public class MenuServiceTest
         {
             context.Menus.AddRange(new List<Menu>
             {
-                new Menu { Id = 1, Name = "Menu1", Description = "Desc1", MenuType = MenuType.Dir, CreatedAt = DateTime.Now, CreatedBy = 1 },
-                new Menu { Id = 2, Name = "Menu2", Description = "Desc2", MenuType = MenuType.Menu, CreatedAt = DateTime.Now, CreatedBy = 1  },
-                new Menu { Id = 3, Name = "Menu3", Description = "Desc3", MenuType = MenuType.Btn, CreatedAt = DateTime.Now, CreatedBy = 1  }
+                new Menu { Id = 1, Name = "Menu1", Title = "Title1", MenuType = MenuType.Dir, CreatedAt = DateTime.Now, CreatedBy = 1 },
+                new Menu { Id = 2, Name = "Menu2", Title = "Title2", MenuType = MenuType.Menu, CreatedAt = DateTime.Now, CreatedBy = 1  },
+                new Menu { Id = 3, Name = "Menu3", Title = "Title3", MenuType = MenuType.Btn, CreatedAt = DateTime.Now, CreatedBy = 1  }
             });
             context.SaveChanges();
 
@@ -77,7 +77,7 @@ public class MenuServiceTest
             Name = "Test Menu",
             Permission = "View",
             MenuType = MenuType.Dir,
-            Description = "Test Description",
+            Title = "Test Title",
             OrderNum = 1,
             Route = "/test-menu",
             Component = "/components/test-menu",
@@ -109,7 +109,7 @@ public class MenuServiceTest
             {
                 Id = 1,
                 Name = "Test Menu",
-                Description = "Test Description",
+                Title = "Test Title",
                 MenuType = MenuType.Menu,
                 CreatedAt = DateTime.Now,
                 CreatedBy = 1
@@ -140,7 +140,7 @@ public class MenuServiceTest
             {
                 Id = 1L, 
                 Name = "Old Menu",
-                Description = "Old Description",
+                Title = "Old Title",
                 MenuType = MenuType.Btn,
                 CreatedAt = DateTime.Now,
                 CreatedBy = 1,
@@ -154,7 +154,7 @@ public class MenuServiceTest
             var updateDto = new UpdateMenuDto
             {
                 Name = "Updated Menu",
-                Description = "Updated Description",
+                Title = "Updated Title",
                 MenuType = MenuType.Dir,
                 OrderNum = 2
             };
@@ -165,7 +165,7 @@ public class MenuServiceTest
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Name, Is.EqualTo(updateDto.Name));
-            Assert.That(result.Description, Is.EqualTo(updateDto.Description));
+            Assert.That(result.Title, Is.EqualTo(updateDto.Title));
             Assert.That(result.MenuType, Is.EqualTo(updateDto.MenuType));
         }
     }
@@ -181,7 +181,7 @@ public class MenuServiceTest
             {
                 Id = 1L,
                 Name = "Test Menu",
-                Description = "Test Description",
+                Title = "Test Title",
                 MenuType = MenuType.Menu,
                 CreatedAt = DateTime.Now,
                 CreatedBy = 1

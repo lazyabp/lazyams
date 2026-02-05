@@ -3,10 +3,10 @@
 public class CreateOrUpdateMenuBaseDto : BaseEntityDto
 {
     public string Name { get; set; }
+    public string Title { get; set; }
     public string Permission { get; set; }
     public string Icon { get; set; } = "el-icon-menu";
     public MenuType MenuType { get; set; }
-    public string Description { get; set; }
     public int OrderNum { get; set; } = 0;
     public string Route { get; set; }
     public string Component { get; set; }

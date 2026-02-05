@@ -61,6 +61,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(e => e.Id).ValueGeneratedNever();
             b.HasIndex(x => x.ParentId);
             b.Property(cs => cs.Name).IsRequired().HasMaxLength(MenuEntityConsts.MaxNameLength);
+            b.Property(cs => cs.Title).IsRequired().HasMaxLength(MenuEntityConsts.MaxNameLength);
             b.Property(cs => cs.Icon).HasDefaultValue("el-icon-menu").HasMaxLength(MenuEntityConsts.MaxIconLength);
             b.Property(cs => cs.Permission).HasMaxLength(MenuEntityConsts.MaxPermissionLength);
             b.Property(cs => cs.Route).HasMaxLength(MenuEntityConsts.MaxRouteLength);

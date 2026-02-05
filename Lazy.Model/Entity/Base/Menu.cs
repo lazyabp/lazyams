@@ -30,10 +30,10 @@ public class Menu : BaseEntityWithSoftDelete
     public MenuType MenuType { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the menu.
+    /// Gets or sets the title of the menu.
     /// </summary>
-    [StringLength(200, ErrorMessage = "The Description cannot exceed 200 characters.")]
-    public string Description { get; set; }
+    [StringLength(200, ErrorMessage = "The Title cannot exceed 200 characters.")]
+    public string Title { get; set; }
 
     /// <summary>
     /// the order number for sorting the menu.

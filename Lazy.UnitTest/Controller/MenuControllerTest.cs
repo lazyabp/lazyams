@@ -22,8 +22,8 @@ public class MenuControllerTest
         var input = new MenuPagedResultRequestDto();
         var menus = new List<MenuDto>
         {
-            new MenuDto { Id = 1, Name = "Menu1", Description = "Description1", MenuType = MenuType.Dir },
-            new MenuDto { Id = 2, Name = "Menu2", Description = "Description2", MenuType = MenuType.Menu }
+            new MenuDto { Id = 1, Name = "Menu1", Title = "Title1", MenuType = MenuType.Dir },
+            new MenuDto { Id = 2, Name = "Menu2", Title = "Title2", MenuType = MenuType.Menu }
         };
         var pagedResult = new PagedResultDto<MenuDto>(menus.Count, menus);
 
@@ -46,7 +46,7 @@ public class MenuControllerTest
         var input = new CreateMenuDto
         {
             Name = "New Menu",
-            Description = "Description for new menu",
+            Title = "Title for new menu",
             MenuType = MenuType.Menu
         };
         var createdMenu = new MenuDto { Id = 1, Name = "New Menu" };
@@ -69,7 +69,7 @@ public class MenuControllerTest
         {
             Id = 1,
             Name = "Updated Menu",
-            Description = "Updated Description",
+            Title = "Updated Title",
             MenuType = MenuType.Dir
         };
 
@@ -77,7 +77,7 @@ public class MenuControllerTest
         {
             Id = 1,
             Name = "Updated Menu",
-            Description = "Updated Description",
+            Title = "Updated Title",
             MenuType = MenuType.Menu
         };
         _menuServiceMock.Setup(service => service.GetAsync(input.Id))
@@ -103,7 +103,7 @@ public class MenuControllerTest
         {
             Id = menuId,
             Name = "Sample Menu",
-            Description = "Sample Description",
+            Title = "Sample Title",
             MenuType = MenuType.Menu
         };
 
@@ -129,7 +129,7 @@ public class MenuControllerTest
         {
             Id = menuId,
             Name = "Menu1",
-            Description = "Description1",
+            Title = "Title1",
             MenuType = MenuType.Menu
         };
 
