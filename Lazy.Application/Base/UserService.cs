@@ -271,6 +271,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
         }
 
         var userOutput = Mapper.Map<UserWithRoleIdsDto>(user);
+        userOutput.Password = "";
         userOutput.RoleIds.Clear();
         userOutput.RoleIds.AddRange(user.UserRoles.Select(x => x.RoleId).Distinct());
 

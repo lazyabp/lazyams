@@ -16,13 +16,15 @@ public class AuthController : ControllerBase
     //private readonly IOptions<JwtSettingConfig> _settingConfig;
     private readonly IRoleService _roleService;
     private readonly IUserService _userService;
+    private readonly IMenuService _menuService;
 
     public AuthController(
         IAuthenticationService authenticationService,
         //IConfiguration configuration,
         //IOptions<JwtSettingConfig> settingConfig,
         IRoleService roleService,
-        IUserService userService
+        IUserService userService,
+        IMenuService menuService
     )
     {
         _authenticationService = authenticationService;
@@ -30,6 +32,7 @@ public class AuthController : ControllerBase
         //_settingConfig = settingConfig;
         _roleService = roleService;
         _userService = userService;
+        _menuService = menuService;
     }
 
     /// <summary>
@@ -51,7 +54,7 @@ public class AuthController : ControllerBase
 
         var token = _authenticationService.GenerateJwtToken(user);
         loginResponseDto.Token = token;
-        loginResponseDto.Permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
+        loginResponseDto.UserId = user.Id;
 
         return loginResponseDto;
     }

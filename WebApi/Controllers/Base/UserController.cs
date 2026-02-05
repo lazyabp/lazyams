@@ -1,4 +1,8 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using AutoMapper;
+using Lazy.Application.Contracts.Dto;
+using Lazy.Core.ExceptionHandling;
+using Lazy.Model.DBContext;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
@@ -12,11 +16,14 @@ namespace WebApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IRoleService _roleService;
+    private readonly IMenuService _menuService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IRoleService roleService, IMenuService menuService)
     {
         _userService = userService;
-
+        _roleService = roleService;
+        _menuService = menuService;
     }
 
     /// <summary>
@@ -95,7 +102,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [Authorize(PermissionConsts.User.Default)]
+    [Authorize]
     [HttpGet("GetUserById/{id}")]
     public async Task<UserWithRoleIdsDto> GetUserById(long id)
     {
@@ -105,25 +112,22 @@ public class UserController : ControllerBase
     /// <summary>
     /// 通过用户名获取用户信息
     /// </summary>
-    /// <param name="userName"></param>
     /// <returns></returns>
-    //[Authorize(PermissionConsts.User.Default)]
-    [HttpGet("Get/{userName}")]
-    public async Task<UserDto> Get(string userName)
+    [Authorize]
+    [HttpGet("GetCurrentUser")]
+    public async Task<UserLoginDto> GetCurrentUser()
     {
-        var data = await _userService.GetByUserNameAsync(userName);
+        var data = await _userService.GetCurrentUserInfoAsync();
         data.Password = "";
+        var permissions = await _roleService.GetPermissionsbyUserIdAsync(data.Id);
+        var menus = await _menuService.GetMenuTreeAsync();
 
-        return data;
-    }
-
-    /// <summary>
-    /// 当前登录用户信息
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("Info")]
-    public async Task<UserWithRoleIdsDto> GetUserInfo()
-    {
-        return await _userService.GetCurrentUserInfoAsync();
+        return new UserLoginDto
+        {
+            User = data,
+            RoleIds = data.RoleIds,
+            Permissions = permissions,
+            Menus = menus,
+        };
     }
 }

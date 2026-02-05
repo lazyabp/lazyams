@@ -6,11 +6,16 @@ public class UserControllerTest
 {
     private readonly UserController _controller;
     private readonly Mock<IUserService> _userServiceMock;
+    private readonly Mock<IRoleService> _roleServiceMock;
+    private readonly Mock<IMenuService> _menuServiceMock;
 
     public UserControllerTest()
     {
         _userServiceMock = new Mock<IUserService>();
-        _controller = new UserController(_userServiceMock.Object);
+        _roleServiceMock = new Mock<IRoleService>();
+        _menuServiceMock = new Mock<IMenuService>();
+
+        _controller = new UserController(_userServiceMock.Object, _roleServiceMock.Object, _menuServiceMock.Object);
     }
 
     [Test]
@@ -237,6 +242,7 @@ public class UserControllerTest
         // Arrange
         var user = new UserDto()
         {
+            Id = 999,
             UserName = "Apple",
             Password = "",
             Age = 1,
@@ -248,7 +254,7 @@ public class UserControllerTest
         _userServiceMock.Setup(service => service.GetByUserNameAsync("Apple")).ReturnsAsync(user);
 
         // Act
-        var result = await _controller.Get("Apple");
+        var result = await _controller.GetUserById(user.Id);
 
         // Assert
         Assert.That(result, Is.Not.Null);

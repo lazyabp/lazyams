@@ -171,10 +171,10 @@ public class MenuControllerTest
         Assert.That(result, Is.InstanceOf<List<MenuDto>>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Items.Count, Is.EqualTo(1));
-        Assert.That(result.Items[0].Name, Is.EqualTo("Root Menu"));
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].Name, Is.EqualTo("Root Menu"));
 
-        var children = result.Items[0].Children.ToList();
+        var children = result[0].Children.ToList();
         Assert.That(children.Count, Is.EqualTo(2));
         Assert.That(children[0].Name, Is.EqualTo("Child Menu 1"));
         Assert.That(children[1].Name, Is.EqualTo("Child Menu 2"));

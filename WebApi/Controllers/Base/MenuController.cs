@@ -92,11 +92,9 @@ public class MenuController : ControllerBase
     /// <returns>A list of menus with tree structure</returns>
     [HttpGet("GetMenuTree")]
     [Authorize(PermissionConsts.Menu.Default)]
-    public async Task<ListResultDto<MenuDto>> GetMenuTree()
+    public async Task<List<MenuDto>> GetMenuTree()
     {
-        var data = await _menuService.GetMenuTreeAsync();
-
-        return new ListResultDto<MenuDto>(data);
+        return await _menuService.GetMenuTreeAsync();
     }
 
     /// <summary>
@@ -123,10 +121,8 @@ public class MenuController : ControllerBase
     /// <returns>A list of menu Ids</returns>
 
     [HttpGet("GetMenuIdsByRoleId/{id}")]
-    public async Task<ListResultDto<MenuIdDto>> GetMenuIdsByRoleId(long id)
+    public async Task<List<MenuIdDto>> GetMenuIdsByRoleId(long id)
     {
-        var data = await _menuService.GetMenuIdsByRoleIdAsync(id);
-
-        return new ListResultDto<MenuIdDto>(data);
+        return await _menuService.GetMenuIdsByRoleIdAsync(id);
     }
 }

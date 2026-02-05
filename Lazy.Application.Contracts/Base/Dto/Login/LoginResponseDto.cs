@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lazy.Application.Contracts.Dto;
+﻿namespace Lazy.Application.Contracts.Dto;
 
 /// <summary>
 /// Result of login
@@ -12,5 +6,6 @@ namespace Lazy.Application.Contracts.Dto;
 public class LoginResponseDto
 {
     public string Token { get; set; }
-    public List<string> Permissions { get; set; }
+
+    public long? UserId { get; set; }
 }

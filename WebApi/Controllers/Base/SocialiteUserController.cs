@@ -1,4 +1,5 @@
-﻿using Lazy.Application.Contracts.SocialiteUser;
+﻿using Lazy.Application.Contracts.Dto;
+using Lazy.Application.Contracts.SocialiteUser;
 using Lazy.Core.ExceptionHandling;
 using Lazy.Shared.Configs;
 using System.Security.Cryptography;

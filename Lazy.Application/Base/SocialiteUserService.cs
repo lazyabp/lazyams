@@ -8,21 +8,18 @@ public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto,
     //private readonly ILazyCache _lazyCache;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    private readonly IRoleService _roleService;
 
     public SocialiteUserService(
         LazyDBContext dbContext, 
         IMapper mapper, 
         //ILazyCache lazyCache,
         IAuthenticationService authenticationService,
-        IUserService userService,
-        IRoleService roleService)
+        IUserService userService)
         : base(dbContext, mapper)
     {
         //_lazyCache = lazyCache;
         _authenticationService = authenticationService;
         _userService = userService;
-        _roleService = roleService;
     }
 
     protected override IQueryable<SocialiteUser> CreateFilteredQuery(FilterPagedResultRequestDto input)
@@ -86,12 +83,11 @@ public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto,
 
         // 3. Generate JWT token
         var token = _authenticationService.GenerateJwtToken(user);
-        var permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
 
         return new LoginResponseDto
         {
             Token = token,
-            Permissions = permissions
+            UserId = user.Id
         };
     }
 
@@ -140,12 +136,11 @@ public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto,
 
         // 3. Generate JWT token
         var token = _authenticationService.GenerateJwtToken(user);
-        var permissions = await _roleService.GetPermissionsbyUserIdAsync(user.Id);
 
         return new LoginResponseDto
         {
             Token = token,
-            Permissions = permissions
+            UserId = user.Id,
         };
     }
 }
