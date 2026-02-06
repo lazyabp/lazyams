@@ -4,7 +4,6 @@ public class LazyDBContext : DbContext
 {
     public LazyDBContext(DbContextOptions<LazyDBContext> options) : base(options)
     {
-
     }
 
     public DbSet<User> Users { get; set; }

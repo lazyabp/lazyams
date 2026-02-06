@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class UserWithRoleIdsDto : UserDto
+public class UserWithRoleIdsDto : UserInfoDto
 {
     public List<long> RoleIds { get; set; } = new List<long>();
 }
@@ -14,7 +14,7 @@ public class UserWithRoleIdsDto : UserDto
 
 public class UserLoginDto
 {
-    public UserDto User { get; set; }
+    public UserInfoDto User { get; set; }
     public List<long> RoleIds { get; set; } = new List<long>();
     public List<string> Permissions { get; set; }
     public List<MenuDto> Menus { get; set; }

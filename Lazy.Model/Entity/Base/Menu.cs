@@ -70,10 +70,11 @@ public class Menu : BaseEntityWithSoftDelete
     /// <summary>
     /// the parent menu entity.
     /// </summary>
-    public Menu Parent { get; set; }
+    public virtual Menu Parent { get; set; }
 
     /// <summary>
     /// the role-menu associations for this menu.
     /// </summary>
-    public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
+    //public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
+    public virtual ICollection<Role> Roles { get; set; } = [];
 }

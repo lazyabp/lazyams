@@ -16,6 +16,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     protected override IQueryable<Menu> CreateFilteredQuery(MenuPagedResultRequestDto input)
     {
         var query = base.CreateFilteredQuery(input);
+        query = query.Where(x => !x.IsDeleted);
 
         if (!string.IsNullOrEmpty(input.Permission))
             query = query.Where(x => x.Permission == input.Permission);
@@ -44,6 +45,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         if (menu == null) throw new EntityNotFoundException(nameof(Menu), id.ToString());
         menu.IsActive = input.IsActive;
+        SetUpdatedAudit(menu);
 
         await LazyDBContext.SaveChangesAsync();
 
@@ -93,13 +95,14 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             }
         }
 
-        var entity = MapToEntity(input);
-        GetDbSet().Add(entity);
-        await LazyDBContext.SaveChangesAsync();
+        //var entity = MapToEntity(input);
+        //GetDbSet().Add(entity);
+        //await LazyDBContext.SaveChangesAsync();
+        var menuDto = await base.CreateAsync(input);
 
         await _cache.RemoveByTagAsync(cacheTag);
 
-        return MapToGetOutputDto(entity);
+        return menuDto;
     }
 
     // Update a existing menu
@@ -215,11 +218,9 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
     public async Task<List<MenuIdDto>> GetMenuIdsByRoleIdAsync(long roleId)
     {
-        var roleMenusList = await LazyDBContext.RoleMenus.Where(rm => rm.RoleId == roleId).Include(rm => rm.Menu).ToListAsync();
+        var role = await LazyDBContext.Roles.Include(x => x.Menus).FirstAsync(rm => rm.Id == roleId);
 
-        var menuIds = roleMenusList.Select(rm => rm.Menu).ToList();
-
-        var menuDtos = Mapper.Map<List<MenuIdDto>>(menuIds);
+        var menuDtos = role.Menus.Select(rm => new MenuIdDto { MenuId = rm.Id }).ToList();
 
         return menuDtos;
     }

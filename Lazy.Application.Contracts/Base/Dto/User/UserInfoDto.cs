@@ -1,8 +1,10 @@
-﻿using Lazy.Model.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class UserDto : BaseEntityWithAuditDto
+public class UserInfoDto : BaseEntityDto
 {
     public string UserName { get; set; }
 
@@ -25,7 +27,4 @@ public class UserDto : BaseEntityWithAuditDto
     public string Address { get; set; }
 
     public bool IsActive { get; set; }
-
-    //public virtual ICollection<UserRoleDto> UserRoles { get; set; } = new List<UserRoleDto>();
-    public virtual ICollection<RoleDto> Roles { get; set; } = new List<RoleDto>();
 }

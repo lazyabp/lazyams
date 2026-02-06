@@ -6,6 +6,7 @@ public class BaseProfile : Profile
     public BaseProfile()
     {
         CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserInfoDto>();
         CreateMap<User, UserWithRoleIdsDto>();
         CreateMap<CreateUserDto, User>().ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<UpdateUserDto, User>();
@@ -16,6 +17,7 @@ public class BaseProfile : Profile
         CreateMap<UpdateMenuDto, Menu>();
 
         CreateMap<Role, RoleDto>();
+        CreateMap<Role, RoleListDto>();
         CreateMap<CreateRoleDto, Role>();
         CreateMap<UpdateRoleDto, Role>();
         CreateMap<LoginRequestDto, User>();

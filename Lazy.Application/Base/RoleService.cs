@@ -2,7 +2,7 @@
 
 namespace Lazy.Application;
 
-public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedResultRequestDto, CreateRoleDto, UpdateRoleDto>, IRoleService, ITransientDependency
+public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePagedResultRequestDto, CreateRoleDto, UpdateRoleDto>, IRoleService, ITransientDependency
 {
     private readonly ILazyCache _lazyCache;
 
@@ -11,12 +11,12 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
         _lazyCache = lazyCache;
     }
 
-    override public async Task<RoleDto> GetAsync(long id)
-    {
-        return await base.GetAsync(id);
-    }
+    //override public async Task<RoleDto> GetAsync(long id)
+    //{
+    //    return await base.GetAsync(id);
+    //}
 
-    public async Task<PagedResultDto<RoleDto>> GetAllRolesAsync(RolePagedResultRequestDto input)
+    public async Task<PagedResultDto<RoleListDto>> GetAllRolesAsync(RolePagedResultRequestDto input)
     {
         Console.Write($"input pageindex is: {input.PageIndex}");
         if (input.PageIndex < 1)
@@ -24,21 +24,21 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
             input.PageIndex = 1;
         }
 
-        var query = LazyDBContext.Roles.AsQueryable();
+        var query = CreateFilteredQuery(input);
 
         int totalItems = await query.CountAsync();
-
         var roles = await query.OrderBy(r => r.Id).Skip((input.PageIndex - 1) * input.PageSize).Take(input.PageSize).ToListAsync();
 
-        var roleDtos = Mapper.Map<List<RoleDto>>(roles);
+        var roleDtos = Mapper.Map<List<RoleListDto>>(roles);
 
-        return new PagedResultDto<RoleDto>(totalItems, roleDtos);
+        return new PagedResultDto<RoleListDto>(totalItems, roleDtos);
         //return await base.GetListAsync(input);
     }
 
     protected override IQueryable<Role> CreateFilteredQuery(RolePagedResultRequestDto input)
     {
         var query = base.CreateFilteredQuery(input);
+        query = query.Where(q => !q.IsDeleted);
 
         if (input.IsActive.HasValue)
             query = query.Where(x => x.IsActive == input.IsActive);
@@ -55,6 +55,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
 
         if (role == null) throw new EntityNotFoundException(nameof(Role), id.ToString());
         role.IsActive = input.IsActive;
+        SetUpdatedAudit(role);
 
         await LazyDBContext.SaveChangesAsync();
 
@@ -94,35 +95,39 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
     /// <returns>true or false</returns>
     public async Task<bool> BulkDelete(IEnumerable<long> ids)
     {
-        var dbSet = GetDbSet();
-        var roleList = await LazyDBContext.Roles.Where(x => ids.Contains(x.Id)).ToListAsync();
-        if (roleList.Any())
-            LazyDBContext.Roles.RemoveRange(roleList);
+        var roles = await LazyDBContext.Roles.Where(x => ids.Contains(x.Id)).ToListAsync();
+        var softDelete = false;
+        foreach (var role in roles)
+        {
+            softDelete = SetDeletedAudit(role);
+        }
 
-        var deleteList = await dbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
-        if (deleteList.Any())
-            dbSet.RemoveRange(deleteList);
+        if (softDelete)
+        {
+            LazyDBContext.Roles.UpdateRange(roles);
+        }
+        else
+        {
+            LazyDBContext.Roles.RemoveRange(roles);
+        }
 
         await LazyDBContext.SaveChangesAsync();
+
         return true;
     }
 
     public async Task<List<string>> GetPermissionsbyUserIdAsync(long id)
     {
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        var permissList = await _lazyCache.GetAsync<List<string>>(cacheKey);
+        var permissiones = await _lazyCache.GetAsync<List<string>>(cacheKey);
 
-        if (permissList == null)
+        if (permissiones == null)
         {
-            var user = await LazyDBContext.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await LazyDBContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
                 return new List<string>();
-
-            //no roles
-            if (user.UserRoles == null || user.UserRoles.Count == 0)
-                return new List<string>();
-            var roleIds = user.UserRoles.Select(x => x.RoleId).ToList();
-            permissList = new List<string>();
+                        
+            permissiones = new List<string>();
 
             // 超级管理员拥有所有权限
             if (user.IsAdministrator && user.IsActive)
@@ -131,26 +136,30 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
                 foreach (var menu in menus)
                 {
                     if (!string.IsNullOrEmpty(menu.Permission))
-                        permissList.Add(menu.Permission);
+                        permissiones.Add(menu.Permission);
                 }
             }
+            // 普通用户
             else
             {
-                // 普通用户
-                var roleMenuList = await LazyDBContext.RoleMenus.Include(r => r.Menu).Where(r => roleIds.Contains(r.RoleId)).ToListAsync();
-                foreach (var roleMenu in roleMenuList)
+                //no roles
+                if (user.Roles == null || user.Roles.Count == 0)
+                    return new List<string>();
+                var roleIds = user.Roles.Select(x => x.Id).ToList();
+
+                var roles = await LazyDBContext.Roles.Include(x => x.Menus).Where(r => roleIds.Contains(r.Id)).ToListAsync();
+                foreach (var role in roles)
                 {
-                    if (!string.IsNullOrEmpty(roleMenu.Menu.Permission))
-                        permissList.Add(roleMenu.Menu.Permission);
+                    permissiones.AddRange(role.Menus.Where(m => !string.IsNullOrEmpty(m.Permission)).Select(m => m.Permission));
                 }
             }
 
-            permissList = [.. permissList.Distinct()];
+            permissiones = [.. permissiones.Distinct()];
 
-            await _lazyCache.SetAsync(cacheKey, permissList, 60);
+            await _lazyCache.SetAsync(cacheKey, permissiones);
         }
 
-        return permissList;
+        return permissiones;
     }
 
     /// <summary>
@@ -161,29 +170,20 @@ public class RoleService : CrudService<Role, RoleDto, RoleDto, long, RolePagedRe
     /// <returns></returns>
     public async Task<bool> RolePermissionAsync(long id, IEnumerable<long> menuIdList)
     {
-        var oldRoleMenuList = await LazyDBContext.RoleMenus.Where(x => x.RoleId == id).ToListAsync();
-        LazyDBContext.RoleMenus.RemoveRange(oldRoleMenuList);
-
-        foreach (var iMenuId in menuIdList)
+        var role = await LazyDBContext.Roles.Include(x => x.Menus).FirstAsync(x => x.Id == id);
+        if (menuIdList == null || menuIdList.Count() == 0)
         {
-            var roleMenu = new RoleMenu() { MenuId = iMenuId, RoleId = id };
-            SetIdForLong(roleMenu);
-            LazyDBContext.RoleMenus.Add(roleMenu);
+            role.Menus = new List<Menu>();
+        }
+        else
+        {
+            var menus = await LazyDBContext.Menus.Where(x => menuIdList.Contains(x.Id)).ToListAsync();
+            role.Menus = menus;
         }
 
-        var isSuccesss = await LazyDBContext.SaveChangesAsync() > 0;
+        await LazyDBContext.SaveChangesAsync();
 
-        if (isSuccesss)
-        {
-            var userIdList = LazyDBContext.UserRoles.Where(x => x.RoleId == id).Select(x => x.UserId).Distinct();
-            foreach (var userId in userIdList)
-            {
-                var cacheKey = string.Format(CacheConsts.PermissCacheKey, userId);
-                await _lazyCache.RemoveAsync(cacheKey);
-            }
-        }
-
-        return isSuccesss;
+        return true;
     }
 
     // Override MapToEntity method

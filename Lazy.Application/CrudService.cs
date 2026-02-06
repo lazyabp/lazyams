@@ -13,14 +13,13 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
 
     public CrudService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-
     }
 
     public virtual async Task<TGetOutputDto> CreateAsync(TCreateInput input)
     {
         var entity = MapToEntity(input);
         GetDbSet().Add(entity);
-        await this.LazyDBContext.SaveChangesAsync();
+        await LazyDBContext.SaveChangesAsync();
         return MapToGetOutputDto(entity);
     }
 
@@ -31,7 +30,7 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// </summary>
     protected virtual TEntity MapToEntity(TCreateInput createInput)
     {
-        var entity = this.Mapper.Map<TCreateInput, TEntity>(createInput);
+        var entity = Mapper.Map<TCreateInput, TEntity>(createInput);
         SetIdForLong(entity);
         SetCreatedAudit(entity);
         return entity;
@@ -68,7 +67,7 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// <param name="entity">added object</param>
     protected virtual void SetUpdatedAudit(TEntity entity)
     {
-        if (entity is BaseEntityWithAudit baseEntityWithAudit && !baseEntityWithAudit.UpdatedBy.HasValue)
+        if (entity is BaseEntityWithAudit baseEntityWithAudit)
         {
             baseEntityWithAudit.UpdatedBy = CurrentUser.Id;
             baseEntityWithAudit.UpdatedAt = DateTime.Now;
@@ -79,16 +78,19 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// Set deleted datetime & deleted user
     /// </summary>
     /// <param name="entity">delete object</param>
-    protected virtual void SetDeletedAudit(TEntity entity)
+    protected virtual bool SetDeletedAudit(TEntity entity)
     {
-        if (entity is BaseEntityWithSoftDelete baseEntityWithSoftDelete && !baseEntityWithSoftDelete.DeletedBy.HasValue)
+        if (entity is BaseEntityWithSoftDelete baseEntityWithSoftDelete)
         {
             baseEntityWithSoftDelete.IsDeleted = true;
             baseEntityWithSoftDelete.DeletedBy = CurrentUser.Id;
-            baseEntityWithSoftDelete.UpdatedAt = DateTime.Now;
-        }
-    }
+            baseEntityWithSoftDelete.DeletedAt = DateTime.Now;
 
+            return true;
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Sets Id value for the entity if <typeparamref name="TKey"/> is <see cref="long"/>.
@@ -106,7 +108,7 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// </summary>
     protected virtual void MapToEntity(TUpdateInput updateInput, TEntity entity)
     {
-        this.Mapper.Map(updateInput, entity);
+        Mapper.Map(updateInput, entity);
         SetUpdatedAudit(entity);
     }
 
@@ -132,8 +134,25 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     {
         var entity = await GetEntityByIdAsync(id);
         var dbSet = GetDbSet();
+        if (entity is BaseEntityWithSoftDelete baseEntityWithSoftDelete)
+        {
+            SetDeletedAudit(entity);
+            dbSet.Update(entity);
+        }
+        else
+        {
+            dbSet.Remove(entity);
+        }
+
+        await LazyDBContext.SaveChangesAsync();
+    }
+
+    public virtual async Task DropAsync(TKey id)
+    {
+        var entity = await GetEntityByIdAsync(id);
+        var dbSet = GetDbSet();
         dbSet.Remove(entity);
-        await this.LazyDBContext.SaveChangesAsync();
+        await LazyDBContext.SaveChangesAsync();
     }
 
     public virtual async Task SoftDeleteAsync(TKey id)
@@ -144,7 +163,7 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
         var dbSet = GetDbSet();
         dbSet.Update(entity);
 
-        await this.LazyDBContext.SaveChangesAsync();
+        await LazyDBContext.SaveChangesAsync();
     }
 }
 

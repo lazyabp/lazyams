@@ -24,15 +24,15 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<Role> roles = new List<Role>()
     {
-        new Role(){Id=1, RoleName="admin",   Description="with full permission to crud", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true},
-        new Role(){Id=2, RoleName="member",   Description="with limit permission to crud", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true}
+        new Role(){Id=1, RoleName="admin",   Description="管理员", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true},
+        new Role(){Id=2, RoleName="member",   Description="会员", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true}
     };
 
-    private List<UserRole> userRoles = new List<UserRole>()
-    {
-        new UserRole(){Id=1, UserId=1, RoleId=1},
-        new UserRole(){Id=2, UserId=2, RoleId=2},
-    };
+    //private List<UserRole> userRoles = new List<UserRole>()
+    //{
+    //    new UserRole(){UserId=1, RoleId=1},
+    //    new UserRole(){UserId=2, RoleId=2},
+    //};
 
     private List<Menu> menus = new List<Menu>()
     {
@@ -82,17 +82,24 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
         {
             await _dbContext.Roles.AddRangeAsync(roles);
             await _dbContext.SaveChangesAsync();
-        }
 
-        if (!_dbContext.UserRoles.Any())
-        {
-            await _dbContext.UserRoles.AddRangeAsync(userRoles);
+            var uersList = await _dbContext.Users.ToListAsync();
+            uersList.Where(x => x.UserName == "admin").FirstOrDefault().Roles.Add(roles.First(x => x.RoleName == "admin"));
+            uersList.Where(x => x.UserName == "test").FirstOrDefault().Roles.Add(roles.First(x => x.RoleName == "member"));
             await _dbContext.SaveChangesAsync();
         }
 
         if (!_dbContext.Menus.Any())
         {
             await _dbContext.Menus.AddRangeAsync(menus);
+            await _dbContext.SaveChangesAsync();
+
+            var menusList = await _dbContext.Menus.ToListAsync();
+            var adminRole = await _dbContext.Roles.FirstOrDefaultAsync(x => x.RoleName == "admin");
+            foreach (var menu in menusList)
+            {
+                adminRole.Menus.Add(menu);
+            }
             await _dbContext.SaveChangesAsync();
         }
 

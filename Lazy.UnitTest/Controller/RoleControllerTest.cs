@@ -18,15 +18,15 @@ public class RoleControllerTest
     {
         // Arrange
         var input = new RolePagedResultRequestDto();
-        var roles = new List<RoleDto>
+        var roles = new List<RoleListDto>
         {
-            new RoleDto { Id = 1, RoleName ="admin1",   Description="full power" },
-            new RoleDto { Id = 2, RoleName ="admin2",   Description="full power" },
-            new RoleDto { Id = 3, RoleName ="teacher1", Description="limited power" },
-            new RoleDto { Id = 4, RoleName ="teacher2", Description="limited power" },
-            new RoleDto { Id = 5, RoleName ="teacher3", Description="limited power" },
+            new RoleListDto { Id = 1, RoleName ="admin1",   Description="full power" },
+            new RoleListDto { Id = 2, RoleName ="admin2",   Description="full power" },
+            new RoleListDto { Id = 3, RoleName ="teacher1", Description="limited power" },
+            new RoleListDto { Id = 4, RoleName ="teacher2", Description="limited power" },
+            new RoleListDto { Id = 5, RoleName ="teacher3", Description="limited power" },
         };
-        var pagedResult = new PagedResultDto<RoleDto>
+        var pagedResult = new PagedResultDto<RoleListDto>
         {
             Items = roles,
             Total = 5,
@@ -131,18 +131,18 @@ public class RoleControllerTest
         //Arrange
         var validId = id;
         var input = new RolePagedResultRequestDto();
-        var rolesBeforeDelete = new List<RoleDto>
+        var rolesBeforeDelete = new List<RoleListDto>
         {
-            new RoleDto { Id = 1, RoleName ="admin1",   Description="full power" },
-            new RoleDto { Id = 2, RoleName ="admin2",   Description="full power" },
-            new RoleDto { Id = 3, RoleName ="teacher1", Description="limited power" },
-            new RoleDto { Id = 4, RoleName ="teacher2", Description="limited power" },
-            new RoleDto { Id = 5, RoleName ="teacher3", Description="limited power" },
+            new RoleListDto { Id = 1, RoleName ="admin1",   Description="full power" },
+            new RoleListDto { Id = 2, RoleName ="admin2",   Description="full power" },
+            new RoleListDto { Id = 3, RoleName ="teacher1", Description="limited power" },
+            new RoleListDto { Id = 4, RoleName ="teacher2", Description="limited power" },
+            new RoleListDto { Id = 5, RoleName ="teacher3", Description="limited power" },
         };
         var rolesAfterDeleteValid = from listItem in rolesBeforeDelete where id != validId select listItem;
-        var pagedResult = new PagedResultDto<RoleDto>
+        var pagedResult = new PagedResultDto<RoleListDto>
         {
-            Items = rolesAfterDeleteValid as List<RoleDto>,
+            Items = rolesAfterDeleteValid as List<RoleListDto>,
             Total = 4,
         };
         _roleServiceMock.Setup(service => service.DeleteAsync(validId)).Returns(Task.FromResult(pagedResult));
@@ -160,9 +160,9 @@ public class RoleControllerTest
         var invalidId = id2;
         var input2 = new RolePagedResultRequestDto();
         var rolesAfterDeleteInvalid = from listItem in rolesBeforeDelete where id != invalidId select listItem;
-        var pagedResultInvalid = new PagedResultDto<RoleDto>
+        var pagedResultInvalid = new PagedResultDto<RoleListDto>
         {
-            Items = rolesAfterDeleteValid as List<RoleDto>,
+            Items = rolesAfterDeleteValid as List<RoleListDto>,
             Total = 5,
         };
         _roleServiceMock.Setup(service => service.DeleteAsync(invalidId)).Returns(Task.FromResult(pagedResultInvalid));

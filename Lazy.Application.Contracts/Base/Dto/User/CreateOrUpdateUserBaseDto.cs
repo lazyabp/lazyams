@@ -19,6 +19,5 @@ public class CreateOrUpdateUserBaseDto : BaseEntityDto
     public DateTime? CreatedDate { get; set; }
     public string Address { get; set; }
     public bool IsActive { get; set; }
-
     public List<long> RoleIds { get; set; } = new List<long>();
 }

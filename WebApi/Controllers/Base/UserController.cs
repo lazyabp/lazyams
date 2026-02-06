@@ -1,8 +1,4 @@
 ﻿// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-using AutoMapper;
-using Lazy.Application.Contracts.Dto;
-using Lazy.Core.ExceptionHandling;
-using Lazy.Model.DBContext;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;

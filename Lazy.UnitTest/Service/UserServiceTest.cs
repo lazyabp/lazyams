@@ -90,12 +90,12 @@ public class UserServiceTest
 
             // Verify that the roles are correctly assigned
             var createdUser = await context.Users
-                .Include(u => u.UserRoles)
+                .Include(u => u.Roles)
                 .FirstOrDefaultAsync(u => u.UserName == newUser.UserName);
             Assert.That(createdUser, Is.Not.Null);
-            Assert.That(createdUser.UserRoles.Count, Is.EqualTo(3));
-            Assert.That(createdUser.UserRoles.Any(ur => ur.RoleId == 1), Is.True);
-            Assert.That(createdUser.UserRoles.Select(ur => ur.RoleId), Is.EquivalentTo(newUser.RoleIds));
+            Assert.That(createdUser.Roles.Count, Is.EqualTo(3));
+            Assert.That(createdUser.Roles.Any(ur => ur.Id == 1), Is.True);
+            Assert.That(createdUser.Roles.Select(ur => ur.Id), Is.EquivalentTo(newUser.RoleIds));
         }
     }
 
@@ -198,13 +198,13 @@ public class UserServiceTest
 
         using (var context = new LazyDBContext(options))
         {
-            var findUpdatedUser = await context.Users.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == 2);
+            var findUpdatedUser = await context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == 2);
             Assert.That(findUpdatedUser, Is.Not.Null);
-            Assert.That(findUpdatedUser.UserRoles.Count, Is.EqualTo(2));
-            Assert.That(findUpdatedUser.UserRoles.Any(ur => ur.RoleId == 2), Is.True);
-            Assert.That(findUpdatedUser.UserRoles.Any(ur => ur.RoleId == 4), Is.True);
+            Assert.That(findUpdatedUser.Roles.Count, Is.EqualTo(2));
+            Assert.That(findUpdatedUser.Roles.Any(ur => ur.Id == 2), Is.True);
+            Assert.That(findUpdatedUser.Roles.Any(ur => ur.Id == 4), Is.True);
             // Ensure previous roles are removed if not included in RoleIds
-            Assert.That(findUpdatedUser.UserRoles.Any(ur => ur.RoleId == 1 || ur.RoleId == 3), Is.False);
+            Assert.That(findUpdatedUser.Roles.Any(ur => ur.Id == 1 || ur.Id == 3), Is.False);
         }
     }
 

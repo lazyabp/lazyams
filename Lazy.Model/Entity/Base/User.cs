@@ -24,5 +24,6 @@ public class User : BaseEntityWithSoftDelete
 
     public string Address { get; set; }
 
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    //public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public virtual List<Role> Roles { get; set; } = [];
 }

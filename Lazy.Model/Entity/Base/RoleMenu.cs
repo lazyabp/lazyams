@@ -1,13 +1,13 @@
 ﻿namespace Lazy.Model.Entity;
 
-public class RoleMenu : BaseEntity
+public class RoleMenu
 {
 
-    public Menu Menu { get; set; }
+    //public virtual Menu Menu { get; set; }
 
     public long MenuId { get; set; }
 
-    public Role Role { get; set; }
+    //public virtual Role Role { get; set; }
 
     public long RoleId { get; set; }
 }

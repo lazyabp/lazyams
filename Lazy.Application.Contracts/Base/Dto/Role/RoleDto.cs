@@ -12,7 +12,8 @@ public class RoleDto: BaseEntityWithAuditDto
 
     public bool IsActive { get; set; }
 
-    public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
-
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    //public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
+    //public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public virtual ICollection<MenuDto> Menus { get; set; } = new List<MenuDto>();    
+    public virtual ICollection<UserDto> Users { get; set; } = new List<UserDto>();
 }

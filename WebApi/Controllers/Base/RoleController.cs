@@ -28,7 +28,7 @@ public class RoleController : ControllerBase
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Default)]
     [HttpGet("GetByPage")]
-    public async Task<PagedResultDto<RoleDto>> GetByPageAsync([FromQuery] RolePagedResultRequestDto input)
+    public async Task<PagedResultDto<RoleListDto>> GetByPageAsync([FromQuery] RolePagedResultRequestDto input)
     {
         var pagedResult = await _roleService.GetListAsync(input);
         //var pagedResult = await _roleService.GetAllRolesAsync(input);
@@ -117,7 +117,7 @@ public class RoleController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Role.Update)]
-    [HttpPost]
+    [HttpPost("RolePermission")]
     public async Task<bool> RolePermissionAsync([FromBody]RolePermissionInput input)
     {
         return await _roleService.RolePermissionAsync(input.Id, input.MenuIds);
