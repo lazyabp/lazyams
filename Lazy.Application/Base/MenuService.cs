@@ -216,12 +216,10 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         return entity;
     }
 
-    public async Task<List<MenuIdDto>> GetMenuIdsByRoleIdAsync(long roleId)
+    public async Task<List<long>> GetMenuIdsByRoleIdAsync(long roleId)
     {
         var role = await LazyDBContext.Roles.Include(x => x.Menus).FirstAsync(rm => rm.Id == roleId);
 
-        var menuDtos = role.Menus.Select(rm => new MenuIdDto { MenuId = rm.Id }).ToList();
-
-        return menuDtos;
+        return role.Menus.Select(x => x.Id).ToList();
     }
 }

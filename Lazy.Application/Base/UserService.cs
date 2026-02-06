@@ -66,9 +66,6 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
         else 
             input.UserName = id.ToString();
 
-        // Validate provided Role IDs.
-        //await ValidateRoleIdsAsync(input.RoleIds);
-
         // Hash the plain-text password.
         input.Password = BCryptUtil.HashPassword(input.Password);
 
@@ -101,27 +98,6 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
     }
 
     /// <summary>
-    /// Validates that all provided Role IDs exist in the database.
-    /// Throws an exception if any invalid IDs are found.
-    /// </summary>
-    /// <param name="roleIds"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    private async Task ValidateRoleIdsAsync(IEnumerable<long> roleIds)
-    {
-        if (roleIds == null || roleIds.Count() == 0) return;
-
-        var validRoleIds = await LazyDBContext.Roles.Select(r => r.Id).ToListAsync();
-
-        //identify any invalid IDS
-        var invalidRoleIds = roleIds.Except(validRoleIds).ToList();
-        if (invalidRoleIds.Any())
-        {
-            throw new InvalidOperationException($"the following role ids are invalid:{string.Join(",", invalidRoleIds)}");
-        }
-    }
-
-    /// <summary>
     ///  Updates an existing user
     /// </summary>
     /// <param name="id"></param>
@@ -134,27 +110,18 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 
         //Retrieve the existing user (with roles) from the database
         var user = await LazyDBContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
+        var password = user.Password;
 
         if (user == null) throw new EntityNotFoundException(nameof(User), id.ToString());
 
         //Map updated properties from the DTO to the User entity
         Mapper.Map(input, user);
 
-        //await ValidateRoleIdsAsync(input.RoleIds);
+        if (!string.IsNullOrEmpty(input.Password))
+            user.Password = BCryptUtil.HashPassword(input.Password);
+        else
+            user.Password = password;
 
-        //var currentUserRole = new List<UserRole>();
-        //if (input.RoleIds != null && input.RoleIds.Any())
-        //{
-        //    // Determine which roles to add/remove
-        //    currentUserRole = user.Roles.Select(x => new UserRole { RoleId = x.Id, UserId = user.Id }).ToList();
-        //    var rolesToAdd = input.RoleIds.Except(currentUserRole.Select(ur => ur.RoleId)).ToList();
-        //    var rolesToRemove = currentUserRole.Select(ur => ur.RoleId).Except(input.RoleIds).ToList();
-
-        //    // Add new UserRole entries for roles to add
-        //    var userRolesToAdd = rolesToAdd.Select(roleId => new UserRole { RoleId = roleId, UserId = user.Id }).ToList();
-        //    await LazyDBContext.UserRoles.AddRangeAsync(userRolesToAdd);
-        //    await LazyDBContext.UserRoles.Where(ur => ur.UserId == user.Id && rolesToRemove.Contains(ur.RoleId)).ExecuteDeleteAsync();
-        //}
         if (input.RoleIds != null && input.RoleIds.Any())
         {
             var roles = await LazyDBContext.Roles.Where(x => input.RoleIds.Contains(x.Id)).ToListAsync();
@@ -202,7 +169,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 
     protected virtual async Task ValidateNameAsync(string userName, long? expectedId = null)
     {
-        var user = await this.GetQueryable().FirstOrDefaultAsync(p => p.UserName == userName);
+        var user = await GetQueryable().FirstOrDefaultAsync(p => p.UserName == userName);
         if (user != null && user.Id != expectedId)
         {
             throw new EntityAlreadyExistsException($"User {userName} already exists", $"{userName} already exists");
@@ -211,7 +178,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 
     protected virtual async Task ValidateEmailAsync(string email, long? expectedId = null)
     {
-        var user = await this.GetQueryable().FirstOrDefaultAsync(p => p.Email == email);
+        var user = await GetQueryable().FirstOrDefaultAsync(p => p.Email == email);
         if (user != null && user.Id != expectedId)
         {
             throw new EntityAlreadyExistsException($"User {email} already exists", $"{email} already exists");

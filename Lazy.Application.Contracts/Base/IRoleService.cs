@@ -8,9 +8,9 @@ public interface IRoleService : ICrudService<RoleDto, RoleListDto, long, RolePag
     //   Task<PagedResultDto<RoleDto>> GetAllRolesAsync(RolePagedResultRequestDto input);
     Task<RoleDto> ActiveAsync(long id, ActiveDto input);
 
-    public Task<bool> BulkDelete(IEnumerable<long> ids);
+    Task<bool> BulkDelete(IEnumerable<long> ids);
 
-    public Task<List<string>> GetPermissionsbyUserIdAsync(long id);
+    Task<List<string>> GetPermissionsbyUserIdAsync(long id);
 
-    public Task<bool> RolePermissionAsync(long id, IEnumerable<long> menuIdList);
+    Task<bool> RolePermissionAsync(long id, IEnumerable<long> menuIdList);
 }

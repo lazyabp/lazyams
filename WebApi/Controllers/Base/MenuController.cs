@@ -121,7 +121,7 @@ public class MenuController : ControllerBase
     /// <returns>A list of menu Ids</returns>
 
     [HttpGet("GetMenuIdsByRoleId/{id}")]
-    public async Task<List<MenuIdDto>> GetMenuIdsByRoleId(long id)
+    public async Task<List<long>> GetMenuIdsByRoleId(long id)
     {
         return await _menuService.GetMenuIdsByRoleIdAsync(id);
     }

@@ -11,11 +11,11 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         _lazyCache = lazyCache;
     }
 
-    //override public async Task<RoleDto> GetAsync(long id)
-    //{
-    //    return await base.GetAsync(id);
-    //}
-
+    /// <summary>
+    /// 获取所有角色
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public async Task<PagedResultDto<RoleListDto>> GetAllRolesAsync(RolePagedResultRequestDto input)
     {
         Console.Write($"input pageindex is: {input.PageIndex}");
@@ -49,6 +49,13 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         return query;
     }
 
+    /// <summary>
+    /// 设置角色状态
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    /// <exception cref="EntityNotFoundException"></exception>
     public async Task<RoleDto> ActiveAsync(long id, ActiveDto input)
     {
         var role = await LazyDBContext.Roles.FirstOrDefaultAsync(u => u.Id == id);
@@ -68,7 +75,11 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         return roleDto;
     }
 
-
+    /// <summary>
+    /// 创建角色
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public override async Task<RoleDto> CreateAsync(CreateRoleDto input)
     {
         var entity = MapToEntity(input);
@@ -78,18 +89,29 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         return MapToGetOutputDto(entity);
     }
 
+    /// <summary>
+    /// 更新角色
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public override async Task<RoleDto> UpdateAsync(long id, UpdateRoleDto input)
     {
         return await base.UpdateAsync(id, input);
     }
 
+    /// <summary>
+    /// 删除角色
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public override async Task DeleteAsync(long id)
     {
         await base.DeleteAsync(id);
     }
 
     /// <summary>
-    /// bulk detele role ids
+    /// 批量删除角色
     /// </summary>
     /// <param name="ids"></param>
     /// <returns>true or false</returns>
@@ -116,6 +138,11 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         return true;
     }
 
+    /// <summary>
+    /// 获取用户权限信息
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<List<string>> GetPermissionsbyUserIdAsync(long id)
     {
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
@@ -163,7 +190,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     }
 
     /// <summary>
-    /// Save permissions for a sigle role
+    /// 给角色赋权
     /// </summary>
     /// <param name="id">Role id</param>
     /// <param name="menuIdList">permission list</param>
