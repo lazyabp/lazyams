@@ -87,7 +87,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"Image format '{fileExt}' is not allowed!");
 
-        var fileMd5 = await FileUtil.Md5Async(file);
+        var fileMd5 = await SecurityUtil.Md5Async(file);
         var dto = await StorageFileAsync(file, FileType.Avatar, fileMd5);
         var avatarUrl = dto.BaseUrl + dto.FilePath;
 
@@ -119,7 +119,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"Image format '{fileExt}' is not allowed!");
 
-        var fileMd5 = await FileUtil.Md5Async(file);
+        var fileMd5 = await SecurityUtil.Md5Async(file);
         var existFile = await GetByMd5Async(fileMd5);
         if (existFile != null)
             return existFile;
@@ -146,7 +146,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"Video format '{fileExt}' is not allowed!");
 
-        var fileMd5 = await FileUtil.Md5Async(file);
+        var fileMd5 = await SecurityUtil.Md5Async(file);
         var existFile = await GetByMd5Async(fileMd5);
         if (existFile != null)
             return existFile;
@@ -173,7 +173,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
         if (!allowExtensions.Contains(fileExt))
             throw new UserFriendlyException($"File format '{fileExt}' is not allowed!");
 
-        var fileMd5 = await FileUtil.Md5Async(file);
+        var fileMd5 = await SecurityUtil.Md5Async(file);
         var existFile = await GetByMd5Async(fileMd5);
         if (existFile != null)
             return existFile;

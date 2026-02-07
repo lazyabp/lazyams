@@ -4,11 +4,11 @@ namespace Lazy.Application;
 
 public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePagedResultRequestDto, CreateRoleDto, UpdateRoleDto>, IRoleService, ITransientDependency
 {
-    private readonly ILazyCache _lazyCache;
+    private readonly ICaching _cacheing;
 
-    public RoleService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache) : base(dbContext, mapper)
+    public RoleService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        _lazyCache = lazyCache;
+        _cacheing = CacheFactory.Cache;
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
 
         //clear permission from cache
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        await _lazyCache.RemoveAsync(cacheKey);
+        _cacheing.RemoveCache(cacheKey);
 
         return roleDto;
     }
@@ -146,7 +146,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     public async Task<List<string>> GetPermissionsbyUserIdAsync(long id)
     {
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        var permissiones = await _lazyCache.GetAsync<List<string>>(cacheKey);
+        var permissiones = _cacheing.GetCache<List<string>>(cacheKey);
 
         if (permissiones == null)
         {
@@ -183,7 +183,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
 
             permissiones = [.. permissiones.Distinct()];
 
-            await _lazyCache.SetAsync(cacheKey, permissiones);
+            _cacheing.SetCache(cacheKey, permissiones);
         }
 
         return permissiones;

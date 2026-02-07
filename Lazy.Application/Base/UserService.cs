@@ -7,14 +7,12 @@ namespace Lazy.Application;
 public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
 {
-    //private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly ILazyCache _lazyCache;
+    private readonly ICaching _lazyCache;
     private readonly IMediator _mediator;
 
-    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache, IMediator mediator) : base(dbContext, mapper)
+    public UserService(LazyDBContext dbContext, IMapper mapper, IMediator mediator) : base(dbContext, mapper)
     {
-        //this._webHostEnvironment = webHostEnvironment;
-        _lazyCache = lazyCache;
+        _lazyCache = CacheFactory.Cache;
         _mediator = mediator;
     }
 
@@ -142,7 +140,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 
         //clear permission from cache
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        await _lazyCache.RemoveAsync(cacheKey);
+        _lazyCache.RemoveCache(cacheKey);
 
         return userDto;
     }
@@ -169,7 +167,7 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 
         //clear permission from cache
         var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        await _lazyCache.RemoveAsync(cacheKey);
+        _lazyCache.RemoveCache(cacheKey);
 
         return userDto;
     }

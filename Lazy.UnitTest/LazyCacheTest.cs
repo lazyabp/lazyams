@@ -10,11 +10,11 @@ public class LazyCacheTest : BaseTest
     {
         using (var scope = Factory.Services.CreateScope())
         {
-            var LazyCache = scope.ServiceProvider.GetRequiredService<ILazyCache>();
+            var LazyCache = CacheFactory.Cache;
             string key = "key1";
             string val = "123dadfdsaf";
-            await LazyCache.SetAsync(key, val, 5);
-            var cVal =await LazyCache.GetAsync<string>(key);
+            LazyCache.SetCache(key, val);
+            var cVal = LazyCache.GetCache<string>(key);
             Assert.That(val == cVal, "");
         }
     }

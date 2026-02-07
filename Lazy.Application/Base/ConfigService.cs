@@ -6,12 +6,11 @@ namespace Lazy.Application;
 public class ConfigService : CrudService<Config, ConfigDto, ConfigDto, long, FilterPagedResultRequestDto, CreateConfigDto, UpdateConfigDto>,
     IConfigService, ITransientDependency
 {
-    //private readonly ILazyCache _lazyCache;
+    //private readonly ICaching _cacheing;
 
-    public ConfigService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache)
+    public ConfigService(LazyDBContext dbContext, IMapper mapper)
         : base(dbContext, mapper)
     {
-        //_lazyCache = lazyCache;
     }
 
     protected override IQueryable<Config> CreateFilteredQuery(FilterPagedResultRequestDto input)

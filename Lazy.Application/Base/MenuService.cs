@@ -2,15 +2,12 @@
 
 public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedResultRequestDto, CreateMenuDto, UpdateMenuDto>, IMenuService, ITransientDependency
 {
-    private readonly ILazyTaggedCache _cache;
+    private readonly ICaching _cache;
     private readonly string cacheTag = "menu";
 
-    public MenuService(
-        LazyDBContext dbContext, 
-        IMapper mapper,
-        ILazyTaggedCache cache) : base(dbContext, mapper)
+    public MenuService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        _cache = cache;
+        _cache = CacheFactory.Cache;
     }
 
     protected override IQueryable<Menu> CreateFilteredQuery(MenuPagedResultRequestDto input)
@@ -49,8 +46,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         await LazyDBContext.SaveChangesAsync();
 
-        //var menuDto = Mapper.Map<MenuDto>(menu);
-        await _cache.RemoveByTagAsync(cacheTag);
+        _cache.RemoveHashCache(cacheTag);
 
         return true;
     }
@@ -62,17 +58,14 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
 
         var key = $"menu:{id}";
-        var menu = await _cache.GetAsync<MenuDto>(key);
+        var menu = _cache.GetHashFieldCache<MenuDto>(cacheTag, key);
         if (menu == null)
         {
             menu = await base.GetAsync(id);
 
             if (menu != null)
-                await _cache.SetAsync(key, menu, tag: cacheTag);
+                _cache.SetHashFieldCache(cacheTag, key, menu);
         }
-
-        //var allMenus = await GetAllMenusAsync();
-        //menu.Children = BuildMenuTree(allMenus, menu.Id);
 
         return menu;
     }
@@ -95,12 +88,9 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             }
         }
 
-        //var entity = MapToEntity(input);
-        //GetDbSet().Add(entity);
-        //await LazyDBContext.SaveChangesAsync();
         var menuDto = await base.CreateAsync(input);
 
-        await _cache.RemoveByTagAsync(cacheTag);
+        _cache.RemoveHashCache(cacheTag);
 
         return menuDto;
     }
@@ -121,7 +111,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         }
 
         var result = await base.UpdateAsync(id, input);
-        await _cache.RemoveByTagAsync(cacheTag);
+        _cache.RemoveHashCache(cacheTag);
 
         return result;
     }
@@ -137,7 +127,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         await base.DeleteAsync(id);
 
-        await _cache.RemoveByTagAsync(cacheTag);
+        _cache.RemoveHashCache(cacheTag);
     }
 
     // Get menu tree
@@ -165,7 +155,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     {
         var key = "menu:all";
 
-        var items = await _cache.GetAsync<List<MenuDto>>(key);
+        var items = _cache.GetHashFieldCache<List<MenuDto>>(cacheTag, key);
         if (items == null)
         {
             var input = new MenuPagedResultRequestDto
@@ -177,7 +167,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             var result = await GetListAsync(input);
             items = result.Items.ToList();
 
-            await _cache.SetAsync(key, items, tag: cacheTag);
+            _cache.SetHashFieldCache(cacheTag, key, items);
         }
 
         return items;
