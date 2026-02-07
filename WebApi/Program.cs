@@ -219,7 +219,7 @@ public class Program
             }
 
             // 启动定时任务
-            (new Lazy.Application.AutoJobs.JobCenter()).Start();
+            //(new Lazy.Application.AutoJobs.JobCenter()).Start();
 
             app.Run();
         }
