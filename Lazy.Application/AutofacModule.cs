@@ -14,7 +14,6 @@ public class AutofacModule : Autofac.Module
             .As<IAuthenticationService>()
             .InstancePerDependency();
 
-
         var dependencyContext = DependencyContext.Default;
         if (dependencyContext == null)
         {
@@ -48,6 +47,8 @@ public class AutofacModule : Autofac.Module
         builder.RegisterAssemblyTypes(assemblys).Where(x => x.IsAssignableTo<ISingletonDependency>())
             .AsImplementedInterfaces()
             .SingleInstance()
-            .PropertiesAutowired(); 
+            .PropertiesAutowired();
+
+
     }
 }

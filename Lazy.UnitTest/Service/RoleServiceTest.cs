@@ -9,21 +9,10 @@ namespace Lazy.UnitTest.Service;
 
 public class RoleServiceTest
 {
-    private readonly IMapper _mapper;
-    private readonly IMock<ILazyCache> _LazyCache;
-    public RoleServiceTest()
+    private readonly IRoleService _service;
+    public RoleServiceTest(IRoleService service)
     {
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<Role, RoleDto>();
-            cfg.CreateMap<CreateRoleDto, Role>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
-            cfg.CreateMap<UpdateRoleDto, Role>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
-        }, null);
-        _mapper = config.CreateMapper();
-
-        _LazyCache = new Mock<ILazyCache>();
+        _service = service;
     }
 
     private DbContextOptions<LazyDBContext> GetDbContextOptions(string dbName)
@@ -48,7 +37,6 @@ public class RoleServiceTest
             });
             context.SaveChanges();
 
-            var service = new RoleService(context, _mapper, _LazyCache.Object);
             var filterInput = new RolePagedResultRequestDto
             {
                 PageIndex = 1,
@@ -56,7 +44,7 @@ public class RoleServiceTest
             };
 
             // Act
-            var result = await service.GetListAsync(filterInput);
+            var result = await _service.GetListAsync(filterInput);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -81,10 +69,8 @@ public class RoleServiceTest
 
         using (var context = new LazyDBContext(options))
         {
-            var service = new RoleService(context, _mapper, _LazyCache.Object);
-
             // Act
-            var result = await service.CreateAsync(createRoleDto);
+            var result = await _service.CreateAsync(createRoleDto);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -110,10 +96,8 @@ public class RoleServiceTest
             context.Roles.Add(role);
             context.SaveChanges();
 
-            var service = new RoleService(context, _mapper, _LazyCache.Object);
-
             // Act
-            var result = await service.GetAsync(1);
+            var result = await _service.GetAsync(1);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -139,7 +123,6 @@ public class RoleServiceTest
             context.Roles.Add(role);
             context.SaveChanges();
 
-            var service = new RoleService(context, _mapper, _LazyCache.Object);
             var updateDto = new UpdateRoleDto
             {
                 RoleName = "Admin",
@@ -148,7 +131,7 @@ public class RoleServiceTest
             };
 
             // Act
-            var result = await service.UpdateAsync(1, updateDto);
+            var result = await _service.UpdateAsync(1, updateDto);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -175,10 +158,8 @@ public class RoleServiceTest
             context.Roles.Add(role);
             context.SaveChanges();
 
-            var service = new RoleService(context, _mapper, _LazyCache.Object);
-
             // Act
-            await service.DeleteAsync(1L);
+            await _service.DeleteAsync(1L);
 
             // Assert
             var deletedRole = await context.Roles.FindAsync(1L);

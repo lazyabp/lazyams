@@ -12,25 +12,12 @@ namespace Lazy.UnitTest.Service;
 
 public class UserServiceTest
 {
-
-
-    private readonly IMapper _mapper;
-    private readonly Mock<IWebHostEnvironment> _mockWebHostEnvironment;
-    private readonly ILazyCache _LazyCache;
     private string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MockData", "users.json");
+    private readonly UserService _userService;
 
-    public UserServiceTest()
+    public UserServiceTest(UserService userService)
     {
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<User, UserDto>();
-            cfg.CreateMap<CreateUserDto, User>();
-            cfg.CreateMap<UpdateUserDto, User>();
-        }, null);
-
-        _mapper = config.CreateMapper();
-        _LazyCache = new Mock<ILazyCache>().Object;
-        _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
+        _userService = userService;
     }
 
     private List<User> LoadUsersFromJson(string filePath)
@@ -41,7 +28,6 @@ public class UserServiceTest
             return JsonConvert.DeserializeObject<List<User>>(json);
         }
     }
-
 
     [Test]
 
@@ -77,10 +63,8 @@ public class UserServiceTest
             context.Users.AddRange(users);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _LazyCache);
-
             //act
-            var result = await service.CreateAsync(newUser);
+            var result = await _userService.CreateAsync(newUser);
 
             //assert
             Assert.That(result, Is.Not.Null);
@@ -112,10 +96,9 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _LazyCache);
             //act
-            var result = await service.GetByUserNameAsync("A1");
-            var inValidResult = await service.GetByUserNameAsync("nonExistingUser");
+            var result = await _userService.GetByUserNameAsync("A1");
+            var inValidResult = await _userService.GetByUserNameAsync("nonExistingUser");
             //Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(inValidResult, Is.Null);
@@ -144,9 +127,8 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _LazyCache);
             //act
-            var updatedResult = await service.UpdateAsync(5, updatedUser);
+            var updatedResult = await _userService.UpdateAsync(5, updatedUser);
             //Assert
             Assert.That(updatedResult, Is.Not.Null);
             Assert.That(updatedResult.UserName, Is.EqualTo(updatedUser.UserName));
@@ -188,8 +170,7 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _LazyCache);
-            updatedResult = await service.UpdateAsync(2, updatedUser);
+            updatedResult = await _userService.UpdateAsync(2, updatedUser);
         }
 
         //assert
@@ -238,12 +219,10 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _LazyCache);
-
             //act & assert
             var exception = Assert.ThrowsAsync<InvalidOperationException>
                 (
-                async () => await service.CreateAsync(newUser));
+                async () => await _userService.CreateAsync(newUser));
             Assert.That(exception.Message, Does.Contain("the following role ids are invalid:99"));
 
         }
@@ -279,9 +258,7 @@ public class UserServiceTest
             context.Roles.AddRange(roles);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _LazyCache);
-
-            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await service.UpdateAsync(3, updatedUser));
+            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _userService.UpdateAsync(3, updatedUser));
             Assert.That(ex.Message, Does.Contain("the following role ids are invalid:100"));
         }
     }
@@ -303,8 +280,7 @@ public class UserServiceTest
             context.Users.AddRange(users);
             context.SaveChanges();
 
-            var service = new UserService(context, _mapper, _LazyCache);
-            isDeleted = await service.DeleteAsync(deleteUserId);
+            isDeleted = await _userService.DeleteAsync(deleteUserId);
         }
 
         // Assert
@@ -331,9 +307,8 @@ public class UserServiceTest
         {
             context.Users.AddRange(users);
             context.SaveChanges();
-            var service = new UserService(context, _mapper, _LazyCache);
 
-            Assert.ThrowsAsync<EntityNotFoundException>(async () => await service.DeleteAsync(deleteUserId));
+            Assert.ThrowsAsync<EntityNotFoundException>(async () => await _userService.DeleteAsync(deleteUserId));
         }
 
     }

@@ -8,21 +8,11 @@ namespace Lazy.UnitTest.Service;
 
 public class MenuServiceTest
 {
-    private readonly IMapper _mapper;
-    private readonly ILazyTaggedCache _cache;
+    private readonly IMenuService _service;
 
-    public MenuServiceTest(ILazyTaggedCache cache)
+    public MenuServiceTest(IMenuService service)
     {
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<Menu, MenuDto>();
-            cfg.CreateMap<CreateMenuDto, Menu>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
-            cfg.CreateMap<UpdateMenuDto, Menu>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
-        }, null);
-        _mapper = config.CreateMapper();
-        _cache = cache;
+        _service = service;
     }
 
     private DbContextOptions<LazyDBContext> GetDbContextOptions(string dbName)
@@ -48,7 +38,6 @@ public class MenuServiceTest
             });
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper, _cache);
             var filterInput = new MenuPagedResultRequestDto
             {
                 PageIndex = 1,
@@ -56,7 +45,7 @@ public class MenuServiceTest
             };
 
             // Act
-            var result = await service.GetListAsync(filterInput);
+            var result = await _service.GetListAsync(filterInput);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -86,10 +75,8 @@ public class MenuServiceTest
 
         using (var context = new LazyDBContext(options))
         {
-            var service = new MenuService(context, _mapper, _cache);
-
             // Act
-            var result = await service.CreateAsync(createMenuDto);
+            var result = await _service.CreateAsync(createMenuDto);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -117,10 +104,8 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper, _cache);
-
             // Act
-            var result = await service.GetAsync(1);
+            var result = await _service.GetAsync(1);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -150,7 +135,6 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper, _cache);
             var updateDto = new UpdateMenuDto
             {
                 Name = "Updated Menu",
@@ -160,7 +144,7 @@ public class MenuServiceTest
             };
 
             // Act
-            var result = await service.UpdateAsync(1L, updateDto);
+            var result = await _service.UpdateAsync(1L, updateDto);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -189,10 +173,8 @@ public class MenuServiceTest
             context.Menus.Add(menu);
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper, _cache);
-
             // Act
-            await service.DeleteAsync(1);
+            await _service.DeleteAsync(1);
 
             // Assert
             var deletedMenu = await context.Menus.FindAsync(1L);
@@ -215,9 +197,7 @@ public class MenuServiceTest
     });
             context.SaveChanges();
 
-            var service = new MenuService(context, _mapper, _cache);
-
-            var result = await service.GetMenuTreeAsync();
+            var result = await _service.GetMenuTreeAsync();
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(1));

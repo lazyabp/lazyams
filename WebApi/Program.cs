@@ -142,9 +142,12 @@ public class Program
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             //builder.Services.AddEndpointsApiExplorer();
+            // EventBus and MediatR
+            builder.Services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            );
 
             builder.Services.AddSwaggerLazy();
-
 
             //CORS
             builder.Services.AddCors(options =>

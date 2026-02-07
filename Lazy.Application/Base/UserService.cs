@@ -1,4 +1,6 @@
-﻿using Lazy.Core.Utils;
+﻿using Lazy.Application.Contracts.Events;
+using Lazy.Core.Utils;
+using MediatR;
 
 namespace Lazy.Application;
 
@@ -7,11 +9,13 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
 {
     //private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILazyCache _lazyCache;
+    private readonly IMediator _mediator;
 
-    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache) : base(dbContext, mapper)
+    public UserService(LazyDBContext dbContext, IMapper mapper, ILazyCache lazyCache, IMediator mediator) : base(dbContext, mapper)
     {
         //this._webHostEnvironment = webHostEnvironment;
         _lazyCache = lazyCache;
+        _mediator = mediator;
     }
 
     protected override IQueryable<User> CreateFilteredQuery(UserPagedResultRequestDto input)
@@ -93,6 +97,9 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
             // Optionally, update the DTO if it includes role information.
             userDto = Mapper.Map<UserDto>(user);
         }
+
+        // 发送用户创建通知
+        await _mediator.Publish(new UserCreatedNotification { UserId = user.Id, UserName = user.UserName, CreatedAt = DateTime.Now });
 
         return userDto;
     }
