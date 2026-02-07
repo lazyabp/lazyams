@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Application.Contracts.Dto;
 
-public class SocialiteUserDto : BaseEntityWithAuditDto
+public class SocialiteUserDto : BaseEntityWithUpdatingAuditDto
 {
     public long UserId { get; set; }
 

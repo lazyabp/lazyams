@@ -54,10 +54,10 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// <param name="entity">added object</param>
     protected virtual void SetCreatedAudit(TEntity entity)
     {
-        if (entity is BaseEntityWithAudit baseEntityWithAudit && !baseEntityWithAudit.CreatedBy.HasValue)
+        if (entity is BaseEntityWithCreatingAudit entityWithCreatingAudit && !entityWithCreatingAudit.CreatedBy.HasValue)
         {
-            baseEntityWithAudit.CreatedBy = CurrentUser.Id;
-            baseEntityWithAudit.CreatedAt = DateTime.Now;
+            entityWithCreatingAudit.CreatedBy = CurrentUser.Id;
+            entityWithCreatingAudit.CreatedAt = DateTime.Now;
         }
     }
 
@@ -67,10 +67,10 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// <param name="entity">added object</param>
     protected virtual void SetUpdatedAudit(TEntity entity)
     {
-        if (entity is BaseEntityWithAudit baseEntityWithAudit)
+        if (entity is BaseEntityWithUpdatingAudit entityWithUpdatingAudit)
         {
-            baseEntityWithAudit.UpdatedBy = CurrentUser.Id;
-            baseEntityWithAudit.UpdatedAt = DateTime.Now;
+            entityWithUpdatingAudit.UpdatedBy = CurrentUser.Id;
+            entityWithUpdatingAudit.UpdatedAt = DateTime.Now;
         }
     }
 
@@ -80,11 +80,11 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     /// <param name="entity">delete object</param>
     protected virtual bool SetDeletedAudit(TEntity entity)
     {
-        if (entity is BaseEntityWithSoftDelete baseEntityWithSoftDelete)
+        if (entity is BaseEntityWithDeletingAudit entityWithDeletingAudit)
         {
-            baseEntityWithSoftDelete.IsDeleted = true;
-            baseEntityWithSoftDelete.DeletedBy = CurrentUser.Id;
-            baseEntityWithSoftDelete.DeletedAt = DateTime.Now;
+            entityWithDeletingAudit.IsDeleted = true;
+            entityWithDeletingAudit.DeletedBy = CurrentUser.Id;
+            entityWithDeletingAudit.DeletedAt = DateTime.Now;
 
             return true;
         }
@@ -134,7 +134,7 @@ public abstract class CrudService<TEntity, TGetOutputDto, TGetListOutputDto, TKe
     {
         var entity = await GetEntityByIdAsync(id);
         var dbSet = GetDbSet();
-        if (entity is BaseEntityWithSoftDelete baseEntityWithSoftDelete)
+        if (entity is BaseEntityWithDeletingAudit entityWithDeletingAudit)
         {
             SetDeletedAudit(entity);
             dbSet.Update(entity);

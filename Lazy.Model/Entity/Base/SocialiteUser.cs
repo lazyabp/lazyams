@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Model.Entity;
 
-namespace Lazy.Model.Entity;
-
-public class SocialiteUser : BaseEntityWithAudit
+public class SocialiteUser : BaseEntityWithUpdatingAudit
 {
     public long? UserId { get; set; }
 

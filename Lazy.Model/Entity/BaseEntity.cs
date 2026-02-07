@@ -7,17 +7,24 @@ public class BaseEntity
 }
 
 /// <summary>
-/// Audit for creating/updating
+/// Audit for creating
 /// </summary>
-public class BaseEntityWithAudit : BaseEntity
+public class BaseEntityWithCreatingAudit : BaseEntity
 {
     public long? CreatedBy { get; set; }
+    public DateTime? CreatedAt { get; set; }
+}
+
+/// <summary>
+/// Audit for updating
+/// </summary>
+public class BaseEntityWithUpdatingAudit : BaseEntityWithCreatingAudit
+{
     public long? UpdatedBy { get; set; }
-    public DateTime? CreatedAt { get; set; } 
     public DateTime? UpdatedAt { get; set; }
 }
 
-public class BaseEntityWithSoftDelete : BaseEntityWithAudit
+public class BaseEntityWithDeletingAudit : BaseEntityWithUpdatingAudit
 {
     public bool IsDeleted { get; set; }
     public long? DeletedBy { get; set; }

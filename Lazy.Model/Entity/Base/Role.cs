@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Model.Entity;
 
-public class Role : BaseEntityWithSoftDelete
+public class Role : BaseEntityWithDeletingAudit
 {
     public string RoleName { get; set; } 
 

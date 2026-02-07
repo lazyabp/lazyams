@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Lazy.Model.Entity;
 
-namespace Lazy.Model.Entity;
-
-public class File : BaseEntityWithSoftDelete
+public class File : BaseEntityWithDeletingAudit
 {
     public StorageType Storage { get; set; }
 

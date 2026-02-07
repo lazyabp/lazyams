@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Model.Entity;
 
-public class User : BaseEntityWithSoftDelete
+public class User : BaseEntityWithDeletingAudit
 {
     public string UserName { get; set; }
 

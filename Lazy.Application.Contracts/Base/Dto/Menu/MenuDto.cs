@@ -2,7 +2,7 @@
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class MenuDto: BaseEntityWithAuditDto
+public class MenuDto: BaseEntityWithUpdatingAuditDto
 {
     public string Name { get; set; }
     public string Title { get; set; }

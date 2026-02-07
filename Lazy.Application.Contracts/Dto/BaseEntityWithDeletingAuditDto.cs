@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Application.Contracts.Dto;
 
-public class BaseEntityWithSoftDeleteDto : BaseEntityWithAuditDto
+public class BaseEntityWithDeletingAuditDto : BaseEntityWithUpdatingAuditDto
 {
     public bool IsDeleted { get; set; }
     public long? DeletedBy { get; set; }

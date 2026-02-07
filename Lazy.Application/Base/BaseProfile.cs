@@ -34,6 +34,14 @@ public class BaseProfile : Profile
         CreateMap<CreateFileDto, Lazy.Model.Entity.File>().ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<UpdateFileDto, Lazy.Model.Entity.File>();
 
+        CreateMap<AutoJob, AutoJobDto>().ReverseMap();
+        CreateMap<CreateAutoJobDto, AutoJob>().ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<UpdateAutoJobDto, AutoJob>();
+
+        CreateMap<AutoJobLog, AutoJobLogDto>().ReverseMap();
+        CreateMap<CreateAutoJobLogDto, AutoJobLog>().ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<UpdateAutoJobLogDto, AutoJobLog>();
+
         CreateMap<Carousel, CarouselDto>().ReverseMap();
         CreateMap<CreateCarouselDto, Carousel>().ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<UpdateCarouselDto, Carousel>();

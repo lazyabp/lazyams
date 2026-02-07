@@ -1,8 +1,11 @@
 ﻿using Lazy.Shared.Enum;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Lazy.Model.Entity;
+namespace Lazy.Application.Contracts.Dto;
 
-public class AutoJob : BaseEntityWithDeletingAudit
+public class CreateOrUpdateAutoJobBaseDto : BaseEntityDto
 {
     public string JobGroupName { get; set; }
 

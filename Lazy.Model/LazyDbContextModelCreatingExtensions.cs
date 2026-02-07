@@ -1,4 +1,5 @@
 ﻿using Lazy.Shared.Entity;
+using Lazy.Shared.Enum;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public static class LazyDbContextModelCreatingExtensions
@@ -14,12 +15,14 @@ public static class LazyDbContextModelCreatingExtensions
         ConfigureUser(modelBuilder);
         ConfigureRole(modelBuilder);
         ConfigureMenu(modelBuilder);
-        //ConfigureRoleMenu(modelBuilder);
-        //ConfigureUserRole(modelBuilder);
 
         ConfigureConfig(modelBuilder);
         ConfigureSocialiteUser(modelBuilder);
         ConfigureFile(modelBuilder);
+
+        ConfigureAutoJob(modelBuilder);
+        ConfigureAutoJobLog(modelBuilder);
+
         ConfigureCarousel(modelBuilder);
     }
 
@@ -35,7 +38,6 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Password).HasMaxLength(UserEntityConsts.MaxPasswordLength);
             b.Property(x => x.Email).IsRequired().HasMaxLength(UserEntityConsts.MaxEmailLength);
             b.Property(x => x.Age).HasDefaultValue(0);
-            //b.HasMany(x => x.UserRoles);
             b.Property(x => x.Avatar).HasMaxLength(UserEntityConsts.MaxAvatarLength);
             b.Property(x => x.Access).HasConversion(
                 v => v.ToString(),
@@ -47,7 +49,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
             b.Property(x => x.Address).HasMaxLength(UserEntityConsts.MaxAddressLength);
             // b.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");//for SQLite
-            b.ConfigureSoftDelete();
+            b.ConfigureAudit();
             b.HasMany(x => x.Roles).WithMany(x => x.Users).UsingEntity<UserRole>(
                 TablePrefix + "UserRole",
                 r => r.HasOne<Role>().WithMany().HasForeignKey(ur => ur.RoleId),
@@ -95,7 +97,7 @@ public static class LazyDbContextModelCreatingExtensions
                     je.Property(rm => rm.MenuId).ValueGeneratedNever();
                 }
             );
-            b.ConfigureSoftDelete();
+            b.ConfigureAudit();
         });
     }
 
@@ -118,54 +120,77 @@ public static class LazyDbContextModelCreatingExtensions
                v => (MenuType)Enum.Parse(typeof(MenuType), v)
             ).HasMaxLength(MenuEntityConsts.MaxMenuTypeLength);
             b.Property(x => x.IsActive).IsRequired().HasDefaultValue(false);
-            //b.HasMany(cs => cs.RoleMenus);
             b.HasOne(cs => cs.Parent).WithMany(cs => cs.Children).HasForeignKey(cs => cs.ParentId);
-            b.ConfigureSoftDelete();
+            b.ConfigureAudit();
             b.HasMany(x => x.Roles).WithMany(x => x.Menus);
             b.HasIndex(x => new { x.IsDeleted, x.MenuType, x.ParentId, x.CreatedAt });
         });
     }
 
-    //private static void ConfigureRoleMenu(ModelBuilder modelBuilder)
-    //{
-    //    modelBuilder.Entity<RoleMenu>(b =>
-    //    {
-    //        b.ToTable(TablePrefix + "RoleMenu");
-    //        b.HasKey(x => x.Id);
-    //        b.Property(x => x.Id).ValueGeneratedNever();
-    //        b.HasKey(rm => new { rm.RoleId, rm.MenuId });
-    //        //b.HasOne(rm => rm.Role)
-    //        //  .WithMany(r => r.RoleMenus)
-    //        //  .HasForeignKey(rm => rm.RoleId);
-    //        //b.HasOne(rm => rm.Menu)
-    //        // .WithMany(m => m.RoleMenus)
-    //        // .HasForeignKey(rm => rm.MenuId);
-    //    });
-    //}
+    private static void ConfigureAutoJob(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AutoJob>(b =>
+        {
+            b.ToTable(TablePrefix + "AutoJob");
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.JobGroupName)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.JobName)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(cs => cs.JobStatus).HasConversion(
+               v => v.ToString(),
+               v => (JobStatus)Enum.Parse(typeof(JobStatus), v)
+            ).HasMaxLength(EntityConsts.MaxLength32);
+            b.Property(x => x.CronExpression)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.StartAt)
+                .IsRequired(false);
+            b.Property(x => x.EndAt)
+                .IsRequired(false);
+            b.Property(x => x.NextStartAt)
+                .IsRequired(false);
+            b.Property(x => x.Remark)
+                .IsRequired(false)
+                .HasMaxLength(EntityConsts.MaxLength255);
+            b.ConfigureAudit();
+            b.HasIndex(x => x.JobGroupName);
+            b.HasIndex(x => x.JobName);
+        });
+    }
 
-    //private static void ConfigureUserRole(ModelBuilder modelBuilder)
-    //{
-    //    modelBuilder.Entity<UserRole>(b =>
-    //    {
-    //        b.ToTable(TablePrefix + "UserRole");
-    //        // b.HasKey(x => x.Id);
-    //        b.Property(x => x.Id).ValueGeneratedNever();
-    //        b.HasKey(ur => new { ur.UserId, ur.RoleId });
-    //        //b.HasOne(ur => ur.User)
-    //        //      .WithMany(u => u.UserRoles)
-    //        //      .HasForeignKey(ur => ur.UserId);
-    //        //      //.OnDelete(DeleteBehavior.Cascade);
-    //        //b.HasOne(ur => ur.Role)
-    //        //      .WithMany(r => r.UserRoles)
-    //        //      .HasForeignKey(ur => ur.RoleId);
-    //    });
-    //}
+    private static void ConfigureAutoJobLog(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AutoJobLog>(b =>
+        {
+            b.ToTable(TablePrefix + "AutoJobLog");
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.JobGroupName)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.JobName)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.LogStatus)
+                .IsRequired(false);
+            b.Property(x => x.Remark)
+                .IsRequired(false);
+            b.ConfigureAudit();
+            b.HasIndex(x => x.JobGroupName);
+            b.HasIndex(x => x.JobName);
+        });
+    }
 
     private static void ConfigureCarousel(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Carousel>(b =>
         {
             b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
             b.Property(x => x.Title)
                 .IsRequired()
                 .HasMaxLength(CarouselEntityConsts.MaxTitleLength);
@@ -177,7 +202,6 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.IsActive)
                 .IsRequired()
                 .HasDefaultValue(CarouselEntityConsts.DefaultIsActive);
-            b.Property(x => x.UpdatedAt).IsRequired();
             b.Property(x => x.StartDate)
                 .IsRequired(false);
             b.Property(x => x.EndDate)
@@ -187,12 +211,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.Description)
                 .IsRequired(false);
             b.HasIndex(x => x.Position);
-            b.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(x => x.CreatedBy);
-            b.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(x => x.UpdatedBy);
+            b.ConfigureAudit();
         });
     }
 
@@ -265,50 +284,42 @@ public static class LazyDbContextModelCreatingExtensions
     public static void ConfigureAudit<T>(this EntityTypeBuilder<T> b)
         where T : class
     {
-        if (b.Metadata.ClrType.IsSubclassOf(typeof(BaseEntityWithAudit)))
+        if (b.Metadata.ClrType.IsSubclassOf(typeof(BaseEntityWithCreatingAudit)))
         {
-            b.Property(nameof(BaseEntityWithAudit.CreatedBy))
+            b.Property(nameof(BaseEntityWithCreatingAudit.CreatedBy))
                 .IsRequired(true)
-                .HasColumnName(nameof(BaseEntityWithAudit.CreatedBy));
+                .HasColumnName(nameof(BaseEntityWithCreatingAudit.CreatedBy));
 
-            b.Property(nameof(BaseEntityWithAudit.CreatedAt))
+            b.Property(nameof(BaseEntityWithCreatingAudit.CreatedAt))
                 .IsRequired(true)
-                .HasColumnName(nameof(BaseEntityWithAudit.CreatedAt));
-
-            b.Property(nameof(BaseEntityWithAudit.UpdatedBy))
-                .IsRequired(false)
-                .HasColumnName(nameof(BaseEntityWithAudit.UpdatedBy));
-
-            b.Property(nameof(BaseEntityWithAudit.UpdatedAt))
-                .IsRequired(false)
-                .HasColumnName(nameof(BaseEntityWithAudit.UpdatedAt));
+                .HasColumnName(nameof(BaseEntityWithCreatingAudit.CreatedAt));
         }
-    }
 
-    /// <summary>
-    /// configuration for audit properties
-    /// </summary>
-    /// <typeparam name="T">your model<Teacher></typeparam>
-    /// <param name="b">The delegate parameter passed to Entity<Teacher></param>
-    public static void ConfigureSoftDelete<T>(this EntityTypeBuilder<T> b)
-        where T : class
-    {
-        b.ConfigureAudit();
-
-        if (b.Metadata.ClrType.IsSubclassOf(typeof(BaseEntityWithSoftDelete)))
+        if (b.Metadata.ClrType.IsSubclassOf(typeof(BaseEntityWithUpdatingAudit)))
         {
-            b.Property(nameof(BaseEntityWithSoftDelete.IsDeleted))
-                .IsRequired(true)
+            b.Property(nameof(BaseEntityWithUpdatingAudit.UpdatedBy))
+                .IsRequired(false)
+                .HasColumnName(nameof(BaseEntityWithUpdatingAudit.UpdatedBy));
+
+            b.Property(nameof(BaseEntityWithUpdatingAudit.UpdatedAt))
+                .IsRequired(false)
+                .HasColumnName(nameof(BaseEntityWithUpdatingAudit.UpdatedAt));
+        }
+
+        if (b.Metadata.ClrType.IsSubclassOf(typeof(BaseEntityWithDeletingAudit)))
+        {
+            b.Property(nameof(BaseEntityWithDeletingAudit.IsDeleted))
+                .IsRequired()
                 .HasDefaultValue(false)
-                .HasColumnName(nameof(BaseEntityWithSoftDelete.IsDeleted));
+                .HasColumnName(nameof(BaseEntityWithDeletingAudit.IsDeleted));
 
-            b.Property(nameof(BaseEntityWithSoftDelete.DeletedBy))
+            b.Property(nameof(BaseEntityWithDeletingAudit.DeletedBy))
                 .IsRequired(false)
-                .HasColumnName(nameof(BaseEntityWithSoftDelete.DeletedBy));
+                .HasColumnName(nameof(BaseEntityWithDeletingAudit.DeletedBy));
 
-            b.Property(nameof(BaseEntityWithSoftDelete.DeletedAt))
+            b.Property(nameof(BaseEntityWithDeletingAudit.DeletedAt))
                 .IsRequired(false)
-                .HasColumnName(nameof(BaseEntityWithSoftDelete.DeletedAt));
+                .HasColumnName(nameof(BaseEntityWithDeletingAudit.DeletedAt));
         }
     }
 }

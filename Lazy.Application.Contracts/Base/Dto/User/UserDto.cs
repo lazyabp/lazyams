@@ -2,7 +2,7 @@
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class UserDto : BaseEntityWithAuditDto
+public class UserDto : BaseEntityWithUpdatingAuditDto
 {
     public string UserName { get; set; }
 

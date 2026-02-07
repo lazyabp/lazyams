@@ -2,7 +2,7 @@
 
 namespace Lazy.Model.Entity;
 
-public class Menu : BaseEntityWithSoftDelete
+public class Menu : BaseEntityWithDeletingAudit
 {
     /// <summary>
     /// the name of the menu.

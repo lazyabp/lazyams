@@ -2,7 +2,7 @@
 
 namespace Lazy.Application.Contracts.Dto;
 
-public class RoleDto: BaseEntityWithAuditDto
+public class RoleDto: BaseEntityWithUpdatingAuditDto
 {
     [Required(ErrorMessage = "RoleName cannnot be Null")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "UserName must be between 3 and 50 character")]

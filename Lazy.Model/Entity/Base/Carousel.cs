@@ -2,7 +2,7 @@
 
 namespace Lazy.Model.Entity;
 
-public class Carousel : BaseEntityWithAudit
+public class Carousel : BaseEntityWithUpdatingAudit
 {
     /// <summary>
     /// The title of the carousel item.
