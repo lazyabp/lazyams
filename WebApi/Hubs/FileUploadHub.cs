@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
-namespace Lazy.Shared.Hubs;
+namespace WebApi.Hubs;
 
 /// <summary>
 /// SignalR hub for handling file upload progress updates.

@@ -4,7 +4,6 @@ using Lazy.Core;
 using Lazy.Core.Authorization;
 using Lazy.Core.LazyAttribute;
 using Lazy.Model.DBContext;
-using Lazy.Shared.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using WebApi.Filters;
+using WebApi.Hubs;
 using WebApi.Init;
 using WebApi.Middlewares;
 
@@ -159,7 +159,10 @@ public class Program
                     });
             });
 
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR()
+                .AddJsonProtocol(options => {
+                    options.PayloadSerializerOptions.WriteIndented = true;
+                });
 
             builder.Services.AddHttpContextAccessor();
 
@@ -176,7 +179,8 @@ public class Program
             app.UseCors(defaultPolicy);
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.MapHub<FileUploadHub>("/fileUploadHub");
+            //app.MapHub<FileUploadHub>("/fileUploadHub");
+            app.MapHub<ChatHub>("/chat");
 
             // Configure the HTTP request pipeline.
             //app.UseSwaggerLazy();
