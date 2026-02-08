@@ -34,9 +34,12 @@ public class AutoJobService : CrudService<AutoJob, AutoJobDto, AutoJobDto, long,
 
         var jobCenter = new Lazy.Application.AutoJobs.JobCenter();
         if (entity.JobStatus == JobStatus.Stopped)
-            await jobCenter.RemoveScheduleJob(entity.JobName, entity.JobGroupName);
+            await jobCenter.RemoveScheduleJob(entity);
         else
             await jobCenter.UpdateScheduleJob(entity);
+
+        dbSet.Attach(entity);
+        await LazyDBContext.SaveChangesAsync();
 
         return MapToGetOutputDto(entity);
     }

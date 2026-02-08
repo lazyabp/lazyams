@@ -34,15 +34,10 @@ public class JobCenter
     {
         try
         {
-            if (entity.StartAt == null)
-            {
-                entity.StartAt = DateTime.Now;
-            }
-            DateTimeOffset starRunTime = DateBuilder.NextGivenSecondDate(entity.StartAt, 1);
-            if (entity.EndAt == null)
-            {
-                entity.EndAt = DateTime.MaxValue.AddDays(-1);
-            }
+            entity.StartAt = DateTime.Now;
+            entity.EndAt = DateTime.MaxValue.AddDays(-1);
+
+            DateTimeOffset starRunTime = DateBuilder.NextGivenSecondDate(entity.StartAt, 1);            
             DateTimeOffset endRunTime = DateBuilder.NextGivenSecondDate(entity.EndAt, 1);
 
             var scheduler = JobScheduler.GetScheduler();
@@ -95,6 +90,25 @@ public class JobCenter
 
             await scheduler.ScheduleJob(job, trigger);
             await scheduler.Start();
+        }
+        catch (Exception ex)
+        {
+            LogUtil.Error(ex);
+        }
+    }
+
+    /// <summary>
+    /// 移除定时任务
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public async Task RemoveScheduleJob(AutoJob entity)
+    {
+        try
+        {            
+            await RemoveScheduleJob(entity.JobName, entity.JobGroupName);
+
+            entity.EndAt = DateTime.Now;
         }
         catch (Exception ex)
         {
