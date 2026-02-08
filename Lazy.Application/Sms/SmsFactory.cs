@@ -1,6 +1,5 @@
 ﻿using Lazy.Core;
 using Lazy.Shared.Configs;
-using Lazy.Shared.Enum;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lazy.Application.Sms;

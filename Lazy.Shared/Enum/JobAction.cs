@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Lazy.Shared;
 
-public enum MailerType
+public enum JobAction
 {
-    Smtp = 0,
-    Resend = 1,
+    Fire = 1,
+    Stop = 2,
 }

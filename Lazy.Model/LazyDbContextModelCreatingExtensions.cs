@@ -1,5 +1,4 @@
 ﻿using Lazy.Shared.Entity;
-using Lazy.Shared.Enum;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public static class LazyDbContextModelCreatingExtensions

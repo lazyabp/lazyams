@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lazy.Application;
 
-public class AutoJobLogService : CrudService<AutoJobLog, AutoJobLogDto, AutoJobLogDto, long, FilterPagedResultRequestDto, CreateAutoJobLogDto, UpdateAutoJobLogDto>,
+public class AutoJobLogService : CrudService<AutoJobLog, AutoJobLogDto, AutoJobLogListDto, long, FilterPagedResultRequestDto, CreateAutoJobLogDto, UpdateAutoJobLogDto>,
     IAutoJobLogService, ITransientDependency
 {
     public AutoJobLogService(LazyDBContext dbContext, IMapper mapper)
@@ -12,8 +12,8 @@ public class AutoJobLogService : CrudService<AutoJobLog, AutoJobLogDto, AutoJobL
     {
     }
 
-    public async Task Clear()
+    public async Task ClearAsync()
     {
-        var logs = await LazyDBContext.Database.ExecuteSqlRawAsync("truncate table AutoJobLog");
+        await LazyDBContext.Database.ExecuteSqlRawAsync("truncate table AutoJobLog");
     }
 }

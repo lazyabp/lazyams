@@ -39,6 +39,7 @@ public class BaseProfile : Profile
         CreateMap<UpdateAutoJobDto, AutoJob>();
 
         CreateMap<AutoJobLog, AutoJobLogDto>().ReverseMap();
+        CreateMap<AutoJobLog, AutoJobLogListDto>();
         CreateMap<CreateAutoJobLogDto, AutoJobLog>().ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<UpdateAutoJobLogDto, AutoJobLog>();
 

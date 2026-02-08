@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lazy.Shared.Enum
+namespace Lazy.Shared;
+
+public enum SmsProvider
 {
-    public enum SmsProvider
-    {
-        Twilio = 0,
-        Alibaba = 1,
-        Tencent = 2,
-    }
+    Twilio = 0,
+    Alibaba = 1,
+    Tencent = 2,
 }

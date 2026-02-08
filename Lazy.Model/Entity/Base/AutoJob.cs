@@ -1,6 +1,4 @@
-﻿using Lazy.Shared.Enum;
-
-namespace Lazy.Model.Entity;
+﻿namespace Lazy.Model.Entity;
 
 public class AutoJob : BaseEntityWithDeletingAudit
 {

@@ -1,6 +1,4 @@
-﻿using Lazy.Shared.Enum;
-
-namespace Lazy.Shared.Configs;
+﻿namespace Lazy.Shared.Configs;
 
 public class SmsConfigModel
 {

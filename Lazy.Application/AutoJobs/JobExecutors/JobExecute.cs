@@ -3,7 +3,6 @@ using Lazy.Core;
 using Lazy.Core.Extensions;
 using Lazy.Core.Utils;
 using Lazy.Shared.Entity;
-using Lazy.Shared.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.Impl.Triggers;

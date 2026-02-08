@@ -12,7 +12,7 @@ public class LogCleanerJob : IJobTask
     {
         // 执行发布
         var service = GlobalContext.ServiceProvider.GetRequiredService<IAutoJobLogService>();
-        await service.Clear();
+        await service.ClearAsync();
 
         TData obj = new TData();
         obj.Tag = 1;
