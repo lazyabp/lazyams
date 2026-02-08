@@ -1,5 +1,6 @@
 ﻿using Lazy.Application.Mailer;
 using Lazy.Application.Sms;
+using Lazy.Core.Caching;
 using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;

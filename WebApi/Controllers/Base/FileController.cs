@@ -45,4 +45,18 @@ public class FileController : ControllerBase
     {
         return await _fileService.UploadAvatarAsync(file);
     }
+
+    /// <summary>
+    /// 删除文件
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize(PermissionConsts.File.Delete)]
+    [HttpDelete("{id}")]
+    public async Task<bool> Delete(long id)
+    {
+        await _fileService.DeleteAsync(id);
+
+        return true;
+    }
 }

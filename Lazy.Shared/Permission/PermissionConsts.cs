@@ -35,6 +35,12 @@ public class PermissionConsts
         public const string Update = Default + ".Update";
     }
 
+    public class Cache
+    {
+        public const string Default = PermissionManagement + ".Cache";
+        public const string Delete = Default + ".Delete";
+    }
+
     public class AutoJob
     {
         public const string Default = PermissionManagement + ".AutoJob";
@@ -54,6 +60,7 @@ public class PermissionConsts
     {
         public const string Default = PermissionManagement + ".File";
         public const string Add = Default + ".Add";
+        public const string Delete = Default + ".Delete";
     }
 
     public class Carousel

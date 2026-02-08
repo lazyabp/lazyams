@@ -11,6 +11,9 @@ public class CacheConsts
     public const string MenuCacheTag = "menu_cache";
     public const string MenuCacheKey = "menu_cache_{0}";
 
+    public const string ConfigCacheTag = "config_cache";
+    public const string ConfigCacheKey = "config_cache_{0}";
+
     public const string UserPermissionCacheTag = "permission_cache";
     public const string UserPermissionCacheKey = "permission_cache_userid_{0}";
 }

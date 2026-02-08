@@ -36,27 +36,43 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<Menu> menus = new List<Menu>()
     {
-        new Menu(){Id=1, Name="Rights Management", Title="Rights Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=2, Name="User", Title="User", ParentId=1, MenuType=MenuType.Menu, OrderNum=1, Route="/user", Component="user/index", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=3, Name="Add", Title="Add",ParentId=2, MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.User.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=4, Name="Update", Title="Update",ParentId=2, MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.User.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=5, Name="Delete", Title="Delete",ParentId=2, MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.User.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=6, Name="Role", Title="Role",ParentId=1,MenuType= MenuType.Menu, OrderNum=2,Route="/role", Component="role/index", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
-        new Menu(){Id=7, Name="Add",Title="Add",ParentId=6, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Role.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=8, Name="Update",Title="Update",ParentId=6, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=9, Name="Delete",Title="Delete",ParentId=6, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=10, Name = "Menu", Title="Menu",ParentId=1,MenuType=MenuType.Menu, OrderNum=1,Route="/menu",Component="menu/index", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
-        new Menu(){Id=11, Name="Add",Title="Add",ParentId=10, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=12, Name="Update",Title="Update",ParentId=10, MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=13, Name="Delete",Title="Delete",ParentId=10, MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=1, Name="Rights", Icon="el-icon-coordinate", Title="权限管理", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        
+        new Menu(){Id=2, ParentId=1, Icon="el-icon-user", Name="User", Title="User", MenuType=MenuType.Menu, OrderNum=1, Route="/user", Component="user/index", Permission=PermissionConsts.User.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=3, ParentId=2, Icon="", Name="Add", Title="Add",MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.User.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=4, ParentId=2, Icon="", Name="Update", Title="Update",MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.User.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=5, ParentId=2, Icon="", Name="Delete", Title="Delete",MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.User.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        
+        new Menu(){Id=6, ParentId=1, Icon="el-icon-user-solid", Name="Role", Title="Role",MenuType= MenuType.Menu, OrderNum=2,Route="/role", Component="role/index", Permission=PermissionConsts.Role.Default,CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=7, ParentId=6, Icon="", Name="Add",Title="Add",MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Role.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=8, ParentId=6, Icon="", Name="Update",Title="Update",MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Role.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=9, ParentId=6, Icon="", Name="Delete",Title="Delete",MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Role.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        
+        new Menu(){Id=10, ParentId=1, Icon="el-icon-s-fold", Name = "Menu", Title="Menu",MenuType=MenuType.Menu, OrderNum=3,Route="/menu", Component="menu/index", Permission=PermissionConsts.Menu.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=11, ParentId=10, Icon="", Name="Add",Title="Add",MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Menu.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=12, ParentId=10, Icon="", Name="Update",Title="Update", MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Menu.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=13, ParentId=10, Icon="", Name="Delete",Title="Delete", MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Menu.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=14, Name="Config Management", Title="Config Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=15, Name = "Config", Title="Config",ParentId=14,MenuType=MenuType.Menu, OrderNum=1,Route="/config",Component="config/index", Permission=PermissionConsts.Config.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=16, Name="Update",Title="Update",ParentId=15, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Config.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=17, Name="Media Management", Title="Media Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=18, Name = "File", Title="File",ParentId=17,MenuType=MenuType.Menu, OrderNum=1,Route="/file",Component="file/index", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=19, Name="Upload",Title="Upload",ParentId=18, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=14, Name="System", Icon="el-icon-school", Title="系统管理", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        
+        new Menu(){Id=15, ParentId=14, Icon="el-icon-setting", Name = "Config", Title="系统配置",MenuType=MenuType.Menu, OrderNum=1,Route="/config", Component="config/index", Permission=PermissionConsts.Config.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=16, ParentId=15, Icon="", Name="Update",Title="Update",MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Config.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=17, ParentId=14, Icon="el-icon-date", Name = "AutoJob", Title="自动任务",MenuType=MenuType.Menu, OrderNum=1,Route="/auto-job", Component="auto-job/index", Permission=PermissionConsts.AutoJob.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=18, ParentId=17, Icon="", Name="Add",Title="Add",MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.AutoJob.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=19, ParentId=17, Icon="", Name="Update",Title="Update", MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.AutoJob.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=20, ParentId=17, Icon="", Name="Delete",Title="Delete", MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.AutoJob.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=21, ParentId=14, Icon="el-icon-tickets", Name = "AutoJobLog", Title="任务日志",MenuType=MenuType.Menu, OrderNum=1,Route="/auto-job-log", Component="auto-job-log/index", Permission=PermissionConsts.AutoJobLog.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true },
+        new Menu(){Id=22, ParentId=21, Icon="", Name="Delete",Title="Delete", MenuType=MenuType.Btn, OrderNum=3, Permission=PermissionConsts.AutoJobLog.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=23, ParentId=14, Icon="el-icon-picture-outline", Name = "File", Title="文件管理", MenuType=MenuType.Menu, OrderNum=1,Route="/file", Component="file/index", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=24, ParentId=23, Icon="", Name="Upload",Title="Upload", MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=25, ParentId=23, Icon="", Name="Delete",Title="Delete", MenuType=MenuType.Btn, OrderNum=2, Permission=PermissionConsts.File.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+
+        new Menu(){Id=26, ParentId=14, Icon="el-icon-discover", Name = "Cache", Title="缓存管理", MenuType=MenuType.Menu, OrderNum=1,Route="/cache", Component="cache/index", Permission=PermissionConsts.Cache.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=27, ParentId=26, Icon="", Name="Delete",Title="Delete", MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Cache.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
     };
 
     private List<Config> configs = new List<Config>

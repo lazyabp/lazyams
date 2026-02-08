@@ -24,6 +24,7 @@ public class AutoJobController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpGet]
+    [Authorize(PermissionConsts.AutoJob.Default)]
     public async Task<PagedResultDto<AutoJobDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         return await _autoJobService.GetListAsync(input);
@@ -35,6 +36,7 @@ public class AutoJobController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
+    [Authorize(PermissionConsts.AutoJob.Default)]
     public async Task<AutoJobDto> GetById(long id)
     {
         return await _autoJobService.GetAsync(id);
@@ -45,7 +47,7 @@ public class AutoJobController : ControllerBase
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpPost]
     [Authorize(PermissionConsts.AutoJob.Add)]
     public async Task<AutoJobDto> Add([FromBody] CreateAutoJobDto input)
     {

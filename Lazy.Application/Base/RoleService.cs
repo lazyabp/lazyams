@@ -57,9 +57,17 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     /// <exception cref="EntityNotFoundException"></exception>
     public async Task<RoleDto> ActiveAsync(long id, ActiveDto input)
     {
-        var role = await LazyDBContext.Roles.FirstOrDefaultAsync(u => u.Id == id);
+        var role = await LazyDBContext.Roles.Include(x => x.Users).FirstOrDefaultAsync(u => u.Id == id);
 
-        if (role == null) throw new EntityNotFoundException(nameof(Role), id.ToString());
+        if (role == null) 
+            throw new EntityNotFoundException(nameof(Role), id.ToString());
+
+        foreach (var user in role.Users)
+        {
+            var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, user.Id);
+            _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
+        }
+
         role.IsActive = input.IsActive;
         SetUpdatedAudit(role);
 
@@ -92,6 +100,13 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     /// <returns></returns>
     public override async Task<RoleDto> UpdateAsync(long id, UpdateRoleDto input)
     {
+        var role = await LazyDBContext.Roles.Include(r => r.Users).FirstOrDefaultAsync(r => r.Id == id);
+        foreach (var user in role.Users)
+        {
+            var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, user.Id);
+            _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
+        }
+
         return await base.UpdateAsync(id, input);
     }
 
@@ -102,6 +117,13 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     /// <returns></returns>
     public override async Task DeleteAsync(long id)
     {
+        var role = await LazyDBContext.Roles.Include(r => r.Users).FirstOrDefaultAsync(r => r.Id == id);
+        foreach (var user in role.Users)
+        {
+            var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, user.Id);
+             _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
+        }
+
         await base.DeleteAsync(id);
     }
 
@@ -129,6 +151,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         }
 
         await LazyDBContext.SaveChangesAsync();
+        _caching.RemoveHashCache(CacheConsts.UserPermissionCacheTag);
 
         return true;
     }
@@ -204,6 +227,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         }
 
         await LazyDBContext.SaveChangesAsync();
+        _caching.RemoveHashCache(CacheConsts.UserPermissionCacheTag);
 
         return true;
     }

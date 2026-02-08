@@ -23,6 +23,7 @@ public class AutoJobLogController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpGet]
+    [Authorize(PermissionConsts.AutoJobLog.Default)]
     public async Task<PagedResultDto<AutoJobLogListDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
     {
         return await _autoJobLogService.GetListAsync(input);
@@ -34,6 +35,7 @@ public class AutoJobLogController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
+    [Authorize(PermissionConsts.AutoJobLog.Default)]
     public async Task<AutoJobLogDto> GetById(long id)
     {
         return await _autoJobLogService.GetAsync(id);

@@ -5,19 +5,18 @@ namespace Lazy.Application;
 public class SocialiteUserService : CrudService<SocialiteUser, SocialiteUserDto, SocialiteUserDto, long, FilterPagedResultRequestDto, CreateSocialiteUserDto, UpdateSocialiteUserDto>,
     ISocialiteUserService, ITransientDependency
 {
-    //private readonly ILazyCache _lazyCache;
+    //private readonly ICaching _caching;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
 
     public SocialiteUserService(
         LazyDBContext dbContext, 
         IMapper mapper, 
-        //ILazyCache lazyCache,
         IAuthenticationService authenticationService,
         IUserService userService)
         : base(dbContext, mapper)
     {
-        //_lazyCache = lazyCache;
+        //_caching = CacheFactory.Cache;
         _authenticationService = authenticationService;
         _userService = userService;
     }

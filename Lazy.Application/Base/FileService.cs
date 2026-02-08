@@ -10,18 +10,15 @@ namespace Lazy.Application;
 public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto, long, FilterPagedResultRequestDto, CreateFileDto, UpdateFileDto>,
     IFileService, ITransientDependency
 {
-    //private readonly ILazyCache _lazyCache;
     private readonly IConfigService _settingService;
     private readonly IServiceProvider _serviceProvider;
 
     public FileService(LazyDBContext dbContext, 
         IMapper mapper, 
-        //ILazyCache lazyCache,
         IConfigService settingService,
         IServiceProvider serviceProvider) 
         : base(dbContext, mapper)
     {
-        //_lazyCache = lazyCache;
         _settingService = settingService;
         _serviceProvider = serviceProvider;
     }
