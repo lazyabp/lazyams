@@ -17,7 +17,6 @@ public class PermissionConsts
     {
         public const string Default = PermissionManagement + ".Role";
         public const string Add = Default + ".Add";
-        public const string Search = Default + ".Search";
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
     }
@@ -54,7 +53,7 @@ public class PermissionConsts
     public class File
     {
         public const string Default = PermissionManagement + ".File";
-        public const string Upload = Default + ".Upload";
+        public const string Add = Default + ".Add";
     }
 
     public class Carousel

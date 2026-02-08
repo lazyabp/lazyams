@@ -1,4 +1,5 @@
-﻿using Lazy.Application.Contracts.Events;
+﻿using Amazon.Runtime.Internal.Util;
+using Lazy.Application.Contracts.Events;
 using Lazy.Core.Utils;
 using MediatR;
 
@@ -7,12 +8,12 @@ namespace Lazy.Application;
 public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedResultRequestDto, CreateUserDto, UpdateUserDto>,
         IUserService, ITransientDependency
 {
-    private readonly ICaching _lazyCache;
+    private readonly ICaching _caching;
     private readonly IMediator _mediator;
 
     public UserService(LazyDBContext dbContext, IMapper mapper, IMediator mediator) : base(dbContext, mapper)
     {
-        _lazyCache = CacheFactory.Cache;
+        _caching = CacheFactory.Cache;
         _mediator = mediator;
     }
 
@@ -139,8 +140,8 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
         var userDto = Mapper.Map<UserDto>(user);
 
         //clear permission from cache
-        var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        _lazyCache.RemoveCache(cacheKey);
+        var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, id);
+        _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
 
         return userDto;
     }
@@ -166,8 +167,8 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
         var userDto = Mapper.Map<UserDto>(user);
 
         //clear permission from cache
-        var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        _lazyCache.RemoveCache(cacheKey);
+        var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, id);
+        _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
 
         return userDto;
     }
@@ -227,6 +228,9 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
             LazyDBContext.Users.Remove(user);
 
         await LazyDBContext.SaveChangesAsync();
+
+        var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, id);
+        _caching.RemoveHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey);
 
         return true;
     }

@@ -4,11 +4,11 @@ namespace Lazy.Application;
 
 public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePagedResultRequestDto, CreateRoleDto, UpdateRoleDto>, IRoleService, ITransientDependency
 {
-    private readonly ICaching _cacheing;
+    private readonly ICaching _caching;
 
     public RoleService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        _cacheing = CacheFactory.Cache;
+        _caching = CacheFactory.Cache;
     }
 
     /// <summary>
@@ -32,7 +32,6 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         var roleDtos = Mapper.Map<List<RoleListDto>>(roles);
 
         return new PagedResultDto<RoleListDto>(totalItems, roleDtos);
-        //return await base.GetListAsync(input);
     }
 
     protected override IQueryable<Role> CreateFilteredQuery(RolePagedResultRequestDto input)
@@ -67,10 +66,6 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
         await LazyDBContext.SaveChangesAsync();
 
         var roleDto = Mapper.Map<RoleDto>(role);
-
-        //clear permission from cache
-        var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        _cacheing.RemoveCache(cacheKey);
 
         return roleDto;
     }
@@ -141,12 +136,12 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
     /// <summary>
     /// 获取用户权限信息
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">用户ID</param>
     /// <returns></returns>
     public async Task<List<string>> GetPermissionsbyUserIdAsync(long id)
     {
-        var cacheKey = string.Format(CacheConsts.PermissCacheKey, id);
-        var permissiones = _cacheing.GetCache<List<string>>(cacheKey);
+        var cacheKey = string.Format(CacheConsts.UserPermissionCacheKey, id);
+        var permissiones = _caching.GetHashFieldCache<List<string>>(CacheConsts.UserPermissionCacheTag, cacheKey);
 
         if (permissiones == null)
         {
@@ -183,7 +178,7 @@ public class RoleService : CrudService<Role, RoleDto, RoleListDto, long, RolePag
 
             permissiones = [.. permissiones.Distinct()];
 
-            _cacheing.SetCache(cacheKey, permissiones);
+            _caching.SetHashFieldCache(CacheConsts.UserPermissionCacheTag, cacheKey, permissiones);
         }
 
         return permissiones;

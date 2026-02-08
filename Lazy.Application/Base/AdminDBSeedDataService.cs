@@ -56,7 +56,7 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
         new Menu(){Id=17, Name="Media Management", Title="Media Management", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=18, Name = "File", Title="File",ParentId=17,MenuType=MenuType.Menu, OrderNum=1,Route="/file",Component="file/index", Permission=PermissionConsts.File.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
-        new Menu(){Id=19, Name="Upload",Title="Upload",ParentId=18, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Upload, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=19, Name="Upload",Title="Upload",ParentId=18, MenuType=MenuType.Btn, OrderNum=1, Permission=PermissionConsts.File.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
     };
 
     private List<Config> configs = new List<Config>

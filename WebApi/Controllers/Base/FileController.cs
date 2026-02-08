@@ -26,7 +26,7 @@ public class FileController : ControllerBase
     /// <param name="file"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(PermissionConsts.File.Upload)]
+    [Authorize(PermissionConsts.File.Add)]
     [Route("Upload")]
     public async Task<FileDto> UploadAsync(IFormFile file)
     {

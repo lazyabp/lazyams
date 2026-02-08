@@ -101,6 +101,12 @@ namespace Lazy.Core.Caching
             foreach (string fieldKey in dict.Keys)
             {
                 string fieldValue = cache.HashGet(key, fieldKey);
+                if (fieldValue == null)
+                {
+                    dict[fieldKey] = default;
+                    continue;
+                }
+
                 dict[fieldKey] = JsonConvert.DeserializeObject<T>(fieldValue);
             }
             return dict;

@@ -2,12 +2,11 @@
 
 public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedResultRequestDto, CreateMenuDto, UpdateMenuDto>, IMenuService, ITransientDependency
 {
-    private readonly ICaching _cache;
-    private readonly string cacheTag = "menu";
+    private readonly ICaching _caching;
 
     public MenuService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        _cache = CacheFactory.Cache;
+        _caching = CacheFactory.Cache;
     }
 
     protected override IQueryable<Menu> CreateFilteredQuery(MenuPagedResultRequestDto input)
@@ -46,7 +45,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         await LazyDBContext.SaveChangesAsync();
 
-        _cache.RemoveHashCache(cacheTag);
+        _caching.RemoveHashCache(CacheConsts.MenuCacheTag);
 
         return true;
     }
@@ -58,13 +57,13 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             throw new EntityNotFoundException($"Menu with ID {id} not found.");
 
         var key = $"menu:{id}";
-        var menu = _cache.GetHashFieldCache<MenuDto>(cacheTag, key);
+        var menu = _caching.GetHashFieldCache<MenuDto>(CacheConsts.MenuCacheTag, key);
         if (menu == null)
         {
             menu = await base.GetAsync(id);
 
             if (menu != null)
-                _cache.SetHashFieldCache(cacheTag, key, menu);
+                _caching.SetHashFieldCache(CacheConsts.MenuCacheTag, key, menu);
         }
 
         return menu;
@@ -89,8 +88,66 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         }
 
         var menuDto = await base.CreateAsync(input);
+        // 关联创建按钮
+        if (menuDto.MenuType == MenuType.Menu)
+        {
+            if (input.CreateAddButton)
+            {
+                var add = new CreateMenuDto
+                {
+                    Name = "Add",
+                    Title = "Add",
+                    Permission = menuDto.Permission + ".Add",
+                    Icon = "el-icon-menu",
+                    MenuType = MenuType.Btn,
+                    OrderNum = 1,
+                    Route = "",
+                    Component = "",
+                    ParentId = menuDto.Id,
+                    IsActive = true
+                };
+                await base.CreateAsync(add);
+            }
 
-        _cache.RemoveHashCache(cacheTag);
+            if (input.CreateUpdateButton)
+            {
+                var update = new CreateMenuDto
+                {
+                    Name = "Update",
+                    Title = "Update",
+                    Permission = menuDto.Permission + ".Update",
+                    Icon = "el-icon-menu",
+                    MenuType = MenuType.Btn,
+                    OrderNum = 2,
+                    Route = "",
+                    Component = "",
+                    ParentId = menuDto.Id,
+                    IsActive = true
+                };
+                await base.CreateAsync(update);
+            }
+
+            if (input.CreateDeleteButton)
+            {
+                var delete = new CreateMenuDto
+                {
+                    Name = "Delete",
+                    Title = "Delete",
+                    Permission = menuDto.Permission + ".Delete",
+                    Icon = "el-icon-menu",
+                    MenuType = MenuType.Btn,
+                    OrderNum = 3,
+                    Route = "",
+                    Component = "",
+                    ParentId = menuDto.Id,
+                    IsActive = true
+                };
+                await base.CreateAsync(delete);
+            }
+        }
+
+        _caching.RemoveHashCache(CacheConsts.MenuCacheTag);
+        _caching.RemoveHashCache(CacheConsts.UserPermissionCacheTag);
 
         return menuDto;
     }
@@ -111,7 +168,8 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
         }
 
         var result = await base.UpdateAsync(id, input);
-        _cache.RemoveHashCache(cacheTag);
+        _caching.RemoveHashCache(CacheConsts.MenuCacheTag);
+        _caching.RemoveHashCache(CacheConsts.UserPermissionCacheTag);
 
         return result;
     }
@@ -127,7 +185,8 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
 
         await base.DeleteAsync(id);
 
-        _cache.RemoveHashCache(cacheTag);
+        _caching.RemoveHashCache(CacheConsts.MenuCacheTag);
+        _caching.RemoveHashCache(CacheConsts.UserPermissionCacheTag);
     }
 
     // Get menu tree
@@ -147,7 +206,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     // Validate child menu existince
     private bool IsAnyChildMenuExist(long id)
     {
-        return LazyDBContext.Menus.Any(menu => menu.ParentId == id);
+        return LazyDBContext.Menus.Any(menu => menu.ParentId == id && !menu.IsDeleted);
     }
 
     // Get all menus
@@ -155,7 +214,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
     {
         var key = "menu:all";
 
-        var items = _cache.GetHashFieldCache<List<MenuDto>>(cacheTag, key);
+        var items = _caching.GetHashFieldCache<List<MenuDto>>(CacheConsts.MenuCacheTag, key);
         if (items == null)
         {
             var input = new MenuPagedResultRequestDto
@@ -167,7 +226,7 @@ public class MenuService : CrudService<Menu, MenuDto, MenuDto, long, MenuPagedRe
             var result = await GetListAsync(input);
             items = result.Items.ToList();
 
-            _cache.SetHashFieldCache(cacheTag, key, items);
+            _caching.SetHashFieldCache(CacheConsts.MenuCacheTag, key, items);
         }
 
         return items;
