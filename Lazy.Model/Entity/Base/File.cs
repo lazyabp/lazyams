@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Model.Entity;
 
-public class File : BaseEntityWithDeletingAudit
+public class File : BaseEntityWithCreatingAudit
 {
     public StorageType Storage { get; set; }
 

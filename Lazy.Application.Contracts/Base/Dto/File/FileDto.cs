@@ -1,6 +1,6 @@
 ﻿namespace Lazy.Application.Contracts.Dto;
 
-public class FileDto : BaseEntityWithDeletingAuditDto
+public class FileDto : BaseEntityWithCreatingAuditDto
 {
     public StorageType Storage { get; set; }
 

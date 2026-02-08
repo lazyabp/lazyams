@@ -21,6 +21,18 @@ public class FileController : ControllerBase
     }
 
     /// <summary>
+    /// 分页获取文件列表
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpGet("GetByPage")]
+    [Authorize(PermissionConsts.File.Default)]
+    public async Task<PagedResultDto<FileDto>> GetByPageAsync([FromQuery] FilterPagedResultRequestDto input)
+    {
+        return await _fileService.GetListAsync(input);
+    }
+
+    /// <summary>
     /// 执行上传
     /// </summary>
     /// <param name="file"></param>

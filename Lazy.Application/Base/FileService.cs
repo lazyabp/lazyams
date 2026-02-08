@@ -27,7 +27,7 @@ public class FileService : CrudService<Lazy.Model.Entity.File, FileDto, FileDto,
     {
         if (!string.IsNullOrEmpty(input.Filter))
         {
-            return GetQueryable().Where(x => x.FileName.Contains(input.Filter));
+            return GetQueryable().Where(x => x.FilePath.Contains(input.Filter) || x.FileName.Contains(input.Filter));
         }
         return base.CreateFilteredQuery(input);
     }
