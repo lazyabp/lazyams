@@ -12,12 +12,11 @@ public class Package : BaseEntityWithDeletingAudit
     public string Name { get; set; }
     public string Code { get; set; }
     public string Version { get; set; }
-    public string Description { get; set; }
     public decimal Price { get; set; }
-    public decimal DiscountedPrice { get; set; }
-    public int DurationDays { get; set; }
-    public bool IsActive { get; set; }
-    public int SortOrder { get; set; }
-    public int Remark { get; set; }
+    public decimal? DiscountedPrice { get; set; }
+    public int DurationDays { get; set; } = 30;
+    public bool IsActive { get; set; } = true;
+    public int SortOrder { get; set; } = 0;
+    public string Description { get; set; }
     public virtual ICollection<PackageFeature> Features { get; set; } = [];
 }

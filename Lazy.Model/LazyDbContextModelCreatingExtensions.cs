@@ -9,7 +9,7 @@ public static class LazyDbContextModelCreatingExtensions
     /// Admin
     /// </summary>
     /// <param name="modelBuilder"></param>
-    public static void ConfigureAdminManagement(this ModelBuilder modelBuilder)
+    public static void ConfigureBaseManagement(this ModelBuilder modelBuilder)
     {
         ConfigureUser(modelBuilder);
         ConfigureRole(modelBuilder);
@@ -24,6 +24,16 @@ public static class LazyDbContextModelCreatingExtensions
 
         ConfigureCarousel(modelBuilder);
     }
+
+    public static void ConfigureBusinessManagement(this ModelBuilder modelBuilder)
+    {
+        ConfigurePackage(modelBuilder);
+        ConfigurePackageFeature(modelBuilder);
+        ConfigureOrder(modelBuilder);
+        ConfigureUserSubscription(modelBuilder);
+    }
+
+    #region Base configuration
 
     private static void ConfigureUser(ModelBuilder modelBuilder)
     {
@@ -184,36 +194,6 @@ public static class LazyDbContextModelCreatingExtensions
         });
     }
 
-    private static void ConfigureCarousel(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Carousel>(b =>
-        {
-            b.HasKey(x => x.Id);
-            b.Property(x => x.Id).ValueGeneratedNever();
-            b.Property(x => x.Title)
-                .IsRequired()
-                .HasMaxLength(CarouselEntityConsts.MaxTitleLength);
-            b.Property(x => x.ImageUrl)
-                .IsRequired()
-                .HasMaxLength(CarouselEntityConsts.MaxImageUrlLength);
-            b.Property(x => x.RedirectUrl)
-                .HasMaxLength(CarouselEntityConsts.MaxRedirectUrlLength);
-            b.Property(x => x.IsActive)
-                .IsRequired()
-                .HasDefaultValue(CarouselEntityConsts.DefaultIsActive);
-            b.Property(x => x.StartDate)
-                .IsRequired(false);
-            b.Property(x => x.EndDate)
-                .IsRequired(false);
-            b.Property(x => x.Position)
-                .IsRequired();
-            b.Property(x => x.Description)
-                .IsRequired(false);
-            b.HasIndex(x => x.Position);
-            b.ConfigureAudit();
-        });
-    }
-
     private static void ConfigureSocialiteUser(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SocialiteUser>(b =>
@@ -275,6 +255,142 @@ public static class LazyDbContextModelCreatingExtensions
         });
     }
 
+    #endregion
+
+    #region Business configuration
+
+    private static void ConfigurePackage(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Package>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength100);
+            b.Property(x => x.Code)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.Version)
+                .HasMaxLength(EntityConsts.MaxLength50);
+            b.Property(x => x.IsActive)
+                .IsRequired();
+            b.Property(x => x.Price)
+                .IsRequired(true);
+            b.Property(x => x.DiscountedPrice)
+                .IsRequired(false);
+            b.Property(x => x.DurationDays)
+                .IsRequired();
+            b.Property(x => x.SortOrder)
+                .IsRequired(true);
+            b.Property(x => x.Description)
+                .IsRequired(false);
+            b.ConfigureAudit();
+            b.HasMany(x => x.Features);
+            b.HasIndex(x => x.Code).IsUnique();
+        });
+    }
+
+    private static void ConfigurePackageFeature(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PackageFeature>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.PackageId)
+                .IsRequired();
+            b.Property(x => x.FeatureKey)
+                .IsRequired()
+                .HasMaxLength(EntityConsts.MaxLength100);
+            b.Property(x => x.FeatureValue)
+                .IsRequired();
+            b.Property(x => x.FeatureType)
+                .IsRequired();
+            b.Property(x => x.Description)
+                .IsRequired(false);
+            b.ConfigureAudit();
+            b.HasOne(x => x.Package);
+            b.HasIndex(x => x.PackageId);
+            b.HasIndex(x => new { x.PackageId, x.FeatureKey}).IsUnique();
+        });
+    }
+
+    private static void ConfigureOrder(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Order>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.OrderNo)
+                .IsRequired(true)
+                .HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.TradeNo)
+                .IsRequired(false)
+                .HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.UserId)
+                .IsRequired();
+            b.Property(x => x.PackageId)
+                .IsRequired();
+            b.Property(x => x.OrderType)
+                .IsRequired();
+            b.Property(x => x.Status)
+                .IsRequired();
+            b.Property(x => x.Amount)
+                .IsRequired();
+            b.Property(x => x.Currency)
+                .IsRequired();
+            b.Property(x => x.PayType)
+                .IsRequired();
+            b.Property(x => x.PaidAt)
+                .IsRequired(false);
+            b.Property(x => x.CompletedAt)
+                .IsRequired(false);
+            b.Property(x => x.CanceledAt)
+                .IsRequired(false);
+            b.Property(x => x.FailedAt)
+                .IsRequired(false);
+            b.Property(x => x.FailReason)
+                .IsRequired(false);
+            b.Property(x => x.RefundedAt)
+                .IsRequired(false);
+            b.Property(x => x.RefundAmount)
+                .IsRequired(false);
+            b.Property(x => x.RefundReason)
+                .IsRequired(false);
+            b.ConfigureAudit();
+            b.HasOne(x => x.User);
+            b.HasOne(x => x.Package);
+            b.HasIndex(x => x.OrderNo).IsUnique();
+            b.HasIndex(x => x.TradeNo).IsUnique();
+            b.HasIndex(x => x.UserId);
+            b.HasIndex(x => x.PackageId);
+        });
+    }
+
+    private static void ConfigureUserSubscription(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserSubscription>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.UserId)
+                .IsRequired();
+            b.Property(x => x.PackageId)
+                .IsRequired();
+            b.Property(x => x.StartAt)
+                .IsRequired();
+            b.Property(x => x.EndAt)
+                .IsRequired();
+            b.Property(x => x.Status)
+                .IsRequired();
+            b.ConfigureAudit();
+            b.HasOne(x => x.User);
+            b.HasOne(x => x.Package);
+        });
+    }
+
+    #endregion
+
     /// <summary>
     /// configuration for audit properties
     /// </summary>
@@ -320,5 +436,39 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired(false)
                 .HasColumnName(nameof(BaseEntityWithDeletingAudit.DeletedAt));
         }
+    }
+
+
+
+
+
+    private static void ConfigureCarousel(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Carousel>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(CarouselEntityConsts.MaxTitleLength);
+            b.Property(x => x.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(CarouselEntityConsts.MaxImageUrlLength);
+            b.Property(x => x.RedirectUrl)
+                .HasMaxLength(CarouselEntityConsts.MaxRedirectUrlLength);
+            b.Property(x => x.IsActive)
+                .IsRequired()
+                .HasDefaultValue(CarouselEntityConsts.DefaultIsActive);
+            b.Property(x => x.StartAt)
+                .IsRequired(false);
+            b.Property(x => x.EndAt)
+                .IsRequired(false);
+            b.Property(x => x.Position)
+                .IsRequired();
+            b.Property(x => x.Description)
+                .IsRequired(false);
+            b.HasIndex(x => x.Position);
+            b.ConfigureAudit();
+        });
     }
 }

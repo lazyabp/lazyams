@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Lazy.Model.Entity;
 
-public class UserSubscription
+public class UserSubscription : BaseEntityWithDeletingAudit
 {
-    public long Id { get; set; }
     public long UserId { get; set; }
     public long PackageId { get; set; }
     public DateTime StartAt { get; set; }

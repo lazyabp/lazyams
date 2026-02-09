@@ -8,9 +8,9 @@ public enum SwaggerGroup
     BaseService = 1,
 
     ///<summary>
-    /// AdminService
+    /// BusinessService
     /// </summary>
-    AdminService = 2,
+    BusinessService = 2,
 
     ///<summary>
     /// MemberService
