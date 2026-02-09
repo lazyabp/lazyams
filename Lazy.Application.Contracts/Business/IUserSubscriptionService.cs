@@ -9,4 +9,5 @@ public interface IUserSubscriptionService : IReadOnlyService<UserSubscriptionDto
     Task<UserSubscriptionDto> SetAsExpiredAsync(long id);
     Task<UserSubscriptionDto> SetAsFreezedAsync(long id);
     Task<UserSubscriptionDto> SetAsActiveAsync(long id);
+    Task<bool> DeleteAsync(long id);
 }

@@ -101,4 +101,19 @@ public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSub
 
         return MapToGetOutputDto(entity);
     }
+
+    public async Task<bool> DeleteAsync(long id)
+    {
+        var entity = await LazyDBContext.UserSubscriptions.FirstAsync(x => x.Id == id);
+        if (entity == null)
+            throw new EntityNotFoundException(nameof(UserSubscription));
+
+        entity.IsDeleted = true;
+        entity.DeletedAt = DateTime.Now;
+        entity.DeletedBy = CurrentUser.Id;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        return true;
+    }
 }

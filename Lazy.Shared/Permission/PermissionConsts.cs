@@ -70,4 +70,35 @@ public class PermissionConsts
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
     }
+
+    public class Order
+    {
+        public const string Default = PermissionManagement + ".Order";
+        public const string Add = Default + ".Add";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public class Package
+    {
+        public const string Default = PermissionManagement + ".Package";
+        public const string Add = Default + ".Add";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public class PackageFeature
+    {
+        public const string Default = PermissionManagement + ".PackageFeature";
+        public const string Add = Default + ".Add";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public class UserSubscription
+    {
+        public const string Default = PermissionManagement + ".UserSubscription";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+    }
 }
