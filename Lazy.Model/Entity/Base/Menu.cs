@@ -75,6 +75,5 @@ public class Menu : BaseEntityWithDeletingAudit
     /// <summary>
     /// the role-menu associations for this menu.
     /// </summary>
-    //public virtual ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
     public virtual ICollection<Role> Roles { get; set; } = [];
 }
