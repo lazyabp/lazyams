@@ -17,14 +17,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Coinbase.Commerce" Version="3.0.1" />
 		<PackageReference Include="Essensoft.Paylink.Alipay" Version="4.1.9" />
 		<PackageReference Include="Essensoft.Paylink.WeChatPay" Version="4.1.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="6.1.1" />
 		<PackageReference Include="PayPalCheckoutSdk.DotNet5" Version="1.0.1" />
