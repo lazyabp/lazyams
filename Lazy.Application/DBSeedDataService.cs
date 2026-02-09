@@ -7,11 +7,11 @@ namespace Lazy.Application;
 
 
 [DBSeedDataOrder(1)]
-public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
+public class DBSeedDataService : IDBSeedDataService, ITransientDependency
 {
     private readonly LazyDBContext _dbContext;
 
-    public AdminDBSeedDataService(LazyDBContext dbContext)
+    public DBSeedDataService(LazyDBContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -27,12 +27,6 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
         new Role(){Id=1, RoleName="admin",   Description="管理员", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true},
         new Role(){Id=2, RoleName="member",   Description="会员", CreatedBy=1, CreatedAt=DateTime.Now, IsActive = true}
     };
-
-    //private List<UserRole> userRoles = new List<UserRole>()
-    //{
-    //    new UserRole(){UserId=1, RoleId=1},
-    //    new UserRole(){UserId=2, RoleId=2},
-    //};
 
     private List<Menu> menus = new List<Menu>()
     {
@@ -78,13 +72,14 @@ public class AdminDBSeedDataService : IDBSeedDataService, ITransientDependency
 
     private List<Config> configs = new List<Config>
     {
-        new Config{Id=1, Key=ConfigNames.Site, TypeName = typeof(SiteConfigModel).FullName, Value=JsonConvert.SerializeObject(new SiteConfigModel{ AppName = "LazyAMS" }) },
+        new Config{Id=1, Key=ConfigNames.Site, TypeName = typeof(SiteConfigModel).FullName, Value=JsonConvert.SerializeObject(new SiteConfigModel()) },
         new Config{Id=2, Key=ConfigNames.UploadFile, TypeName = typeof(UploadFileConfigModel).FullName, Value=JsonConvert.SerializeObject(new UploadFileConfigModel()) },
         new Config{Id=3, Key=ConfigNames.Member, TypeName = typeof(MemberConfigModel).FullName, Value=JsonConvert.SerializeObject(new MemberConfigModel()) },
         new Config{Id=4, Key=ConfigNames.Storage, TypeName = typeof(StorageConfigModel).FullName, Value=JsonConvert.SerializeObject(new StorageConfigModel()) },
         new Config{Id=5, Key=ConfigNames.SocialiteLogin, TypeName = typeof(SocialiteLoginConfigModel).FullName, Value=JsonConvert.SerializeObject(new SocialiteLoginConfigModel()) },
         new Config{Id=6, Key=ConfigNames.Mailer, TypeName = typeof(MailerConfigModel).FullName, Value=JsonConvert.SerializeObject(new MailerConfigModel()) },
         new Config{Id=7, Key=ConfigNames.Sms, TypeName = typeof(SmsConfigModel).FullName, Value=JsonConvert.SerializeObject(new SmsConfigModel()) },
+        new Config{Id=8, Key=ConfigNames.Payment, TypeName = typeof(PaymentConfigModel).FullName, Value=JsonConvert.SerializeObject(new PaymentConfigModel()) },
     };
 
     public async Task<bool> InitAsync()
