@@ -2,6 +2,10 @@
 
 namespace Lazy.Model.Entity;
 
+
+/// <summary>
+/// 轮播图表
+/// </summary>
 public class Carousel : BaseEntityWithUpdatingAudit
 {
     /// <summary>
@@ -37,10 +41,10 @@ public class Carousel : BaseEntityWithUpdatingAudit
     /// <summary>
     /// The start date for the carousel item's display period.
     /// </summary>
-    public DateTime? StartDate { get; set; }
+    public DateTime? StartAt { get; set; }
 
     /// <summary>
     /// The end date for the carousel item's display period.
     /// </summary>
-    public DateTime? EndDate { get; set; }
+    public DateTime? EndAt { get; set; }
 }

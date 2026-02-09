@@ -1,5 +1,8 @@
 ﻿namespace Lazy.Model.Entity;
 
+/// <summary>
+/// 用户表
+/// </summary>
 public class User : BaseEntityWithDeletingAudit
 {
     public string UserName { get; set; }

@@ -2,6 +2,10 @@
 
 namespace Lazy.Model.Entity;
 
+
+/// <summary>
+/// 菜单表
+/// </summary>
 public class Menu : BaseEntityWithDeletingAudit
 {
     /// <summary>

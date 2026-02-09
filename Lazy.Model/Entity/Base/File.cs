@@ -1,5 +1,8 @@
 ﻿namespace Lazy.Model.Entity;
 
+/// <summary>
+/// 文件表
+/// </summary>
 public class File : BaseEntityWithCreatingAudit
 {
     public StorageType Storage { get; set; }

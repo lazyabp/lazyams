@@ -2,6 +2,9 @@
 
 namespace Lazy.Model.Entity;
 
+/// <summary>
+/// 配置表
+/// </summary>
 public class Config : BaseEntity
 {
     [Required(ErrorMessage = "The key field is required.")]

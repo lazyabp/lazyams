@@ -1,5 +1,8 @@
 ﻿namespace Lazy.Model.Entity;
 
+/// <summary>
+/// 自动任务表
+/// </summary>
 public class AutoJob : BaseEntityWithDeletingAudit
 {
     public string JobGroupName { get; set; }

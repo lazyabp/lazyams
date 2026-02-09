@@ -1,5 +1,8 @@
 ﻿namespace Lazy.Model.Entity;
 
+/// <summary>
+/// 社媒体用户表
+/// </summary>
 public class SocialiteUser : BaseEntityWithUpdatingAudit
 {
     public long? UserId { get; set; }

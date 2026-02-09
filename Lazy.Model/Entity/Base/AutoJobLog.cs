@@ -1,5 +1,9 @@
 ﻿namespace Lazy.Model.Entity;
 
+
+/// <summary>
+/// 自动任务日志表
+/// </summary>
 public class AutoJobLog : BaseEntityWithCreatingAudit
 {
     public string JobGroupName { get; set; }
