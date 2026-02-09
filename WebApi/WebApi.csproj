@@ -41,6 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Areas\Member\" />
 	  <Folder Include="Controllers\Business\" />
 	</ItemGroup>
 
