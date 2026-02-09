@@ -8,6 +8,5 @@ public enum SubscriptionStatus
 {
     Active = 0,
     Expired = 1,
-    Freeze = 2,
-    Canceled = 3,
+    Freeze = 2
 }

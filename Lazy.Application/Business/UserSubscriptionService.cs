@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Lazy.Application;
 
-public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSubscriptionDto, long, UserSubscriptionFilterPagedResultRequestDto>, IUserSubscriptionService, ITransientDependency
+public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSubscriptionDto, long, UserSubscriptionFilterPagedResultRequestDto>, 
+    IUserSubscriptionService, ITransientDependency
 {
     public ICurrentUser CurrentUser { get; set; }
 
@@ -39,5 +40,65 @@ public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSub
             query = query.Where(x => x.EndAt < input.LastEndAt.Value.Date.AddDays(1));
 
         return query;
+    }
+
+    public async Task<UserSubscriptionDto> SetAsExpiredAsync(long id)
+    {
+        var entity = await LazyDBContext.UserSubscriptions.FirstAsync(x => x.Id == id);
+        if (entity == null)
+            throw new EntityNotFoundException(nameof(UserSubscription));
+
+        if (entity.Status == SubscriptionStatus.Expired)
+            return MapToGetOutputDto(entity);
+
+        if (entity.Status != SubscriptionStatus.Active)
+            throw new LazyException("Only active subscriptions can be set as expired.");
+
+        entity.Status = SubscriptionStatus.Expired;
+        entity.UpdatedBy = CurrentUser.Id;
+        entity.UpdatedAt = DateTime.Now;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        return MapToGetOutputDto(entity);
+    }
+
+    public async Task<UserSubscriptionDto> SetAsFreezedAsync(long id)
+    {
+        var entity = await LazyDBContext.UserSubscriptions.FirstAsync(x => x.Id == id);
+        if (entity == null)
+            throw new EntityNotFoundException(nameof(UserSubscription));
+
+        if (entity.Status == SubscriptionStatus.Freeze)
+            return MapToGetOutputDto(entity);
+
+        if (entity.Status != SubscriptionStatus.Active)
+            throw new LazyException("Only active subscriptions can be set as expired.");
+
+        entity.Status = SubscriptionStatus.Freeze;
+        entity.UpdatedBy = CurrentUser.Id;
+        entity.UpdatedAt = DateTime.Now;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        return MapToGetOutputDto(entity);
+    }
+
+    public async Task<UserSubscriptionDto> SetAsActiveAsync(long id)
+    {
+        var entity = await LazyDBContext.UserSubscriptions.FirstAsync(x => x.Id == id);
+        if (entity == null)
+            throw new EntityNotFoundException(nameof(UserSubscription));
+
+        if (entity.Status == SubscriptionStatus.Active)
+            return MapToGetOutputDto(entity);
+
+        entity.Status = SubscriptionStatus.Active;
+        entity.UpdatedBy = CurrentUser.Id;
+        entity.UpdatedAt = DateTime.Now;
+
+        await LazyDBContext.SaveChangesAsync();
+
+        return MapToGetOutputDto(entity);
     }
 }

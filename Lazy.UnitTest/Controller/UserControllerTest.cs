@@ -25,11 +25,11 @@ public class UserControllerTest
         var input = new UserPagedResultRequestDto();
         var users = new List<UserDto>
         {
-            new UserDto { Id = 1, UserName = "A1", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 2, UserName = "A2", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 3, UserName = "A3", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 4, UserName = "A4", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 5, UserName = "A5", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 1, UserName = "A1", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 2, UserName = "A2", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 3, UserName = "A3", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 4, UserName = "A4", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 5, UserName = "A5", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
         };
         var pagedResult = new PagedResultDto<UserDto>
         {
@@ -64,7 +64,6 @@ public class UserControllerTest
         {
             Id = 1,
             UserName = "A5",
-            Password = "123",
             Age = 1,
             Email = "abc@uow.edu.au",
             Gender = Gender.Male,
@@ -101,7 +100,6 @@ public class UserControllerTest
         var inputIncomplete = new UserDto()
         {
             UserName = "A5",
-            Password = "123",
             Age = 1,
             Email = "abc@uow.edu.au",
             Avatar = "123",
@@ -135,7 +133,6 @@ public class UserControllerTest
         {
             Id = 1,
             UserName = "A5",
-            Password = "123",
             Age = 1,
             Email = "abc@uow.edu.au",
             Gender = Gender.Male,
@@ -161,7 +158,6 @@ public class UserControllerTest
         {
             Id = 1,
             UserName = "A5",
-
             Age = 1,
             Email = "abc@uow.edu.au",
             Gender = Gender.Male,
@@ -172,7 +168,6 @@ public class UserControllerTest
         {
             Id = 1,
             UserName = "A5",
-            Password = "",
             Age = 1,
             Email = "abc@uow.edu.au",
             Gender = Gender.Male,
@@ -183,7 +178,6 @@ public class UserControllerTest
         //act
         var updatedUser = await _userServiceMock.Object.UpdateAsync(input.Id, input);
         //Assert
-        Assert.That(updatedUser.Password == "");
         _userServiceMock.Verify(s => s.UpdateAsync(input.Id, input), Times.Once);
     }
     [Test]
@@ -196,11 +190,11 @@ public class UserControllerTest
         var input = new UserPagedResultRequestDto();
         var usersBeforeDelete = new List<UserDto>
         {
-            new UserDto { Id = 1, UserName = "A1", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 2, UserName = "A2", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 3, UserName = "A3", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 4, UserName = "A4", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
-            new UserDto { Id = 5, UserName = "A5", Password="123", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 1, UserName = "A1", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 2, UserName = "A2", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 3, UserName = "A3", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 4, UserName = "A4", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
+            new UserDto { Id = 5, UserName = "A5", Age= 1, Email="abc@uow.edu.au", Gender=Gender.Male, Avatar="123" },
         };
         var usersAfterDeleteValid = from listItem in usersBeforeDelete where id != validId select listItem;
         var pagedResult = new PagedResultDto<UserDto>
@@ -244,7 +238,6 @@ public class UserControllerTest
         {
             Id = 999,
             UserName = "Apple",
-            Password = "",
             Age = 1,
             Email = "abc@uow.edu.au",
             Gender = Gender.Male,

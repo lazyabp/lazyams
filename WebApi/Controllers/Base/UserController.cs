@@ -31,13 +31,6 @@ public class UserController : ControllerBase
     public async Task<PagedResultDto<UserDto>> GetByPageAsync([FromQuery] UserPagedResultRequestDto input)
     {
         var pagedResult = await _userService.GetListAsync(input);
-        if (pagedResult.Items.Count > 0)
-        {
-            foreach (var item in pagedResult.Items)
-            {
-                item.Password = "";
-            }
-        }
 
         return pagedResult;
     }

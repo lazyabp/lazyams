@@ -1,6 +1,7 @@
-description = "Archive a deployed OpenSpec change and update specs."
+---
+description: Archive a deployed OpenSpec change and update specs.
+---
 
-prompt = """
 <!-- OPENSPEC:START -->
 **Guardrails**
 - Favor straightforward, minimal implementations first and add complexity only when it is requested or clearly required.
@@ -22,4 +23,4 @@ prompt = """
 - Use `openspec list` to confirm change IDs before archiving.
 - Inspect refreshed specs with `openspec list --specs` and address any validation issues before handing off.
 <!-- OPENSPEC:END -->
-"""
+
