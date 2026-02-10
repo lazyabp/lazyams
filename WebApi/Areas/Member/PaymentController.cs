@@ -33,8 +33,8 @@ public class PaymentController : ControllerBase
         {
             IPaymentService paymentService = input.PayType switch
             {
-                PayType.Alipay => _alipayService,
-                PayType.WeChatPay => _weChatPayService,
+                PaymentProvider.Alipay => _alipayService,
+                PaymentProvider.WeChatPay => _weChatPayService,
                 _ => throw new ArgumentException($"Unsupported payment type: {input.PayType}")
             };
 
@@ -79,8 +79,8 @@ public class PaymentController : ControllerBase
 
             IPaymentService paymentService = order.PayType switch
             {
-                PayType.Alipay => _alipayService,
-                PayType.WeChatPay => _weChatPayService,
+                PaymentProvider.Alipay => _alipayService,
+                PaymentProvider.WeChatPay => _weChatPayService,
                 _ => throw new ArgumentException($"Unsupported payment type: {order.PayType}")
             };
 

@@ -5,12 +5,13 @@ using Essensoft.Paylinks.WeChatPay.Payments.Model;
 using Essensoft.Paylinks.WeChatPay.Payments.Notify;
 using Essensoft.Paylinks.WeChatPay.Payments.Request;
 using Lazy.Core;
+using Lazy.Core.Extensions;
 using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Lazy.Application.Services.Payment;
+namespace Lazy.Application;
 
 public class WeChatPayService : IWeChatPayService, ITransientDependency
 {
@@ -32,7 +33,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
         _logger = logger;
     }
 
-    public PayType Provider => PayType.WeChatPay;
+    public PaymentProvider Provider => PaymentProvider.WeChatPay;
 
     public async Task<PaymentResultDto> CreatePaymentAsync(PaymentRequestDto input)
     {
@@ -52,7 +53,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             AppId = weChatPayConfig.AppId,
             MchId = weChatPayConfig.MchId,
             Description = order.Package.Description,
-            OutTradeNo = order.OrderNo, // 系统订单号
+            OutTradeNo = order.Id.ToString(), // 系统订单号
             NotifyUrl = weChatPayConfig.NotifyUrl,
             GoodsTag = order.Package.Name,
             Amount = new CommReqAmountInfo
@@ -86,6 +87,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             Success = response.IsSuccessful,
             Data = response.CodeUrl, // 返回二维码内容
             ResultType = PaymentResultType.QrCode,
+            OrderId = order.Id,
             OrderNo = order.OrderNo,
             OriginResponse = response
         };
@@ -126,7 +128,11 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             // 检查交易状态是否为成功
             if (notify.TradeState == "SUCCESS")
             {
-                await _orderService.ConfirmPaymentAsync(notify.OutTradeNo, notify.TransactionId);
+                var orderId = notify.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                if (orderId <= 0)
+                    throw new LazyException($"Invalid order ID in WeChatPay notify: {notify.OutTradeNo}");
+
+                await _orderService.ConfirmPaymentAsync(orderId, notify.TransactionId);
 
                 return true;
             }
@@ -142,7 +148,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
         }
     }
 
-    public async Task<bool> CheckOrderPaidAsync(string orderNo)
+    public async Task<bool> CheckOrderPaidAsync(string orderId)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var weChatPayConfig = config.WeChatPay;
@@ -160,7 +166,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
 
             var request = new WeChatPayQueryByOutTradeNoRequest();
             request.SetQueryModel(model);
-            request.OutTradeNo = orderNo; // 使用商户订单号查询
+            request.OutTradeNo = orderId; // 使用商户订单号查询
 
             var options = new WeChatPayClientOptions
             {
@@ -183,7 +189,11 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                 // 检查交易状态是否为成功
                 if (response.TradeState == "SUCCESS")
                 {
-                    await _orderService.ConfirmPaymentAsync(response.OutTradeNo, response.TransactionId);
+                    var id = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                    if (id <= 0)
+                        throw new LazyException($"Invalid order ID in WeChatPay notify: {response.OutTradeNo}");
+
+                    await _orderService.ConfirmPaymentAsync(id, response.TransactionId);
 
                     return true;
                 }

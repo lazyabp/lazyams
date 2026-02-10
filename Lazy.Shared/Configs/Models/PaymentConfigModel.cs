@@ -61,6 +61,9 @@ public class Stripe
     //验证 Stripe 异步通知的签名密钥
     public string WebhookSecret { get; set; }
 
+    public string SuccessUrl { get; set; }
+
+    public string CancelUrl { get; set; }
     public string WebhookUrl { get; set; }
 }
 

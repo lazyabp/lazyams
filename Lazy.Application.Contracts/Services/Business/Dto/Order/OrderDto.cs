@@ -14,9 +14,11 @@ public class OrderDto : BaseEntityWithDeletingAuditDto
     public long PackageId { get; set; }
     public OrderType OrderType { get; set; }
     public OrderStatus Status { get; set; }
+    public decimal Price { get; set; }
+    public decimal Quantity { get; set; }
     public decimal Amount { get; set; }
     public string Currency { get; set; }
-    public PayType PayType { get; set; }
+    public PaymentProvider PayType { get; set; }
     public DateTime? PaidAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public DateTime? CanceledAt { get; set; }

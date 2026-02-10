@@ -333,6 +333,9 @@ public static class LazyDbContextModelCreatingExtensions
             b.Property(x => x.TradeNo)
                 .IsRequired(false)
                 .HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.SessionId)
+                .IsRequired(true)
+                .HasMaxLength(EntityConsts.MaxLength128);
             b.Property(x => x.UserId)
                 .IsRequired();
             b.Property(x => x.PackageId)
@@ -371,6 +374,7 @@ public static class LazyDbContextModelCreatingExtensions
             b.HasOne(x => x.User);
             b.HasOne(x => x.Package);
             b.HasIndex(x => x.OrderNo).IsUnique();
+            b.HasIndex(x => x.SessionId).IsUnique();
             b.HasIndex(x => x.TradeNo).IsUnique();
             b.HasIndex(x => x.UserId);
             b.HasIndex(x => x.PackageId);

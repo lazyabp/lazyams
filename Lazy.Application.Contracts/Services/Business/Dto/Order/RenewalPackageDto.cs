@@ -10,5 +10,5 @@ public class RenewalPackageDto
     public int Quantity { get; set; } = 1;
     //public decimal Amount { get; set; }
     public string Currency { get; set; }
-    public PayType PayType { get; set; }
+    public PaymentProvider PayType { get; set; }
 }

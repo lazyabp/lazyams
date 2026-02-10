@@ -5,7 +5,7 @@ namespace Lazy.Application.Contracts;
 public interface IPaymentService
 {
     // 支付方式标识，如 "Alipay", "Stripe"
-    PayType Provider { get; }
+    PaymentProvider Provider { get; }
 
     /// <summary>
     /// 创建支付订单，返回支付结果（包含支付媒介信息，如二维码链接、客户端密钥等）
@@ -23,7 +23,7 @@ public interface IPaymentService
     /// <summary>
     /// 查询订单支付状态，通常用于前端轮询查询订单是否已支付成功，返回订单是否已支付的布尔值
     /// </summary>
-    /// <param name="orderNo"></param>
+    /// <param name="orderId"></param>
     /// <returns></returns>
-    Task<bool> CheckOrderPaidAsync(string orderNo);
+    Task<bool> CheckOrderPaidAsync(string orderId);
 }

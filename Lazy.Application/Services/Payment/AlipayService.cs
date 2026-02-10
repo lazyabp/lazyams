@@ -8,8 +8,9 @@ using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Lazy.Core.Extensions;
 
-namespace Lazy.Application.Services.Payment;
+namespace Lazy.Application;
 
 public class AlipayService : IAlipayService, ITransientDependency
 {
@@ -31,7 +32,7 @@ public class AlipayService : IAlipayService, ITransientDependency
         _logger = logger;
     }
 
-    public PayType Provider => PayType.Alipay;
+    public PaymentProvider Provider => PaymentProvider.Alipay;
 
     public async Task<PaymentResultDto> CreatePaymentAsync(PaymentRequestDto input)
     {
@@ -48,9 +49,9 @@ public class AlipayService : IAlipayService, ITransientDependency
         // 构建支付宝请求模型
         var model = new AlipayTradePreCreateBodyModel
         {
-            OutTradeNo = order.OrderNo, // 系统订单号
+            OutTradeNo = order.Id.ToString(), // 系统订单号
             Subject = order.Package.Name,
-            TotalAmount = order.Amount.ToString("F2"),
+            TotalAmount = order.Amount.ToString("F2"),  // todo: 这里金额要考虑货币类型
             NotifyUrl = alipayConfig.NotifyUrl
         };
 
@@ -79,6 +80,7 @@ public class AlipayService : IAlipayService, ITransientDependency
             Success = response.IsSuccessful,
             Data = response.QrCode,
             ResultType = PaymentResultType.QrCode,
+            OrderId = order.Id,
             OrderNo = order.OrderNo,
             OriginResponse = response
         };
@@ -115,11 +117,14 @@ public class AlipayService : IAlipayService, ITransientDependency
             // 修正：使用 SDK 的 NotifyExecuteAsync 方法处理字典，返回 AlipayTradePagePayNotify
             var notify = await alipayClient.ExecuteAsync<AlipayTradeStatusSyncNotify>(parameters, options);
 
-
             // 只有状态为成功或结束才视为支付完成
             if (notify.TradeStatus == "TRADE_SUCCESS" || notify.TradeStatus == "TRADE_FINISHED")
             {
-                await _orderService.ConfirmPaymentAsync(notify.OutTradeNo, notify.TradeNo);
+                var orderId = notify.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                if (orderId <= 0)
+                    throw new LazyException($"Invalid order ID in Alipay notify: {notify.OutTradeNo}");
+
+                await _orderService.ConfirmPaymentAsync(orderId, notify.TradeNo);
 
                 return true;
             }
@@ -135,7 +140,7 @@ public class AlipayService : IAlipayService, ITransientDependency
         }
     }
 
-    public async Task<bool> CheckOrderPaidAsync(string orderNo)
+    public async Task<bool> CheckOrderPaidAsync(string orderId)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var alipayConfig = config.Alipay;
@@ -145,7 +150,7 @@ public class AlipayService : IAlipayService, ITransientDependency
 
         // 这个 AlipayTradeQueryRequest 内部实现了 IAlipayRequest
         var request = new AlipayTradeQueryRequest();
-        request.SetBodyModel(new { OutTradeNo = orderNo });
+        request.SetBodyModel(new { OutTradeNo = orderId });
 
         var options = new AlipayClientOptions
         {
@@ -169,7 +174,11 @@ public class AlipayService : IAlipayService, ITransientDependency
             // 只有当交易状态为 成功 或 结束 时才返回 true
             if (response.TradeStatus == "TRADE_SUCCESS" || response.TradeStatus == "TRADE_FINISHED")
             {
-                await _orderService.ConfirmPaymentAsync(response.OutTradeNo, response.TradeNo);
+                var id = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                if (id <= 0)
+                    throw new LazyException($"Invalid order ID in Alipay notify: {response.OutTradeNo}");
+
+                await _orderService.ConfirmPaymentAsync(id, response.TradeNo);
 
                 return true;
             }

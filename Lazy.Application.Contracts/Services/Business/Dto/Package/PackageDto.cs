@@ -12,9 +12,9 @@ public class PackageDto : BaseEntityWithDeletingAuditDto
     public string Version { get; set; }
     public decimal Price { get; set; }
     public decimal? DiscountedPrice { get; set; }
-    public int DurationDays { get; set; } = 30;
-    public bool IsActive { get; set; } = true;
-    public int SortOrder { get; set; } = 0;
+    public DurationUnit DurationUnit { get; set; }
+    public bool IsActive { get; set; }
+    public int SortOrder { get; set; }
     public string Description { get; set; }
     public virtual ICollection<PackageFeatureDto> Features { get; set; }
 }

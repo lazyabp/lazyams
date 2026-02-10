@@ -42,9 +42,35 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
+    public async Task<OrderDto> GetByOrderNoAsync(string orderNo)
+    {
+        var order = await LazyDBContext.Orders
+            .Include(o => o.User)
+            .Include(o => o.Package)
+            .FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+
+        if (order == null)
+            throw new LazyException($"Order with number {orderNo} not found.");
+
+        return MapToGetOutputDto(order);
+    }
+
     public override async Task<OrderDto> UpdateAsync(long id, UpdateOrderDto input)
     {
         throw new NotImplementedException("Updating orders is not supported. Orders are immutable after creation. If you need to change the order status, please use the specific methods for confirming payment, processing payment failure, canceling orders, or processing refunds.");
+    }
+
+    public async Task<bool> SetOrderNoAsync(long id, string orderNo)
+    {
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null)
+            throw new LazyException("Order with ID {id} not found.");
+
+        order.OrderNo = orderNo;
+        SetUpdatedAudit(order);
+        await LazyDBContext.SaveChangesAsync();
+
+        return true;
     }
 
     public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
@@ -58,7 +84,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         var order = new Order
         {
-            OrderNo = Guid.NewGuid().ToString("N").ToUpper(), // Generate a unique order number
+            OrderNo = Guid.NewGuid().ToString("N"), // Generate a unique order number
             UserId = input.UserId,
             PackageId = input.PackageId,
             OrderType = OrderType.Subscription,
@@ -95,7 +121,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         var order = new Order
         {
-            OrderNo = Guid.NewGuid().ToString("N").ToUpper(), // Generate a unique order number
+            OrderNo = Guid.NewGuid().ToString("N"), // Generate a unique order number
             UserId = userSubscription.UserId,
             PackageId = userSubscription.PackageId,
             OrderType = OrderType.Renewal,
@@ -115,11 +141,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ConfirmPaymentAsync(string orderNo, string tradeNo)
+    public async Task<OrderDto> ConfirmPaymentAsync(long id, string tradeNo)
     {
-        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
-            throw new LazyException($"Order with ID {orderNo} not found.");
+            throw new LazyException($"Order with ID {id} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot confirm payment for order with status {order.Status}. Order must be in Pending status.");
@@ -208,11 +234,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ProcessPaymentFailureAsync(string orderNo, string failReason)
+    public async Task<OrderDto> ProcessPaymentFailureAsync(long id, string failReason)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
-            throw new LazyException($"Order with ID {orderNo} not found.");
+            throw new LazyException($"Order with ID {id} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot process payment failure for order with status {order.Status}. Order must be in Pending status.");
@@ -229,11 +255,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> CancelOrderAsync(string orderNo)
+    public async Task<OrderDto> CancelOrderAsync(long id)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
-            throw new LazyException($"Order with ID {orderNo} not found.");
+            throw new LazyException($"Order with ID {id} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot cancel order with status {order.Status}. Order must be in Pending status.");
@@ -249,11 +275,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ProcessRefundAsync(string orderNo, decimal refundAmount, string refundReason)
+    public async Task<OrderDto> ProcessRefundAsync(long id, decimal refundAmount, string refundReason)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
-            throw new LazyException($"Order with ID {orderNo} not found.");
+            throw new LazyException($"Order with ID {id} not found.");
 
         if (order.Status != OrderStatus.Paid && order.Status != OrderStatus.Completed)
             throw new LazyException($"Cannot process refund for order with status {order.Status}. Order must be in Paid or Completed status.");
@@ -267,19 +293,6 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
-
-        return MapToGetOutputDto(order);
-    }
-
-    public async Task<OrderDto> GetByOrderNoAsync(string orderNo)
-    {
-        var order = await LazyDBContext.Orders
-            .Include(o => o.User)
-            .Include(o => o.Package)
-            .FirstOrDefaultAsync(o => o.OrderNo == orderNo);
-
-        if (order == null)
-            throw new LazyException($"Order with number {orderNo} not found.");
 
         return MapToGetOutputDto(order);
     }

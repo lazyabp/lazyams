@@ -23,7 +23,7 @@ public class Order : BaseEntityWithDeletingAudit
     public int Quantity { get; set; } = 1;
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "USD";
-    public PayType PayType { get; set; }
+    public PaymentProvider PayType { get; set; }
     public DateTime? PaidAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public DateTime? CanceledAt { get; set; }
@@ -32,7 +32,7 @@ public class Order : BaseEntityWithDeletingAudit
     public DateTime? RefundedAt { get; set; }
     public decimal? RefundAmount { get; set; }
     public string RefundReason { get; set; }
-
+    public string SessionId { get; set; }
     public virtual User User { get; set; }
     public virtual Package Package { get; set; }
 }

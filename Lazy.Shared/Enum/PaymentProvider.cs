@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lazy.Shared;
 
-public enum PayType
+public enum PaymentProvider
 {
     Alipay = 11,
     WeChatPay = 12,
