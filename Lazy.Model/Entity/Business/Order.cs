@@ -19,6 +19,8 @@ public class Order : BaseEntityWithDeletingAudit
     public long PackageId { get; set; }
     public OrderType OrderType { get; set; } = OrderType.Subscription;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public decimal Price { get; set; }
+    public int Quantity { get; set; } = 1;
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "USD";
     public PayType PayType { get; set; }

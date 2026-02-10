@@ -16,42 +16,33 @@ public class PaymentConfigModel
 public class Alipay
 {
     public int SortOrder { get; set; } = 1;
-
     public bool IsEnabled { get; set; } = true;
-
-    //应用 ID
+    public string ServerUrl { get; set; } = "https://openapi.alipay.com/gateway.do";
     public string AppId { get; set; }
-
-    //PrivateKey
-    public string PrivateKey { get; set; }
-
-    //AlipayPublicKey
+    public string AppPrivateKey { get; set; }
+    public string AppCertSN { get; set; }
     public string AlipayPublicKey { get; set; }
-    public bool IsSandbox { get; set; }
-    public string ReturnUrl { get; set; }
+    public string AlipayCertSN { get; set; }
+    public string AlipayRootCertSN { get; set; }
+    public string EncryptType { get; set; }
+    public string EncryptKey { get; set; }
     public string NotifyUrl { get; set; }
 }
+
 
 public class WeChatPay
 {
     public int SortOrder { get; set; } = 2;
-
     public bool IsEnabled { get; set; } = false;
 
-    //公众号/移动应用 ID
+    public string ServerUrl { get; set; } = "https://api.mch.weixin.qq.com/v3/pay/transactions/native";
     public string AppId { get; set; }
-
-    //商户号
     public string MchId { get; set; }
-
-    //API v3 密钥（解密回调数据）
-    public string ApiV3Key { get; set; }
-
-    //商户证书序列号
-    public string SerialNo { get; set; }
-
-    //apiclient_key.pem 的存储路径
-    public string CertPath { get; set; }
+    public string MchSerialNo { get; set; }
+    public string MchPrivateKey { get; set; }
+    public string WeChatPayPublicKey { get; set; }
+    public string WeChatPayPublicKeyId { get; set; }
+    public string APIv3Key { get; set; }
     public string NotifyUrl { get; set; }
 }
 

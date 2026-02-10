@@ -20,8 +20,10 @@
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Coinbase.Commerce" Version="3.0.1" />
-		<PackageReference Include="Essensoft.Paylink.Alipay" Version="4.1.9" />
-		<PackageReference Include="Essensoft.Paylink.WeChatPay" Version="4.1.9" />
+		<PackageReference Include="Essensoft.Paylinks.Alipay.Client" Version="5.0.4" />
+		<PackageReference Include="Essensoft.Paylinks.Alipay.Payments" Version="5.0.4" />
+		<PackageReference Include="Essensoft.Paylinks.WeChatPay.Client" Version="5.0.4" />
+		<PackageReference Include="Essensoft.Paylinks.WeChatPay.Payments" Version="5.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />

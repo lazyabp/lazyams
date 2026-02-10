@@ -8,8 +8,8 @@ namespace Lazy.Application.Contracts;
 public interface IOrderService : ICrudService<OrderDto, OrderDto, long, OrderFilterPagedResultRequestDto, CreateOrderDto, UpdateOrderDto>
 {
     Task<OrderDto> RenewalPackageAsync(RenewalPackageDto input);
-    Task<OrderDto> ConfirmPaymentAsync(long orderId, string tradeNo);
-    Task<OrderDto> ProcessPaymentFailureAsync(long orderId, string failReason);
-    Task<OrderDto> CancelOrderAsync(long orderId);
-    Task<OrderDto> ProcessRefundAsync(long orderId, decimal refundAmount, string refundReason);
+    Task<OrderDto> ConfirmPaymentAsync(string orderNo, string tradeNo);
+    Task<OrderDto> ProcessPaymentFailureAsync(string orderNo, string failReason);
+    Task<OrderDto> CancelOrderAsync(string orderNo);
+    Task<OrderDto> ProcessRefundAsync(string orderNo, decimal refundAmount, string refundReason);
 }

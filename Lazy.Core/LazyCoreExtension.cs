@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Essensoft.Paylinks.Alipay.Client.Extensions;
+using Essensoft.Paylinks.WeChatPay.Client.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lazy.Core;
@@ -24,5 +26,9 @@ public static class LazyCoreExtension
                 });
             }
         }
+
+        services.AddHttpClient();
+        services.AddAlipayClient();
+        services.AddWeChatPayClient();
     }
 }

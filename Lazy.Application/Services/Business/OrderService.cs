@@ -53,9 +53,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         if (package == null)
             throw new LazyException($"Package with ID {input.PackageId} not found.");
 
-        var realAmount = package.DiscountedPrice ?? package.Price;
-        if (input.Amount != realAmount)
-            throw new LazyException($"The amount {input.Amount} does not match the expected amount");
+        var price = package.DiscountedPrice ?? package.Price;
+        var amount = price * input.Quantity;
 
         var order = new Order
         {
@@ -64,7 +63,9 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             PackageId = input.PackageId,
             OrderType = OrderType.Subscription,
             Status = OrderStatus.Pending,
-            Amount = realAmount,
+            Price = price,
+            Quantity = input.Quantity,
+            Amount = amount,
             Currency = input.Currency ?? "USD",
             PayType = input.PayType
         };
@@ -89,9 +90,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         if (userSubscription.Status != SubscriptionStatus.Active)
             throw new LazyException($"User subscription with ID {input.UserSubscriptionId} is not active and cannot be renewed.");
 
-        var realAmount = userSubscription.Package.DiscountedPrice ?? userSubscription.Package.Price;
-        if (input.Amount != realAmount)
-            throw new LazyException($"The amount {input.Amount} does not match the expected amount");
+        var price = userSubscription.Package.DiscountedPrice ?? userSubscription.Package.Price;
+        var amount = price * input.Quantity;
 
         var order = new Order
         {
@@ -100,7 +100,9 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             PackageId = userSubscription.PackageId,
             OrderType = OrderType.Renewal,
             Status = OrderStatus.Pending,
-            Amount = realAmount,
+            Price = price,
+            Quantity = input.Quantity,
+            Amount = amount,
             Currency = input.Currency ?? "USD",
             PayType = input.PayType
         };
@@ -113,11 +115,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ConfirmPaymentAsync(long orderId, string tradeNo)
+    public async Task<OrderDto> ConfirmPaymentAsync(string orderNo, string tradeNo)
     {
-        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.Id == orderId);
+        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.OrderNo == orderNo);
         if (order == null)
-            throw new LazyException($"Order with ID {orderId} not found.");
+            throw new LazyException($"Order with ID {orderNo} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot confirm payment for order with status {order.Status}. Order must be in Pending status.");
@@ -133,13 +135,31 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         if (order.OrderType == OrderType.Subscription)
         {
+            var endAt = DateTime.Now;
+            switch (order.Package.DurationUnit)
+            {
+                case DurationUnit.Day:
+                    endAt = DateTime.Now.AddDays(order.Quantity);
+                    break;
+                case DurationUnit.Week:
+                    endAt = DateTime.Now.AddDays(order.Quantity * 7);
+                    break;
+                case DurationUnit.Month:
+                    endAt = DateTime.Now.AddMonths(order.Quantity);
+                    break;
+                case DurationUnit.Year:
+                    endAt = DateTime.Now.AddYears(order.Quantity);
+                    break;
+            }
+
             // Handle subscription activation
             var userSubscription = new UserSubscription
             {
                 UserId = order.UserId,
                 PackageId = order.PackageId,
+                LastOrderId = order.Id,
                 StartAt = DateTime.Now,
-                EndAt = DateTime.Now.AddDays(order.Package.DurationDays)
+                EndAt = endAt
             };
             SetIdForLong(userSubscription);
             userSubscription.CreatedBy = order.UserId;
@@ -158,7 +178,25 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
             if (userSubscription != null)
             {
-                userSubscription.EndAt = userSubscription.EndAt > DateTime.Now ? userSubscription.EndAt.AddDays(order.Package.DurationDays) : DateTime.Now.AddDays(order.Package.DurationDays);
+                var endAt = userSubscription.EndAt > DateTime.Now ? userSubscription.EndAt : DateTime.Now;
+                switch (order.Package.DurationUnit)
+                {
+                    case DurationUnit.Day:
+                        endAt = endAt.AddDays(order.Quantity);
+                        break;
+                    case DurationUnit.Week:
+                        endAt = endAt.AddDays(order.Quantity * 7);
+                        break;
+                    case DurationUnit.Month:
+                        endAt = endAt.AddMonths(order.Quantity);
+                        break;
+                    case DurationUnit.Year:
+                        endAt = endAt.AddYears(order.Quantity);
+                        break;
+                }
+
+                userSubscription.LastOrderId = order.Id;
+                userSubscription.EndAt = endAt;
                 userSubscription.UpdatedBy = order.UserId;
                 userSubscription.UpdatedAt = DateTime.Now;
 
@@ -170,11 +208,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ProcessPaymentFailureAsync(long orderId, string failReason)
+    public async Task<OrderDto> ProcessPaymentFailureAsync(string orderNo, string failReason)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
         if (order == null)
-            throw new LazyException($"Order with ID {orderId} not found.");
+            throw new LazyException($"Order with ID {orderNo} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot process payment failure for order with status {order.Status}. Order must be in Pending status.");
@@ -191,11 +229,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> CancelOrderAsync(long orderId)
+    public async Task<OrderDto> CancelOrderAsync(string orderNo)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
         if (order == null)
-            throw new LazyException($"Order with ID {orderId} not found.");
+            throw new LazyException($"Order with ID {orderNo} not found.");
 
         if (order.Status != OrderStatus.Pending)
             throw new LazyException($"Cannot cancel order with status {order.Status}. Order must be in Pending status.");
@@ -211,11 +249,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         return MapToGetOutputDto(order);
     }
 
-    public async Task<OrderDto> ProcessRefundAsync(long orderId, decimal refundAmount, string refundReason)
+    public async Task<OrderDto> ProcessRefundAsync(string orderNo, decimal refundAmount, string refundReason)
     {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.OrderNo == orderNo);
         if (order == null)
-            throw new LazyException($"Order with ID {orderId} not found.");
+            throw new LazyException($"Order with ID {orderNo} not found.");
 
         if (order.Status != OrderStatus.Paid && order.Status != OrderStatus.Completed)
             throw new LazyException($"Cannot process refund for order with status {order.Status}. Order must be in Paid or Completed status.");

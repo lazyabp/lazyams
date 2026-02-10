@@ -279,8 +279,14 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired(true);
             b.Property(x => x.DiscountedPrice)
                 .IsRequired(false);
-            b.Property(x => x.DurationDays)
-                .IsRequired();
+            b.Property(x => x.DurationUnit)
+                .IsRequired()
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (DurationUnit)Enum.Parse(typeof(DurationUnit), v)
+                )
+                .HasDefaultValue(DurationUnit.Month)
+                .HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.SortOrder)
                 .IsRequired(true);
             b.Property(x => x.Description)
@@ -335,6 +341,10 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired();
             b.Property(x => x.Status)
                 .IsRequired();
+            b.Property(x => x.Price)
+                .IsRequired();
+            b.Property(x => x.Quantity)
+                .IsRequired();
             b.Property(x => x.Amount)
                 .IsRequired();
             b.Property(x => x.Currency)
@@ -377,6 +387,8 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired();
             b.Property(x => x.PackageId)
                 .IsRequired();
+            b.Property(x => x.LastOrderId)
+                .IsRequired(false);
             b.Property(x => x.StartAt)
                 .IsRequired();
             b.Property(x => x.EndAt)
