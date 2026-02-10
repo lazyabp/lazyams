@@ -127,6 +127,11 @@ public class StripeService : IStripeService, ITransientDependency
         }
     }
 
+    /// <summary>
+    /// 查询订单支付状态，通常用于前端轮询查询订单是否已支付成功，返回订单是否已支付的布尔值
+    /// </summary>
+    /// <param name="orderId">这里实际上是stripe的sessionId</param>
+    /// <returns></returns>
     public async Task<bool> CheckOrderPaidAsync(string orderId)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);

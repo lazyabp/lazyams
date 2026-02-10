@@ -77,10 +77,11 @@ public class PayPal
     public string ClientId { get; set; }
     //客户端密钥
     public string ClientSecret { get; set; }
+    public string WebhookId { get; set; }
     //沙箱模式
     public bool IsSandbox { get; set; }
-    public string WebhookUrl { get; set; }
-    public string WebhookId { get; set; }
+    public string ReturnUrl { get; set; }
+    public string CancelUrl { get; set; }
 }
 
 public class Coinbase
