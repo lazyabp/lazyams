@@ -5,7 +5,7 @@ namespace Lazy.Application.Contracts;
 public interface IPaymentService
 {
     // 支付方式标识，如 "Alipay", "Stripe"
-    string Provider { get; }
+    PayType Provider { get; }
 
     /// <summary>
     /// 创建支付订单，返回支付结果（包含支付媒介信息，如二维码链接、客户端密钥等）

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace WebApi.Controllers.Business;
+namespace WebApi.Controllers;
 
 /// <summary>
 /// 套餐管理

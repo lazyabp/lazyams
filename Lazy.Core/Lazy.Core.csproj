@@ -18,15 +18,28 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+		<PackageReference Include="AlibabaCloud.SDK.Dysmsapi20170525" Version="4.2.0" />
+		<PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.14.1" />
+		<PackageReference Include="AWSSDK.S3" Version="4.0.17" />
+		<PackageReference Include="MailKit" Version="4.14.1" />
+		<PackageReference Include="Minio" Version="7.0.0" />
+		<PackageReference Include="Qiniu" Version="8.7.0" />
+		<PackageReference Include="Resend" Version="0.2.1" />
+		<PackageReference Include="TencentCloudSDK.Sms" Version="3.0.1363" />
+		<PackageReference Include="Twilio" Version="7.14.2" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Coinbase.Commerce" Version="3.0.1" />
 		<PackageReference Include="Essensoft.Paylinks.Alipay.Client" Version="5.0.4" />
 		<PackageReference Include="Essensoft.Paylinks.Alipay.Payments" Version="5.0.4" />
+		<PackageReference Include="Essensoft.Paylinks.Alipay.Mvc" Version="5.0.4" />
 		<PackageReference Include="Essensoft.Paylinks.WeChatPay.Client" Version="5.0.4" />
 		<PackageReference Include="Essensoft.Paylinks.WeChatPay.Payments" Version="5.0.4" />
+		<PackageReference Include="Essensoft.Paylinks.WeChatPay.Mvc" Version="5.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
+		<PackageReference Include="MediatR" Version="14.0.0" />
+		<PackageReference Include="Quartz" Version="3.15.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="6.1.1" />
 		<PackageReference Include="PayPalCheckoutSdk.DotNet5" Version="1.0.1" />

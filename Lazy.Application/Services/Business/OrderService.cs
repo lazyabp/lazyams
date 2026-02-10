@@ -270,4 +270,17 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         return MapToGetOutputDto(order);
     }
+
+    public async Task<OrderDto> GetByOrderNoAsync(string orderNo)
+    {
+        var order = await LazyDBContext.Orders
+            .Include(o => o.User)
+            .Include(o => o.Package)
+            .FirstOrDefaultAsync(o => o.OrderNo == orderNo);
+
+        if (order == null)
+            throw new LazyException($"Order with number {orderNo} not found.");
+
+        return MapToGetOutputDto(order);
+    }
 }

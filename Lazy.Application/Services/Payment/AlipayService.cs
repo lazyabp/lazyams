@@ -31,7 +31,7 @@ public class AlipayService : IAlipayService, ITransientDependency
         _logger = logger;
     }
 
-    public string Provider => "Alipay";
+    public PayType Provider => PayType.Alipay;
 
     public async Task<PaymentResultDto> CreatePaymentAsync(PaymentRequestDto input)
     {
