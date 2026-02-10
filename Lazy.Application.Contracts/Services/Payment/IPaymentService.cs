@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-
 namespace Lazy.Application.Contracts;
 
 public interface IPaymentService

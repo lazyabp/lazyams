@@ -12,7 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 #endif
 
-namespace Lazy.Application.Services.Payment;
+namespace Lazy.Application;
 
 public class PayPalService : IPayPalService, ITransientDependency
 {

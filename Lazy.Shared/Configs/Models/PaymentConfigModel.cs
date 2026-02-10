@@ -95,7 +95,7 @@ public class Coinbase
     //API 密钥的密码（如果有）
     public string ApiSecret { get; set; }
     //Webhook 监听地址
-    public string WebhookUrl { get; set; }
+    public string RedirectUrl { get; set; }
     //Webhook 事件的签名密钥
     public string WebhookSecret { get; set; }
 }

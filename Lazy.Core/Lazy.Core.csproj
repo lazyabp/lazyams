@@ -21,6 +21,7 @@
 		<PackageReference Include="AlibabaCloud.SDK.Dysmsapi20170525" Version="4.2.0" />
 		<PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.14.1" />
 		<PackageReference Include="AWSSDK.S3" Version="4.0.17" />
+		<PackageReference Include="Coinbase.Commerce" Version="3.0.1" />
 		<PackageReference Include="MailKit" Version="4.14.1" />
 		<PackageReference Include="Minio" Version="7.0.0" />
 		<PackageReference Include="Qiniu" Version="8.7.0" />
@@ -28,7 +29,6 @@
 		<PackageReference Include="TencentCloudSDK.Sms" Version="3.0.1363" />
 		<PackageReference Include="Twilio" Version="7.14.2" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-		<PackageReference Include="Coinbase.Commerce" Version="3.0.1" />
 		<PackageReference Include="Essensoft.Paylinks.Alipay.Client" Version="5.0.4" />
 		<PackageReference Include="Essensoft.Paylinks.Alipay.Payments" Version="5.0.4" />
 		<PackageReference Include="Essensoft.Paylinks.Alipay.Mvc" Version="5.0.4" />
