@@ -68,9 +68,9 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
                 Success = true,
                 Data = charge.HostedUrl,
                 ResultType = PaymentResultType.Url,
-                OrderId = order.Id,
-                OrderNo = charge.Code,
-                OriginResponse = charge
+                OutTradeNo = charge.Code,
+                OutTradeName = "ChargeCode"
+                //OriginResponse = charge
             };
         }
         catch (Exception ex)
@@ -80,7 +80,10 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
         }
     }
 
-    // 处理 Webhook
+    /// <summary>
+    /// 处理 Webhook
+    /// </summary>
+    /// <returns></returns>
     public async Task<bool> ProcessNotifyAsync()
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
@@ -118,9 +121,9 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
 
             if (webhook.Event.IsChargeConfirmed)
             {
-                var code = chargeInfo.Code; // Coinbase 的 8 位唯一码
+                var chargeId = chargeInfo.Id; // Coinbase 的 8 位唯一码
 
-                await _orderService.ConfirmPaymentAsync(orderId, code);
+                await _orderService.ConfirmPaymentAsync(orderId, chargeId);
                 return true;
             }
 
@@ -133,7 +136,12 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
         }
     }
 
-    public async Task<bool> CheckOrderPaidAsync(string chargeCode)
+    /// <summary>
+    /// 支付状态查询
+    /// </summary>
+    /// <param name="outTradeNo">Coinbase的charge code</param>
+    /// <returns></returns>
+    public async Task<bool> CheckOrderPaidAsync(string outTradeNo)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var cbConfig = config.Coinbase;
@@ -146,7 +154,7 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             var commerceApi = new CommerceApi(cbConfig.ApiKey);
 
             // 调用 SDK 查询 Charge 详情
-            var response = await commerceApi.GetChargeAsync(chargeCode);
+            var response = await commerceApi.GetChargeAsync(outTradeNo);
             var charge = response.Data;
 
             // 判断状态
@@ -155,7 +163,7 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             {
                 var orderId = charge.Metadata["order_id"].ToObject<long>();
                 // 确认支付
-                await _orderService.ConfirmPaymentAsync(orderId, charge.Code);
+                await _orderService.ConfirmPaymentAsync(orderId, charge.Id);
 
                 return true;
             }
@@ -164,7 +172,7 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Coinbase Query Failed for Order: {chargeCode}", chargeCode);
+            _logger.LogError(ex, "Coinbase Query Failed for Order: {outTradeNo}", outTradeNo);
             return false;
         }
     }

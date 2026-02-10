@@ -87,9 +87,9 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             Success = response.IsSuccessful,
             Data = response.CodeUrl, // 返回二维码内容
             ResultType = PaymentResultType.QrCode,
-            OrderId = order.Id,
-            OrderNo = order.OrderNo,
-            OriginResponse = response
+            OutTradeNo = order.Id.ToString(),
+            OutTradeName = "Id",
+            //OriginResponse = response
         };
     }
 
@@ -148,7 +148,13 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
         }
     }
 
-    public async Task<bool> CheckOrderPaidAsync(string orderId)
+    /// <summary>
+    /// 订单状态查询，主要用于前端轮询查询订单是否支付成功
+    /// </summary>
+    /// <param name="outTradeNo">实际为订单ID</param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
+    public async Task<bool> CheckOrderPaidAsync(string outTradeNo)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var weChatPayConfig = config.WeChatPay;
@@ -166,7 +172,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
 
             var request = new WeChatPayQueryByOutTradeNoRequest();
             request.SetQueryModel(model);
-            request.OutTradeNo = orderId; // 使用商户订单号查询
+            request.OutTradeNo = outTradeNo; // 使用商户订单号查询
 
             var options = new WeChatPayClientOptions
             {
@@ -189,11 +195,11 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                 // 检查交易状态是否为成功
                 if (response.TradeState == "SUCCESS")
                 {
-                    var id = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
-                    if (id <= 0)
+                    var orderId = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                    if (orderId <= 0)
                         throw new LazyException($"Invalid order ID in WeChatPay notify: {response.OutTradeNo}");
 
-                    await _orderService.ConfirmPaymentAsync(id, response.TransactionId);
+                    await _orderService.ConfirmPaymentAsync(orderId, response.TransactionId);
 
                     return true;
                 }

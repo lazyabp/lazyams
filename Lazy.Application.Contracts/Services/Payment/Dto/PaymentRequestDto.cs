@@ -8,5 +8,5 @@ public class PaymentRequestDto
 {
     public long OrderId { get; set; }
 
-    public PaymentProvider PayType { get; set; }
+    public PaymentProvider Provider { get; set; }
 }

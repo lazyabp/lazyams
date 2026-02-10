@@ -80,9 +80,9 @@ public class StripeService : IStripeService, ITransientDependency
             Success = true,
             Data = session.Url, // 返回 Stripe 托管的支付页面 URL
             ResultType = PaymentResultType.Url,
-            OrderId = order.Id,
-            OrderNo = session.Id, // 使用 SessionId 作为订单号
-            OriginResponse = session
+            OutTradeNo = session.Id, // 使用 SessionId 作为订单号
+            OutTradeName = "Stripe Session Id"
+            //OriginResponse = session
         };
     }
 
@@ -130,9 +130,9 @@ public class StripeService : IStripeService, ITransientDependency
     /// <summary>
     /// 查询订单支付状态，通常用于前端轮询查询订单是否已支付成功，返回订单是否已支付的布尔值
     /// </summary>
-    /// <param name="orderId">这里实际上是stripe的sessionId</param>
+    /// <param name="outTradeNo">这里实际上是stripe的sessionId</param>
     /// <returns></returns>
-    public async Task<bool> CheckOrderPaidAsync(string orderId)
+    public async Task<bool> CheckOrderPaidAsync(string outTradeNo)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var stripeConfig = config.Stripe;
@@ -148,15 +148,15 @@ public class StripeService : IStripeService, ITransientDependency
 
             // 使用 SessionId 获取 Session 对象
             // 此请求会返回最新的 Session 状态
-            Session session = await service.GetAsync(orderId);
+            Session session = await service.GetAsync(outTradeNo);
 
             // 检查 PaymentStatus 是否为 "paid"
             if (session != null && session.PaymentStatus == "paid")
             {
                 // 注意：此时可能需要根据 session.ClientReferenceId 获取系统订单号
-                var id = session.ClientReferenceId.ParseToLong();
+                var orderId = session.ClientReferenceId.ParseToLong();
 
-                await _orderService.ConfirmPaymentAsync(id, session.PaymentIntentId);
+                await _orderService.ConfirmPaymentAsync(orderId, session.PaymentIntentId);
                 return true;
             }
 

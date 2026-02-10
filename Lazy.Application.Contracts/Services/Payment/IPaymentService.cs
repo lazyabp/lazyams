@@ -21,7 +21,7 @@ public interface IPaymentService
     /// <summary>
     /// 查询订单支付状态，通常用于前端轮询查询订单是否已支付成功，返回订单是否已支付的布尔值
     /// </summary>
-    /// <param name="orderId"></param>
+    /// <param name="outTradeNo"></param>
     /// <returns></returns>
-    Task<bool> CheckOrderPaidAsync(string orderId);
+    Task<bool> CheckOrderPaidAsync(string outTradeNo);
 }

@@ -100,9 +100,9 @@ public class PayPalService : IPayPalService, ITransientDependency
                 Success = true,
                 Data = result.Id, // 返回 PayPal OrderId
                 ResultType = PaymentResultType.Url,
-                OrderId = order.Id,
-                OrderNo = result.Id,
-                OriginResponse = result
+                OutTradeNo = result.Id,
+                OutTradeName = "PayPal Order Id"
+                //OriginResponse = result
             };
         }
         catch (HttpException httpEx)
@@ -182,9 +182,9 @@ public class PayPalService : IPayPalService, ITransientDependency
     /// <summary>
     /// 捕获订单 - 用户支付后，系统主动确认
     /// </summary>
-    /// <param name="payPalOrderId"></param>
+    /// <param name="outTradeNo">为PayPal的Order Id</param>
     /// <returns></returns>
-    public async Task<bool> CheckOrderPaidAsync(string payPalOrderId)
+    public async Task<bool> CheckOrderPaidAsync(string outTradeNo)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var ppConfig = config.PayPal;
@@ -198,7 +198,7 @@ public class PayPalService : IPayPalService, ITransientDependency
         var client = new PayPalHttpClient(environment);
 
         // 捕获订单请求
-        var request = new OrdersCaptureRequest(payPalOrderId);
+        var request = new OrdersCaptureRequest(outTradeNo);
         request.RequestBody(new OrderActionRequest());
 
         try

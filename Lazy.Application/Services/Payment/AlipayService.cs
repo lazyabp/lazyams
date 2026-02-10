@@ -80,9 +80,9 @@ public class AlipayService : IAlipayService, ITransientDependency
             Success = response.IsSuccessful,
             Data = response.QrCode,
             ResultType = PaymentResultType.QrCode,
-            OrderId = order.Id,
-            OrderNo = order.OrderNo,
-            OriginResponse = response
+            OutTradeNo = order.Id.ToString(),
+            OutTradeName = nameof(order.Id),
+            //OriginResponse = response
         };
     }
 
@@ -140,7 +140,7 @@ public class AlipayService : IAlipayService, ITransientDependency
         }
     }
 
-    public async Task<bool> CheckOrderPaidAsync(string orderId)
+    public async Task<bool> CheckOrderPaidAsync(string outTradeNo)
     {
         var config = await _configService.GetConfigAsync<PaymentConfigModel>(ConfigNames.Payment);
         var alipayConfig = config.Alipay;
@@ -150,7 +150,7 @@ public class AlipayService : IAlipayService, ITransientDependency
 
         // 这个 AlipayTradeQueryRequest 内部实现了 IAlipayRequest
         var request = new AlipayTradeQueryRequest();
-        request.SetBodyModel(new { OutTradeNo = orderId });
+        request.SetBodyModel(new { OutTradeNo = outTradeNo });
 
         var options = new AlipayClientOptions
         {
@@ -174,11 +174,11 @@ public class AlipayService : IAlipayService, ITransientDependency
             // 只有当交易状态为 成功 或 结束 时才返回 true
             if (response.TradeStatus == "TRADE_SUCCESS" || response.TradeStatus == "TRADE_FINISHED")
             {
-                var id = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
-                if (id <= 0)
+                var orderId = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
+                if (orderId <= 0)
                     throw new LazyException($"Invalid order ID in Alipay notify: {response.OutTradeNo}");
 
-                await _orderService.ConfirmPaymentAsync(id, response.TradeNo);
+                await _orderService.ConfirmPaymentAsync(orderId, response.TradeNo);
 
                 return true;
             }
