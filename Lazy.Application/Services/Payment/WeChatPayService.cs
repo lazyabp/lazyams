@@ -76,7 +76,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             MchPrivateKey = weChatPayConfig.MchPrivateKey,
             WeChatPayPublicKey = weChatPayConfig.WeChatPayPublicKey,
             WeChatPayPublicKeyId = weChatPayConfig.WeChatPayPublicKeyId,
-            APIv3Key = weChatPayConfig.APIv3Key
+            APIv3Key = weChatPayConfig.ApiV3Key
         };
 
         // 执行请求
@@ -118,7 +118,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                 MchPrivateKey = weChatPayConfig.MchPrivateKey,
                 WeChatPayPublicKey = weChatPayConfig.WeChatPayPublicKey,
                 WeChatPayPublicKeyId = weChatPayConfig.WeChatPayPublicKeyId,
-                APIv3Key = weChatPayConfig.APIv3Key
+                APIv3Key = weChatPayConfig.ApiV3Key
             };
 
             var weChatPayClient = GlobalContext.ServiceProvider.GetRequiredService<IWeChatPayNotifyClient>();
@@ -183,7 +183,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                 MchPrivateKey = weChatPayConfig.MchPrivateKey,
                 WeChatPayPublicKey = weChatPayConfig.WeChatPayPublicKey,
                 WeChatPayPublicKeyId = weChatPayConfig.WeChatPayPublicKeyId,
-                APIv3Key = weChatPayConfig.APIv3Key
+                APIv3Key = weChatPayConfig.ApiV3Key
             };
 
             var weChatPayClient = GlobalContext.ServiceProvider.GetRequiredService<IWeChatPayClient>();

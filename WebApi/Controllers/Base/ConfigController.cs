@@ -26,19 +26,20 @@ public class ConfigController : ControllerBase
     /// 配置键信息
     /// </summary>
     /// <returns></returns>
-    [Authorize]
+    [Authorize(PermissionConsts.Config.Default)]
     [HttpGet("GetKeys")]
     public List<ConfigKeyDto> GetKeys()
     {
         return new List<ConfigKeyDto>
         {
-            new ConfigKeyDto{ Key = ConfigNames.Site, Title = "基本", Description = "系统基本信息配置" },
+            new ConfigKeyDto{ Key = ConfigNames.Site, Title = "基本配置", Description = "系统基本信息配置" },
             new ConfigKeyDto{ Key = ConfigNames.UploadFile, Title = "文件上传", Description = "文件上传配置" },
-            new ConfigKeyDto{ Key = ConfigNames.Member, Title = "会员", Description = "会员基本信息配置" },
+            new ConfigKeyDto{ Key = ConfigNames.Member, Title = "会员配置", Description = "会员基本信息配置" },
             new ConfigKeyDto{ Key = ConfigNames.Storage, Title = "文件存储", Description = "文件存储配置" },
             new ConfigKeyDto{ Key = ConfigNames.SocialiteLogin, Title = "社媒登录", Description = "社媒登录配置" },
-            new ConfigKeyDto{ Key = ConfigNames.Mailer, Title = "邮局", Description = "邮件发送置" },
-            new ConfigKeyDto{ Key = ConfigNames.Sms, Title = "短信", Description = "短信验证配置" },
+            new ConfigKeyDto{ Key = ConfigNames.Mailer, Title = "邮局配置", Description = "邮件发送置" },
+            new ConfigKeyDto{ Key = ConfigNames.Sms, Title = "短信配置", Description = "短信验证配置" },
+            new ConfigKeyDto{ Key = ConfigNames.Payment, Title = "支付配置", Description = "支付方式配置" },
         };
     }
 
@@ -108,7 +109,7 @@ public class ConfigController : ControllerBase
     /// <param name="key"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Config.Default)]
-    [HttpGet("Get")]
+    [HttpGet("Get/{key}")]
     public async Task<object> GetConfig(string key)
     {
         switch (key)
@@ -121,6 +122,8 @@ public class ConfigController : ControllerBase
                 return await _settingService.GetConfigAsync<MailerConfigModel>(key);
             case ConfigNames.Sms:
                 return await _settingService.GetConfigAsync<SmsConfigModel>(key);
+            case ConfigNames.Payment:
+                return await _settingService.GetConfigAsync<PaymentConfigModel>(key);
             default:
                 return await _settingService.GetConfigAsync<Dictionary<string, object>>(key);
         }
@@ -133,7 +136,7 @@ public class ConfigController : ControllerBase
     /// <param name="value"></param>
     /// <returns></returns>
     [Authorize(PermissionConsts.Config.Update)]
-    [HttpPost("Set")]
+    [HttpPost("Set/{key}")]
     public async Task<bool> SetConfig(string key, object value)
     {
         switch (key)
@@ -153,6 +156,10 @@ public class ConfigController : ControllerBase
             case ConfigNames.Sms:
                 var sms = JsonConvert.DeserializeObject<SmsConfigModel>(value.ToString());
                 await _settingService.SetConfigAsync(key, sms);
+                break;
+            case ConfigNames.Payment:
+                var payment = JsonConvert.DeserializeObject<PaymentConfigModel>(value.ToString());
+                await _settingService.SetConfigAsync(key, payment);
                 break;
             default:
                 var config = JsonConvert.DeserializeObject<IDictionary<string, object>>(value.ToString());

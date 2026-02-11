@@ -103,14 +103,14 @@ public class PaymentController : ControllerBase
     }
 
     /// <summary>
-    /// 统一查询接口：/api/payment/check/{provider}/{orderNo}
+    /// 统一查询接口：/api/payment/check/{provider}/{outTradeNo}
     /// </summary>
     /// <param name="provider"></param>
-    /// <param name="orderNo"></param>
+    /// <param name="outTradeNo"></param>
     /// <returns></returns>
-    [HttpGet("check/{provider}/{orderNo}")]
+    [HttpGet("check/{provider}/{outTradeNo}")]
     [Authorize]
-    public async Task<object> CheckStatus(PaymentProvider provider, string orderNo)
+    public async Task<object> CheckStatus(PaymentProvider provider, string outTradeNo)
     {
         var service = GetPaymentService(provider);
         if (service == null)
@@ -118,7 +118,7 @@ public class PaymentController : ControllerBase
             return NotFound("Service not found");
         }
 
-        var isPaid = await service.CheckOrderPaidAsync(orderNo);
+        var isPaid = await service.CheckOrderPaidAsync(outTradeNo);
 
         return new { Paid = isPaid };
     }
