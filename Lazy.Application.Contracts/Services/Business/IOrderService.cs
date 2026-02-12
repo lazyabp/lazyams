@@ -11,8 +11,8 @@ public interface IOrderService : ICrudService<OrderDto, OrderDto, long, OrderFil
     Task SetOrderNoAsync(long id, string orderNo);
     Task<OrderDto> RenewalPackageAsync(RenewalPackageDto input);
     Task<OrderDto> ChangeDiscountedAmountAsync(long id, ChangeDiscountedAmountDto input);
-    Task SetAsPaidAsync(long id, SetAsPaidDto input);
-    Task SetAsComplitedAsync(long id);
+    Task SetAsPaidAsync(long id, string reason);
+    Task SetAsComplitedAsync(long id, string reason);
     Task ConfirmPaymentAsync(long id, string tradeNo);
     Task ProcessPaymentAmountMismatchAsync(long id, decimal paidAmount, string paidCurrency);
     Task ProcessPaymentFailureAsync(long id, string failReason);

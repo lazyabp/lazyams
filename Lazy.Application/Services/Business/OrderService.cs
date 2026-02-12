@@ -189,10 +189,10 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
     /// 管理员手动操作订单状态为已支付
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="input"></param>
+    /// <param name="reason"></param>
     /// <returns></returns>
     /// <exception cref="LazyException"></exception>
-    public async Task SetAsPaidAsync(long id, SetAsPaidDto input)
+    public async Task SetAsPaidAsync(long id, string reason)
     {
         var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
@@ -207,19 +207,20 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         await LazyDBContext.SaveChangesAsync();
 
-        await WriteOrderLogAsync(order.Id, OrderAction.Paid, $"The administrator manually changes the order status to paid,\r\nreason: {input.Reason}");
+        await WriteOrderLogAsync(order.Id, OrderAction.Paid, $"The administrator manually changes the order status to paid,\r\nReason: {reason}");
 
         // 支付完成后直接设置订单为完成状态，并激活订阅
-        await SetAsComplitedAsync(order.Id);
+        await SetAsComplitedAsync(order.Id, reason);
     }
 
     /// <summary>
     /// 支付完成后直接设置订单为完成状态，并激活订阅
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="reason"></param>
     /// <returns></returns>
     /// <exception cref="LazyException"></exception>
-    public async Task SetAsComplitedAsync(long id)
+    public async Task SetAsComplitedAsync(long id, string reason)
     {
         var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
@@ -305,7 +306,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
-        await WriteOrderLogAsync(order.Id, OrderAction.Completed, $"User subscription is successfully");
+        await WriteOrderLogAsync(order.Id, OrderAction.Completed, $"User subscription is successfully,\r\nReason: {reason}");
     }
 
     /// <summary>
@@ -335,7 +336,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         await WriteOrderLogAsync(order.Id, OrderAction.Paid, $"Payment confirmed with Trade No: {tradeNo}");
 
         // 支付完成后直接设置订单为完成状态，并激活订阅
-        await SetAsComplitedAsync(order.Id);
+        await SetAsComplitedAsync(order.Id, "Paid is successfully");
     }
 
     /// <summary>
