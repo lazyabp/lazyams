@@ -24,6 +24,7 @@ public class LazyDBContext : DbContext
     public DbSet<Package> Packages { get; set; }
     public DbSet<PackageFeature> PackageFeatures { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderLog> OrderLogs { get; set; }
     public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
     #endregion

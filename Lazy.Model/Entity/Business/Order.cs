@@ -18,21 +18,15 @@ public class Order : BaseEntityWithDeletingAudit
     public long UserId { get; set; }
     public long PackageId { get; set; }
     public OrderType OrderType { get; set; } = OrderType.Subscription;
-    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
     public decimal Price { get; set; }
     public int Quantity { get; set; } = 1;
     public decimal Amount { get; set; }
+    public decimal DiscountedAmount { get; set; }
     public string Currency { get; set; } = "USD";
-    public PaymentProvider PayType { get; set; }
-    public DateTime? PaidAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
-    public DateTime? CanceledAt { get; set; }
-    public DateTime? FailedAt { get; set; }
-    public string FailReason { get; set; }
-    public DateTime? RefundedAt { get; set; }
-    public decimal? RefundAmount { get; set; }
-    public string RefundReason { get; set; }
+    public PaymentProvider PaymentProvider { get; set; }
     public string SessionId { get; set; }
     public virtual User User { get; set; }
     public virtual Package Package { get; set; }
+    public virtual ICollection<OrderLog> Logs { get; set; } = [];
 }

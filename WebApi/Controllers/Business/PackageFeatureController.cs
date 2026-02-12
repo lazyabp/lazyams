@@ -6,7 +6,7 @@ namespace WebApi.Controllers;
 /// 套餐功能管理
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(SwaggerGroup.BusinessService))]
-[Route("api/[controller]")]
+[Route("api/Package/Feature")]
 [ApiController]
 public class PackageFeatureController : ControllerBase
 {

@@ -5,7 +5,8 @@ public class BusinessProfile : Profile
 {
     public BusinessProfile()
     {
-        CreateMap<Order, OrderDto>().ReverseMap();
+        CreateMap<Order, OrderDto>();
+        CreateMap<OrderLog, OrderLogDto>();
 
         CreateMap<Package, PackageDto>().ReverseMap();
         CreateMap<CreatePackageDto, Package>().ForMember(dest => dest.Id, opt => opt.Ignore());

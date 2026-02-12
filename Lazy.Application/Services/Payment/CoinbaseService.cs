@@ -46,7 +46,7 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             PricingType = PricingType.FixedPrice,
             LocalPrice = new Money
             {
-                Amount = order.Amount,
+                Amount = order.DiscountedAmount,
                 Currency = order.Currency
             },
             Metadata = new Newtonsoft.Json.Linq.JObject {
@@ -101,7 +101,7 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             // 获取签名头
             var signature = request.Headers["X-CC-Webhook-Signature"].ToString();
 
-            // 3.0.1 版本的验签工具类
+            // 验签工具类
             if (!WebhookHelper.IsValid(cbConfig.WebhookSecret, signature, json))
             {
                 _logger.LogWarning("Coinbase Webhook Signature Verification Failed");
@@ -122,6 +122,22 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             if (webhook.Event.IsChargeConfirmed)
             {
                 var chargeId = chargeInfo.Id; // Coinbase 的 8 位唯一码
+
+                var order = await _orderService.GetAsync(orderId);
+
+                // 获取实际结算金额
+                // 如果客户支付的是固定价格(FixedPrice)，实际支付金额应当等于预期金额
+                if (!chargeInfo.Pricing.TryGetValue("settlement", out var settlementPrice))
+                {
+                    _logger.LogError("Order {OrderId} Webhook missing 'settlement' pricing data.", orderId);
+                    return false; // 无法校验，直接返回失败
+                }
+
+                if (settlementPrice.Currency != order.Currency || settlementPrice.Amount != order.DiscountedAmount)
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, settlementPrice.Amount, settlementPrice.Currency);
+                    return false;
+                }
 
                 await _orderService.ConfirmPaymentAsync(orderId, chargeId);
                 return true;
@@ -162,6 +178,23 @@ public class CoinbaseService : ICoinbaseService, ITransientDependency
             if (charge.Timeline != null && charge.Timeline.Any(t => t.Status == "CONFIRMED"))
             {
                 var orderId = charge.Metadata["order_id"].ToObject<long>();
+
+                var order = await _orderService.GetAsync(orderId);
+
+                // 获取实际结算金额
+                // 如果客户支付的是固定价格(FixedPrice)，实际支付金额应当等于预期金额
+                if (!charge.Pricing.TryGetValue("settlement", out var settlementPrice))
+                {
+                    _logger.LogError("Order {OrderId} Webhook missing 'settlement' pricing data.", orderId);
+                    return false; // 无法校验，直接返回失败
+                }
+
+                if (settlementPrice.Currency.ToLower() != order.Currency.ToLower() || settlementPrice.Amount != order.DiscountedAmount)
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, settlementPrice.Amount, settlementPrice.Currency);
+                    return false;
+                }
+
                 // 确认支付
                 await _orderService.ConfirmPaymentAsync(orderId, charge.Id);
 

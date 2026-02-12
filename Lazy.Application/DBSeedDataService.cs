@@ -71,22 +71,22 @@ public class DBSeedDataService : IDBSeedDataService, ITransientDependency
 
         new Menu(){Id=29, Name="Business", Icon="el-icon-shopping-cart-full", Title="业务管理", MenuType= MenuType.Dir, OrderNum=0, Permission=PermissionConsts.PermissionManagement, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=30, ParentId=29, Icon="el-icon-document", Name="Order", Title="订单管理", MenuType=MenuType.Menu, OrderNum=1, Route="/business/order", Component="business/order/index", Permission=PermissionConsts.Order.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=30, ParentId=29, Icon="el-icon-document", Name="Order", Title="订单管理", MenuType=MenuType.Menu, OrderNum=1, Route="/order", Component="order/index", Permission=PermissionConsts.Order.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=31, ParentId=30, Icon="", Name="Add", Title="添加订单",MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Order.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=32, ParentId=30, Icon="", Name="Update", Title="更新订单",MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Order.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=33, ParentId=30, Icon="", Name="Delete", Title="删除订单",MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Order.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=34, ParentId=29, Icon="el-icon-box", Name="Package", Title="套餐管理", MenuType=MenuType.Menu, OrderNum=2, Route="/business/package", Component="business/package/index", Permission=PermissionConsts.Package.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=34, ParentId=29, Icon="el-icon-box", Name="Package", Title="套餐管理", MenuType=MenuType.Menu, OrderNum=2, Route="/package", Component="package/index", Permission=PermissionConsts.Package.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=35, ParentId=34, Icon="", Name="Add", Title="添加套餐",MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.Package.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=36, ParentId=34, Icon="", Name="Update", Title="更新套餐",MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.Package.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=37, ParentId=34, Icon="", Name="Delete", Title="删除套餐",MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.Package.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=38, ParentId=34, Icon="el-icon-menu", Name="PackageFeature", Title="套餐功能管理", MenuType=MenuType.Menu, OrderNum=3, Route="/business/package-feature", Component="business/package-feature/index", Permission=PermissionConsts.PackageFeature.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=38, ParentId=34, Icon="el-icon-menu", Name="PackageFeature", Title="套餐功能管理", MenuType=MenuType.Menu, OrderNum=3, Route="/package-feature", Component="package/feature", Permission=PermissionConsts.PackageFeature.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=39, ParentId=34, Icon="", Name="Add", Title="添加功能",MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.PackageFeature.Add, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=40, ParentId=34, Icon="", Name="Update", Title="更新功能",MenuType= MenuType.Btn, OrderNum=2, Permission=PermissionConsts.PackageFeature.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=41, ParentId=34, Icon="", Name="Delete", Title="删除功能",MenuType= MenuType.Btn, OrderNum=3, Permission=PermissionConsts.PackageFeature.Delete, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
 
-        new Menu(){Id=42, ParentId=29, Icon="el-icon-user", Name="UserSubscription", Title="用户订阅管理", MenuType=MenuType.Menu, OrderNum=4, Route="/business/user-subscription", Component="business/user-subscription/index", Permission=PermissionConsts.UserSubscription.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
+        new Menu(){Id=42, ParentId=29, Icon="el-icon-user", Name="UserSubscription", Title="用户订阅管理", MenuType=MenuType.Menu, OrderNum=4, Route="/user-subscription", Component="user-subscription/index", Permission=PermissionConsts.UserSubscription.Default, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
         new Menu(){Id=43, ParentId=42, Icon="", Name="Update", Title="更新订阅",MenuType= MenuType.Btn, OrderNum=1, Permission=PermissionConsts.UserSubscription.Update, CreatedBy=1,CreatedAt= DateTime.Now, IsActive = true},
     };
 

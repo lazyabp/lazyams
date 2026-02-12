@@ -73,7 +73,7 @@ public class PayPalService : IPayPalService, ITransientDependency
                     AmountWithBreakdown = new AmountWithBreakdown()
                     {
                         CurrencyCode = order.Currency, // 如 "USD"
-                        Value = order.Amount.ToString("F2") // PayPal 金额为字符串
+                        Value = order.DiscountedAmount.ToString("F2") // PayPal 金额为字符串
                     },
                     ReferenceId = order.Id.ToString() // 绑定系统订单号
                 }
@@ -211,9 +211,18 @@ public class PayPalService : IPayPalService, ITransientDependency
                 // 获取订单号
                 var orderId = result.PurchaseUnits[0].ReferenceId.ParseToLong();
                 // 获取 PayPal 交易流水号
-                var transactionId = result.PurchaseUnits[0].Payments.Captures[0].Id;
+                //var transactionId = result.PurchaseUnits[0].Payments.Captures[0].Id;
+                var capture = result.PurchaseUnits[0].Payments?.Captures?.FirstOrDefault();
+                var paidAmount = capture?.Amount?.Value.ParseToDecimal();
+                var order = await _orderService.GetAsync(orderId);
+                if (paidAmount != order.DiscountedAmount || capture.Amount.CurrencyCode.ToLower() != order.Currency.ToLower())
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, paidAmount ?? 0, capture.Amount.CurrencyCode);
 
-                await _orderService.ConfirmPaymentAsync(orderId, transactionId);
+                    return false;
+                }
+
+                await _orderService.ConfirmPaymentAsync(orderId, capture.Id);
 
                 return true;
             }

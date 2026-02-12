@@ -9,5 +9,5 @@ public class OrderFilterPagedResultRequestDto : FilterPagedResultRequestDto
     public long? UserId { get; set; }
     public long? PackageId { get; set; }
     public OrderType? OrderType { get; set; }
-    public OrderStatus? Status { get; set; }
+    public OrderStatus? OrderStatus { get; set; }
 }

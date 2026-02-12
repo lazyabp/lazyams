@@ -58,7 +58,7 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
             GoodsTag = order.Package.Name,
             Amount = new CommReqAmountInfo
             {
-                Total = (int)(order.Amount * 100), // 微信支付金额单位为分
+                Total = (int)(order.DiscountedAmount * 100), // 微信支付金额单位为分
                 Currency = order.Currency
             }
         };
@@ -132,6 +132,13 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                 if (orderId <= 0)
                     throw new LazyException($"Invalid order ID in WeChatPay notify: {notify.OutTradeNo}");
 
+                var order = await _orderService.GetAsync(orderId);
+                if (notify.Amount.Total != (int)(order.DiscountedAmount * 100) || notify.Amount.Currency.ToLower() != order.Currency.ToLower())
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, notify.Amount.Total / 100m, notify.Amount.Currency);
+                    return false;
+                }
+
                 await _orderService.ConfirmPaymentAsync(orderId, notify.TransactionId);
 
                 return true;
@@ -198,6 +205,13 @@ public class WeChatPayService : IWeChatPayService, ITransientDependency
                     var orderId = response.OutTradeNo.ParseToLong(); // 这里假设 OutTradeNo 就是系统订单号
                     if (orderId <= 0)
                         throw new LazyException($"Invalid order ID in WeChatPay notify: {response.OutTradeNo}");
+
+                    var order = await _orderService.GetAsync(orderId);
+                    if (response.Amount.Total != (int)(order.DiscountedAmount * 100) || response.Amount.Currency.ToLower() != order.Currency.ToLower())
+                    {
+                        await _orderService.ProcessPaymentAmountMismatchAsync(orderId, response.Amount.Total.Value / 100m, response.Amount.Currency);
+                        return false;
+                    }
 
                     await _orderService.ConfirmPaymentAsync(orderId, response.TransactionId);
 

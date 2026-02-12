@@ -51,7 +51,7 @@ public class StripeService : IStripeService, ITransientDependency
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(order.Amount * 100), // Stripe 金额单位为分
+                        UnitAmount = (long)(order.DiscountedAmount * 100), // Stripe 金额单位为分
                         Currency = order.Currency.ToLower(),    // 必须小写，如 "usd"
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -113,6 +113,13 @@ public class StripeService : IStripeService, ITransientDependency
                 var session = stripeEvent.Data.Object as Session;
                 var orderId = session.ClientReferenceId.ParseToLong();
                 var transactionId = session.PaymentIntentId;
+                var order = await _orderService.GetAsync(orderId);
+                if (session.AmountTotal != (long)(order.DiscountedAmount * 100) || session.Currency.ToLower() != order.Currency.ToLower())
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, session.AmountTotal.Value / 100m, session.Currency);
+
+                    return false; // 金额不匹配，拒绝处理
+                }
 
                 await _orderService.ConfirmPaymentAsync(orderId, transactionId);
                 return true;
@@ -155,6 +162,13 @@ public class StripeService : IStripeService, ITransientDependency
             {
                 // 注意：此时可能需要根据 session.ClientReferenceId 获取系统订单号
                 var orderId = session.ClientReferenceId.ParseToLong();
+                var order = await _orderService.GetAsync(orderId);
+                if (session.AmountTotal != (long)(order.DiscountedAmount * 100) || session.Currency.ToLower() != order.Currency.ToLower())
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, session.AmountTotal.Value / 100m, session.Currency);
+
+                    return false; // 金额不匹配，拒绝处理
+                }
 
                 await _orderService.ConfirmPaymentAsync(orderId, session.PaymentIntentId);
                 return true;

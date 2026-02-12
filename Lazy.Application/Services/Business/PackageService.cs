@@ -21,4 +21,18 @@ public class PackageService :
 
         return query;
     }
+
+    public async Task<bool> ActiveAsync(long id, ActiveDto input)
+    {
+        var entity = await GetEntityByIdAsync(id);
+        if (entity == null)
+            throw new EntityNotFoundException($"Invalid package {id}");
+
+        entity.IsActive = input.IsActive;
+        SetUpdatedAudit(entity);
+
+        await LazyDBContext.SaveChangesAsync();
+
+        return true;
+    }
 }

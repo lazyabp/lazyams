@@ -66,6 +66,19 @@ public class PackageController : ControllerBase
     }
 
     /// <summary>
+    /// 更新套餐
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpPost("Active/{id}")]
+    [Authorize(PermissionConsts.Package.Update)]
+    public async Task<bool> Active(long id, [FromBody] ActiveDto input)
+    {
+        return await _packageService.ActiveAsync(id, input);
+    }
+
+    /// <summary>
     /// 删除套餐
     /// </summary>
     /// <param name="id"></param>

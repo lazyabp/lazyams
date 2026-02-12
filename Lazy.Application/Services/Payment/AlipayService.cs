@@ -1,14 +1,15 @@
 using Essensoft.Paylinks.Alipay.Client;
+using Essensoft.Paylinks.Alipay.Mvc.Extensions;
 using Essensoft.Paylinks.Alipay.Payments.Model;
 using Essensoft.Paylinks.Alipay.Payments.Notify;
 using Essensoft.Paylinks.Alipay.Payments.Request;
-using Essensoft.Paylinks.Alipay.Mvc.Extensions;
 using Lazy.Core;
+using Lazy.Core.Extensions;
 using Lazy.Shared.Configs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Lazy.Core.Extensions;
+using System.Text.Json.Serialization;
 
 namespace Lazy.Application;
 
@@ -47,12 +48,13 @@ public class AlipayService : IAlipayService, ITransientDependency
         var order = await _orderService.GetAsync(input.OrderId);
 
         // 构建支付宝请求模型
-        var model = new AlipayTradePreCreateBodyModel
+        var model = new GlobalAlipayTradePreCreateBodyModel
         {
             OutTradeNo = order.Id.ToString(), // 系统订单号
             Subject = order.Package.Name,
-            TotalAmount = order.Amount.ToString("F2"),  // todo: 这里金额要考虑货币类型
-            NotifyUrl = alipayConfig.NotifyUrl
+            TotalAmount = order.DiscountedAmount.ToString("F2"),  // todo: 这里金额要考虑货币类型
+            NotifyUrl = alipayConfig.NotifyUrl,
+            Currency = order.Currency
         };
 
         // 创建请求对象并设置回调地址
@@ -124,6 +126,14 @@ public class AlipayService : IAlipayService, ITransientDependency
                 if (orderId <= 0)
                     throw new LazyException($"Invalid order ID in Alipay notify: {notify.OutTradeNo}");
 
+                var order = await _orderService.GetAsync(orderId);
+                var paidAmount = notify.TotalAmount.ParseToDecimal();
+                if (paidAmount != order.DiscountedAmount)
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, paidAmount, order.Currency);
+                    return false;
+                }
+
                 await _orderService.ConfirmPaymentAsync(orderId, notify.TradeNo);
 
                 return true;
@@ -178,6 +188,14 @@ public class AlipayService : IAlipayService, ITransientDependency
                 if (orderId <= 0)
                     throw new LazyException($"Invalid order ID in Alipay notify: {response.OutTradeNo}");
 
+                var order = await _orderService.GetAsync(orderId);
+                var paidAmount = response.TotalAmount.ParseToDecimal();
+                if (paidAmount != order.DiscountedAmount)
+                {
+                    await _orderService.ProcessPaymentAmountMismatchAsync(orderId, paidAmount, order.Currency);
+                    return false;
+                }
+
                 await _orderService.ConfirmPaymentAsync(orderId, response.TradeNo);
 
                 return true;
@@ -186,4 +204,10 @@ public class AlipayService : IAlipayService, ITransientDependency
 
         return false;
     }
+}
+
+public class GlobalAlipayTradePreCreateBodyModel : AlipayTradePreCreateBodyModel
+{
+    [JsonPropertyName("settle_currency")]
+    public string Currency { get; set; }
 }

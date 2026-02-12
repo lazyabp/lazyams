@@ -30,6 +30,7 @@ public static class LazyDbContextModelCreatingExtensions
         ConfigurePackage(modelBuilder);
         ConfigurePackageFeature(modelBuilder);
         ConfigureOrder(modelBuilder);
+        ConfigureOrderLog(modelBuilder);
         ConfigureUserSubscription(modelBuilder);
     }
 
@@ -340,44 +341,53 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired();
             b.Property(x => x.PackageId)
                 .IsRequired();
-            b.Property(x => x.OrderType)
-                .IsRequired();
-            b.Property(x => x.Status)
-                .IsRequired();
+            b.Property(x => x.OrderType).HasConversion(
+                v => v.ToString(),
+                v => (OrderType)Enum.Parse(typeof(OrderType), v)).HasMaxLength(EntityConsts.MaxLength32);
+            b.Property(x => x.OrderStatus).HasConversion(
+                v => v.ToString(),
+                v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v)).HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.Price)
                 .IsRequired();
             b.Property(x => x.Quantity)
                 .IsRequired();
             b.Property(x => x.Amount)
                 .IsRequired();
+            b.Property(x => x.DiscountedAmount)
+                .IsRequired(true);
             b.Property(x => x.Currency)
                 .IsRequired();
-            b.Property(x => x.PayType)
-                .IsRequired();
-            b.Property(x => x.PaidAt)
-                .IsRequired(false);
-            b.Property(x => x.CompletedAt)
-                .IsRequired(false);
-            b.Property(x => x.CanceledAt)
-                .IsRequired(false);
-            b.Property(x => x.FailedAt)
-                .IsRequired(false);
-            b.Property(x => x.FailReason)
-                .IsRequired(false);
-            b.Property(x => x.RefundedAt)
-                .IsRequired(false);
-            b.Property(x => x.RefundAmount)
-                .IsRequired(false);
-            b.Property(x => x.RefundReason)
-                .IsRequired(false);
+            b.Property(x => x.PaymentProvider).HasConversion(
+                v => v.ToString(),
+                v => (PaymentProvider)Enum.Parse(typeof(PaymentProvider), v)).HasMaxLength(EntityConsts.MaxLength32);
             b.ConfigureAudit();
             b.HasOne(x => x.User);
             b.HasOne(x => x.Package);
+            b.HasMany(x => x.Logs).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
             b.HasIndex(x => x.OrderNo).IsUnique();
             b.HasIndex(x => x.SessionId).IsUnique();
             b.HasIndex(x => x.TradeNo).IsUnique();
             b.HasIndex(x => x.UserId);
             b.HasIndex(x => x.PackageId);
+        });
+    }
+
+    private static void ConfigureOrderLog(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<OrderLog>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.OrderId)
+                .IsRequired(true)
+                .HasMaxLength(EntityConsts.MaxLength128);
+            b.Property(x => x.OrderAction).HasConversion(
+                v => v.ToString(),
+                v => (OrderAction)Enum.Parse(typeof(PaymentProvider), v)).HasMaxLength(EntityConsts.MaxLength32);
+            b.Property(x => x.Content)
+                .IsRequired(false);
+            b.ConfigureAudit();
+            b.HasOne(x => x.Order);
         });
     }
 
