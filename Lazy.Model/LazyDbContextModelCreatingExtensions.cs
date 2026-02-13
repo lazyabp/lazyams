@@ -369,9 +369,9 @@ public static class LazyDbContextModelCreatingExtensions
             b.HasOne(x => x.User);
             b.HasOne(x => x.Package);
             b.HasMany(x => x.Logs).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
-            b.HasIndex(x => x.OrderNo).IsUnique();
-            b.HasIndex(x => x.SessionId).IsUnique();
-            b.HasIndex(x => x.TradeNo).IsUnique();
+            b.HasIndex(x => x.OrderNo);
+            b.HasIndex(x => x.SessionId);
+            b.HasIndex(x => x.TradeNo);
             b.HasIndex(x => x.UserId);
             b.HasIndex(x => x.PackageId);
         });
