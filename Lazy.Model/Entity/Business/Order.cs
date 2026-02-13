@@ -25,6 +25,7 @@ public class Order : BaseEntityWithDeletingAudit
     public decimal DiscountedAmount { get; set; }
     public string Currency { get; set; } = "USD";
     public PaymentProvider PaymentProvider { get; set; }
+    public decimal? RefundAmount { get; set; }
     public string SessionId { get; set; }
     public virtual User User { get; set; }
     public virtual Package Package { get; set; }

@@ -8,6 +8,6 @@ public class RenewalPackageDto
 {
     public long UserSubscriptionId { get; set; }
     public int Quantity { get; set; } = 1;
-    public string Currency { get; set; }
+    //public string Currency { get; set; }
     public PaymentProvider PaymentProvider { get; set; }
 }

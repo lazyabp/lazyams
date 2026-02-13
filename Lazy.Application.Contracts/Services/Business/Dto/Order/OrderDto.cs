@@ -18,6 +18,7 @@ public class OrderDto : BaseEntityWithDeletingAuditDto
     public decimal Quantity { get; set; }
     public decimal Amount { get; set; }
     public decimal DiscountedAmount { get; set; }
+    public decimal? RefundAmount { get; set; }
     public string Currency { get; set; }
     public PaymentProvider PaymentProvider { get; set; }
     public virtual UserDto User { get; set; }

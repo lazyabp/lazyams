@@ -280,6 +280,9 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired(true);
             b.Property(x => x.DiscountedPrice)
                 .IsRequired(false);
+            b.Property(x => x.Currency)
+                .IsRequired(true)
+                .HasMaxLength(EntityConsts.MaxLength32);
             b.Property(x => x.DurationUnit)
                 .IsRequired()
                 .HasConversion(
@@ -355,6 +358,8 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired();
             b.Property(x => x.DiscountedAmount)
                 .IsRequired(true);
+            b.Property(x => x.RefundAmount)
+                .IsRequired(false);
             b.Property(x => x.Currency)
                 .IsRequired();
             b.Property(x => x.PaymentProvider).HasConversion(

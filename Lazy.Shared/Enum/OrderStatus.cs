@@ -11,6 +11,7 @@ public enum OrderStatus
     Completed = 2,
     PaymentFailed = 3,
     Canceled = 4,
-    Refunded = 5,
-    AmountMismatch = 6,
+    Refunding = 5,
+    Refunded = 6,
+    AmountMismatch = 90,
 }

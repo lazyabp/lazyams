@@ -11,10 +11,11 @@ public enum OrderAction
     Completed = 2,
     PaymentFailed = 3,
     Canceled = 4,
-    Refunded = 5,
-    AmountMismatch = 6,
-    ChangeAmount = 90,
-    AdminConfirm = 91,
-    ChangeOrderNo = 92,
+    Refunding = 5,
+    Refunded = 6,
+    AmountMismatch = 90,
+    ChangeAmount = 91,
+    AdminConfirm = 92,
+    ChangeOrderNo = 93,
     Other = 100
 }

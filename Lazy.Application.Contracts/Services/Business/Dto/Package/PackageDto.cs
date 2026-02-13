@@ -12,6 +12,7 @@ public class PackageDto : BaseEntityWithDeletingAuditDto
     public string Version { get; set; }
     public decimal Price { get; set; }
     public decimal? DiscountedPrice { get; set; }
+    public string Currency { get; set; }
     public DurationUnit DurationUnit { get; set; }
     public bool IsActive { get; set; }
     public int SortOrder { get; set; }

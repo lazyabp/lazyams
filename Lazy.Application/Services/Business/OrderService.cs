@@ -88,7 +88,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             Quantity = input.Quantity,
             Amount = amount,
             DiscountedAmount = discountedAmount,
-            Currency = input.Currency ?? "USD",
+            Currency = package.Currency,
             PaymentProvider = input.PaymentProvider,
         };
 
@@ -158,7 +158,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             Quantity = input.Quantity,
             Amount = amount,
             DiscountedAmount = discountedAmount,
-            Currency = input.Currency ?? "USD",
+            Currency = userSubscription.Package.Currency,
             PaymentProvider = input.PaymentProvider
         };
 
@@ -291,8 +291,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         if (order == null)
             throw new LazyException($"Order with ID {id} not found.");
 
-        if (order.OrderStatus != OrderStatus.Paid && order.OrderStatus != OrderStatus.Completed)
-            throw new LazyException($"Cannot process refund for order with status {order.OrderStatus}. Order must be in Paid or Completed status.");
+        if (order.OrderStatus != OrderStatus.Paid && order.OrderStatus != OrderStatus.Completed && order.OrderStatus != OrderStatus.Refunding)
+            throw new LazyException($"Cannot process refund for order with status {order.OrderStatus}. Order must be in Paid, Completed or Refunding status.");
 
         order.OrderStatus = OrderStatus.Refunded;       
         SetUpdatedAudit(order);
@@ -364,48 +364,47 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         if (order.OrderType == OrderType.Subscription)
         {
-            var endAt = DateTime.Now;
-            switch (order.Package.DurationUnit)
-            {
-                case DurationUnit.Day:
-                    endAt = DateTime.Now.AddDays(order.Quantity);
-                    break;
-                case DurationUnit.Week:
-                    endAt = DateTime.Now.AddDays(order.Quantity * 7);
-                    break;
-                case DurationUnit.Month:
-                    endAt = DateTime.Now.AddMonths(order.Quantity);
-                    break;
-                case DurationUnit.Year:
-                    endAt = DateTime.Now.AddYears(order.Quantity);
-                    break;
-            }
-
-            // Handle subscription activation
-            var userSubscription = new UserSubscription
-            {
-                UserId = order.UserId,
-                PackageId = order.PackageId,
-                LastOrderId = order.Id,
-                StartAt = DateTime.Now,
-                EndAt = endAt
-            };
-            SetIdForLong(userSubscription);
-            userSubscription.CreatedBy = order.UserId;
-            userSubscription.CreatedAt = DateTime.Now;
-
-            LazyDBContext.UserSubscriptions.Add(userSubscription);
-            await LazyDBContext.SaveChangesAsync();
-        }
-        else if (order.OrderType == OrderType.Renewal)
-        {
-            // Handle subscription renewal
             var userSubscription = await LazyDBContext.UserSubscriptions
                 .Where(us => us.UserId == order.UserId && us.PackageId == order.PackageId && us.Status == SubscriptionStatus.Active)
                 .OrderByDescending(us => us.CreatedAt)
                 .FirstOrDefaultAsync();
 
-            if (userSubscription != null)
+            if (userSubscription == null)
+            {
+                var endAt = DateTime.Now;
+                switch (order.Package.DurationUnit)
+                {
+                    case DurationUnit.Day:
+                        endAt = DateTime.Now.AddDays(order.Quantity);
+                        break;
+                    case DurationUnit.Week:
+                        endAt = DateTime.Now.AddDays(order.Quantity * 7);
+                        break;
+                    case DurationUnit.Month:
+                        endAt = DateTime.Now.AddMonths(order.Quantity);
+                        break;
+                    case DurationUnit.Year:
+                        endAt = DateTime.Now.AddYears(order.Quantity);
+                        break;
+                }
+
+                // Handle subscription activation
+                userSubscription = new UserSubscription
+                {
+                    UserId = order.UserId,
+                    PackageId = order.PackageId,
+                    LastOrderId = order.Id,
+                    StartAt = DateTime.Now,
+                    EndAt = endAt
+                };
+                SetIdForLong(userSubscription);
+                userSubscription.CreatedBy = order.UserId;
+                userSubscription.CreatedAt = DateTime.Now;
+
+                LazyDBContext.UserSubscriptions.Add(userSubscription);
+                await LazyDBContext.SaveChangesAsync();
+            }
+            else
             {
                 var endAt = userSubscription.EndAt > DateTime.Now ? userSubscription.EndAt : DateTime.Now;
                 switch (order.Package.DurationUnit)
@@ -432,6 +431,46 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
                 LazyDBContext.UserSubscriptions.Update(userSubscription);
                 await LazyDBContext.SaveChangesAsync();
             }
+        }
+        else if (order.OrderType == OrderType.Renewal)
+        {
+            // Handle subscription renewal
+            var userSubscription = await LazyDBContext.UserSubscriptions
+                .Where(us => us.UserId == order.UserId && us.PackageId == order.PackageId && us.Status == SubscriptionStatus.Active)
+                .OrderByDescending(us => us.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (userSubscription == null)
+            {
+                await WriteOrderLogAsync(order.Id, OrderAction.Other, $"Active subscription not found for user {order.UserId} and package {order.PackageId}. Cannot process renewal.");
+                //throw new LazyException($"Active subscription not found for user {order.UserId} and package {order.PackageId}. Cannot process renewal.");
+                return;
+            }
+
+            var endAt = userSubscription.EndAt > DateTime.Now ? userSubscription.EndAt : DateTime.Now;
+            switch (order.Package.DurationUnit)
+            {
+                case DurationUnit.Day:
+                    endAt = endAt.AddDays(order.Quantity);
+                    break;
+                case DurationUnit.Week:
+                    endAt = endAt.AddDays(order.Quantity * 7);
+                    break;
+                case DurationUnit.Month:
+                    endAt = endAt.AddMonths(order.Quantity);
+                    break;
+                case DurationUnit.Year:
+                    endAt = endAt.AddYears(order.Quantity);
+                    break;
+            }
+
+            userSubscription.LastOrderId = order.Id;
+            userSubscription.EndAt = endAt;
+            userSubscription.UpdatedBy = order.UserId;
+            userSubscription.UpdatedAt = DateTime.Now;
+
+            LazyDBContext.UserSubscriptions.Update(userSubscription);
+            await LazyDBContext.SaveChangesAsync();
         }
 
         order.OrderStatus = OrderStatus.Completed;

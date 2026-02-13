@@ -14,6 +14,7 @@ public class Package : BaseEntityWithDeletingAudit
     public string Version { get; set; }
     public decimal Price { get; set; }
     public decimal? DiscountedPrice { get; set; }
+    public string Currency { get; set; }
     public DurationUnit DurationUnit { get; set; } = DurationUnit.Month;
     public bool IsActive { get; set; } = true;
     public int SortOrder { get; set; } = 0;
