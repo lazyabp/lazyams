@@ -76,6 +76,10 @@ public class PermissionConsts
         public const string Default = PermissionManagement + ".Order";
         public const string Add = Default + ".Add";
         public const string Update = Default + ".Update";
+        public const string SetAsPaid = Default + ".SetAsPaid";
+        public const string SetAsComplited = Default + ".SetAsComplited";
+        public const string SetAsCanceled = Default + ".SetAsCanceled";
+        public const string SetAsRefund = Default + ".SetAsRefund";
         public const string Delete = Default + ".Delete";
     }
 
@@ -99,6 +103,9 @@ public class PermissionConsts
     {
         public const string Default = PermissionManagement + ".UserSubscription";
         public const string Update = Default + ".Update";
+        public const string SetAsExpired = Default + ".SetAsExpired";
+        public const string SetAsFreezed = Default + ".SetAsFreezed";
+        public const string SetAsActive = Default + ".SetAsActive";
         public const string Delete = Default + ".Delete";
     }
 }

@@ -47,7 +47,7 @@ public class UserSubscriptionController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost("SetAsExpired/{id}")]
-    [Authorize(PermissionConsts.UserSubscription.Update)]
+    [Authorize(PermissionConsts.UserSubscription.SetAsExpired)]
     public async Task<UserSubscriptionDto> SetAsExpired(long id)
     {
         return await _userSubscriptionService.SetAsExpiredAsync(id);
@@ -59,7 +59,7 @@ public class UserSubscriptionController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost("SetAsFreezed/{id}")]
-    [Authorize(PermissionConsts.UserSubscription.Update)]
+    [Authorize(PermissionConsts.UserSubscription.SetAsFreezed)]
     public async Task<UserSubscriptionDto> SetAsFreezed(long id)
     {
         return await _userSubscriptionService.SetAsFreezedAsync(id);
@@ -71,7 +71,7 @@ public class UserSubscriptionController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost("SetAsActive/{id}")]
-    [Authorize(PermissionConsts.UserSubscription.Update)]
+    [Authorize(PermissionConsts.UserSubscription.SetAsActive)]
     public async Task<UserSubscriptionDto> SetAsActive(long id)
     {
         return await _userSubscriptionService.SetAsActiveAsync(id);

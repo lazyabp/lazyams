@@ -73,7 +73,7 @@ public class OrderController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost("SetAsPaid/{id}")]
-    [Authorize(PermissionConsts.Order.Update)]
+    [Authorize(PermissionConsts.Order.SetAsPaid)]
     public Task SetAsPaidAsync(long id, SetAsPaidDto input)
     {
         return _orderService.SetAsPaidAsync(id, input.Reason);
@@ -86,10 +86,36 @@ public class OrderController : ControllerBase
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost("SetAsComplited/{id}")]
-    [Authorize(PermissionConsts.Order.Update)]
+    [Authorize(PermissionConsts.Order.SetAsComplited)]
     public Task SetAsComplitedAsync(long id, SetAsComplitedDto input)
     {
         return _orderService.SetAsComplitedAsync(id, input.Reason);
+    }
+
+    /// <summary>
+    /// 设置订单为已取消状态（这里是非正常流程修改订单状态，不建议使用，除非特殊情况，否则请走正常支付流程）
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpPost("SetAsCanceled/{id}")]
+    [Authorize(PermissionConsts.Order.SetAsCanceled)]
+    public Task SetAsCanceled(long id, SetAsComplitedDto input)
+    {
+        return _orderService.SetAsCanceledAsync(id, input.Reason);
+    }
+
+    /// <summary>
+    /// 设置订单为已退款状态（这里是非正常流程修改订单状态，不建议使用，除非特殊情况，否则请走正常支付流程）
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpPost("SetAsRefund/{id}")]
+    [Authorize(PermissionConsts.Order.SetAsRefund)]
+    public Task SetAsRefund(long id, SetAsRefundDto input)
+    {
+        return _orderService.ProcessRefundAsync(id, input.RefundAmount, input.Reason);
     }
 
     /// <summary>

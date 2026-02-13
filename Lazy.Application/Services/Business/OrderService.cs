@@ -61,6 +61,12 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         throw new NotImplementedException("Updating orders is not supported. Orders are immutable after creation. If you need to change the order status, please use the specific methods for confirming payment, processing payment failure, canceling orders, or processing refunds.");
     }
 
+    /// <summary>
+    /// 创建订单
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
     public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
     {
         var package = await LazyDBContext.Packages.FirstOrDefaultAsync(p => p.Id == input.PackageId);
@@ -97,7 +103,6 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
     }
 
 
-
     /// <summary>
     /// 修改订的OrderNo，适用于一些特殊的支付场景，需要替换订单号的情况
     /// </summary>
@@ -120,6 +125,12 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         await WriteOrderLogAsync(order.Id, OrderAction.ChangeOrderNo, $"Order number changed from {oldOrderNo} to {orderNo}");
     }
 
+    /// <summary>
+    /// 续订套餐
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
     public async Task<OrderDto> RenewalPackageAsync(RenewalPackageDto input)
     {
         var userSubscription = await LazyDBContext.UserSubscriptions
@@ -184,6 +195,128 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         return MapToGetOutputDto(order);
     }
+
+    /// <summary>
+    /// 确认支付成功
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="tradeNo"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
+    public async Task ConfirmPaymentAsync(long id, string tradeNo)
+    {
+        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null)
+            throw new LazyException($"Order with ID {id} not found.");
+
+        if (order.OrderStatus != OrderStatus.Pending)
+            throw new LazyException($"Cannot confirm payment for order with status {order.OrderStatus}. Order must be in Pending status.");
+
+        order.TradeNo = tradeNo;
+        order.OrderStatus = OrderStatus.Paid;        
+        SetUpdatedAudit(order);
+
+        LazyDBContext.Orders.Update(order);
+        await LazyDBContext.SaveChangesAsync();
+
+        // 支付完成，记录日志
+        await WriteOrderLogAsync(order.Id, OrderAction.Paid, $"Payment confirmed with Trade No: {tradeNo}");
+
+        // 支付完成后直接设置订单为完成状态，并激活订阅
+        await SetAsComplitedAsync(order.Id, "Paid is successfully");
+    }
+
+    /// <summary>
+    /// 设置订单状态为金额不匹配
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="paidAmount"></param>
+    /// <param name="paidCurrency"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
+    public async Task ProcessPaymentAmountMismatchAsync(long id, decimal paidAmount, string paidCurrency)
+    {
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null)
+            throw new LazyException($"Order with ID {id} not found.");
+        if (order.OrderStatus != OrderStatus.Pending)
+            throw new LazyException($"Cannot process payment success for order with status {order.OrderStatus}. Order must be in Pending status.");
+
+        order.OrderStatus = OrderStatus.AmountMismatch;
+        SetUpdatedAudit(order);
+        LazyDBContext.Orders.Update(order);
+        await LazyDBContext.SaveChangesAsync();
+
+        await WriteOrderLogAsync(order.Id, OrderAction.AmountMismatch, $"Order Currency: {order.Currency}, Order Amount: {order.DiscountedAmount}, Paid currency: {paidCurrency}, Paid Amount: {paidAmount}");
+
+        // 这里可以添加通知管理员的逻辑，例如发送邮件或系统消息，提醒管理员有订单金额不匹配需要处理
+    }
+
+    /// <summary>
+    /// 处理订单失败，将订单状态设置为支付失败
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="failReason"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
+    public async Task ProcessPaymentFailureAsync(long id, string failReason)
+    {
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null)
+            throw new LazyException($"Order with ID {id} not found.");
+
+        if (order.OrderStatus != OrderStatus.Pending)
+            throw new LazyException($"Cannot process payment failure for order with status {order.OrderStatus}. Order must be in Pending status.");
+
+        order.OrderStatus = OrderStatus.PaymentFailed;
+        SetUpdatedAudit(order);
+
+        LazyDBContext.Orders.Update(order);
+        await LazyDBContext.SaveChangesAsync();
+
+        await WriteOrderLogAsync(order.Id, OrderAction.PaymentFailed, $"Payment failed due to: {failReason}");
+    }
+
+    /// <summary>
+    /// 处理退款，将订单状态设置为已退款，并冻结用户订阅
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="refundAmount"></param>
+    /// <param name="refundReason"></param>
+    /// <returns></returns>
+    /// <exception cref="LazyException"></exception>
+    public async Task ProcessRefundAsync(long id, decimal refundAmount, string refundReason)
+    {
+        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null)
+            throw new LazyException($"Order with ID {id} not found.");
+
+        if (order.OrderStatus != OrderStatus.Paid && order.OrderStatus != OrderStatus.Completed)
+            throw new LazyException($"Cannot process refund for order with status {order.OrderStatus}. Order must be in Paid or Completed status.");
+
+        order.OrderStatus = OrderStatus.Refunded;       
+        SetUpdatedAudit(order);
+
+        LazyDBContext.Orders.Update(order);
+        await LazyDBContext.SaveChangesAsync();
+
+        var userSubscription = await LazyDBContext.UserSubscriptions
+            .Where(us => us.LastOrderId == order.Id)
+            .FirstOrDefaultAsync();
+
+        if (userSubscription != null)
+        {
+            userSubscription.Status = SubscriptionStatus.Freeze;
+            userSubscription.UpdatedBy = order.UserId;
+            userSubscription.UpdatedAt = DateTime.Now;
+
+            LazyDBContext.UserSubscriptions.Update(userSubscription);
+            await LazyDBContext.SaveChangesAsync();
+        }
+
+        await WriteOrderLogAsync(order.Id, OrderAction.Refunded, $"Refund Amount: {refundAmount},\r\nReason: {refundReason}");
+    }
+
 
     /// <summary>
     /// 管理员手动操作订单状态为已支付
@@ -310,80 +443,13 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
     }
 
     /// <summary>
-    /// 确认支付成功
+    /// 取消订单
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="tradeNo"></param>
+    /// <param name="reason"></param>
     /// <returns></returns>
     /// <exception cref="LazyException"></exception>
-    public async Task ConfirmPaymentAsync(long id, string tradeNo)
-    {
-        var order = await LazyDBContext.Orders.Include(x => x.Package).FirstOrDefaultAsync(o => o.Id == id);
-        if (order == null)
-            throw new LazyException($"Order with ID {id} not found.");
-
-        if (order.OrderStatus != OrderStatus.Pending)
-            throw new LazyException($"Cannot confirm payment for order with status {order.OrderStatus}. Order must be in Pending status.");
-
-        order.TradeNo = tradeNo;
-        order.OrderStatus = OrderStatus.Paid;        
-        SetUpdatedAudit(order);
-
-        LazyDBContext.Orders.Update(order);
-        await LazyDBContext.SaveChangesAsync();
-
-        // 支付完成，记录日志
-        await WriteOrderLogAsync(order.Id, OrderAction.Paid, $"Payment confirmed with Trade No: {tradeNo}");
-
-        // 支付完成后直接设置订单为完成状态，并激活订阅
-        await SetAsComplitedAsync(order.Id, "Paid is successfully");
-    }
-
-    /// <summary>
-    /// 设置订单状态为金额不匹配
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="paidAmount"></param>
-    /// <param name="paidCurrency"></param>
-    /// <returns></returns>
-    /// <exception cref="LazyException"></exception>
-    public async Task ProcessPaymentAmountMismatchAsync(long id, decimal paidAmount, string paidCurrency)
-    {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
-        if (order == null)
-            throw new LazyException($"Order with ID {id} not found.");
-        if (order.OrderStatus != OrderStatus.Pending)
-            throw new LazyException($"Cannot process payment success for order with status {order.OrderStatus}. Order must be in Pending status.");
-
-        order.OrderStatus = OrderStatus.AmountMismatch;
-        SetUpdatedAudit(order);
-        LazyDBContext.Orders.Update(order);
-        await LazyDBContext.SaveChangesAsync();
-
-        await WriteOrderLogAsync(order.Id, OrderAction.AmountMismatch, $"Order Currency: {order.Currency}, Order Amount: {order.DiscountedAmount}, Paid currency: {paidCurrency}, Paid Amount: {paidAmount}");
-
-        // 这里可以添加通知管理员的逻辑，例如发送邮件或系统消息，提醒管理员有订单金额不匹配需要处理
-    }
-
-    public async Task ProcessPaymentFailureAsync(long id, string failReason)
-    {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
-        if (order == null)
-            throw new LazyException($"Order with ID {id} not found.");
-
-        if (order.OrderStatus != OrderStatus.Pending)
-            throw new LazyException($"Cannot process payment failure for order with status {order.OrderStatus}. Order must be in Pending status.");
-
-        order.OrderStatus = OrderStatus.PaymentFailed;
-        SetUpdatedAudit(order);
-
-        LazyDBContext.Orders.Update(order);
-        await LazyDBContext.SaveChangesAsync();
-
-        await WriteOrderLogAsync(order.Id, OrderAction.PaymentFailed, $"Payment failed due to: {failReason}");
-    }
-
-    public async Task CancelOrderAsync(long id)
+    public async Task SetAsCanceledAsync(long id, string reason)
     {
         var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
@@ -398,39 +464,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
-        await WriteOrderLogAsync(order.Id, OrderAction.Canceled, "Order has been canceled.");
-    }
-
-    public async Task ProcessRefundAsync(long id, decimal refundAmount, string refundReason)
-    {
-        var order = await LazyDBContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
-        if (order == null)
-            throw new LazyException($"Order with ID {id} not found.");
-
-        if (order.OrderStatus != OrderStatus.Paid && order.OrderStatus != OrderStatus.Completed)
-            throw new LazyException($"Cannot process refund for order with status {order.OrderStatus}. Order must be in Paid or Completed status.");
-
-        order.OrderStatus = OrderStatus.Refunded;       
-        SetUpdatedAudit(order);
-
-        LazyDBContext.Orders.Update(order);
-        await LazyDBContext.SaveChangesAsync();
-
-        var userSubscription = await LazyDBContext.UserSubscriptions
-            .Where(us => us.LastOrderId == order.Id)
-            .FirstOrDefaultAsync();
-
-        if (userSubscription != null)
-        {
-            userSubscription.Status = SubscriptionStatus.Freeze;
-            userSubscription.UpdatedBy = order.UserId;
-            userSubscription.UpdatedAt = DateTime.Now;
-
-            LazyDBContext.UserSubscriptions.Update(userSubscription);
-            await LazyDBContext.SaveChangesAsync();
-        }
-
-        await WriteOrderLogAsync(order.Id, OrderAction.Refunded, $"Refund Amount: {refundAmount}, Reason: {refundReason}");
+        await WriteOrderLogAsync(order.Id, OrderAction.Canceled, $"Order has been canceled.\r\nReason: {reason}");
     }
 
     /// <summary>
