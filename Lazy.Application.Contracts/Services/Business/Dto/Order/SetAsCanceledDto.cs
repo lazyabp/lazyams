@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lazy.Application.Contracts;
+namespace Lazy.Application.Contracts.Dto;
 
 public class SetAsCanceledDto
 {

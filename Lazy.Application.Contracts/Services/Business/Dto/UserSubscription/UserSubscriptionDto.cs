@@ -13,6 +13,6 @@ public class UserSubscriptionDto : BaseEntityWithDeletingAuditDto
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
     public SubscriptionStatus Status { get; set; }
-    public virtual UserDto User { get; set; }
+    public virtual UserInfoDto User { get; set; }
     public virtual PackageDto Package { get; set; }
 }

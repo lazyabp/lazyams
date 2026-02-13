@@ -9,7 +9,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
     protected override IQueryable<Order> CreateFilteredQuery(OrderFilterPagedResultRequestDto input)
     {
-        var query = GetQueryable();
+        var query = GetQueryable().Include(q => q.User).AsQueryable().AsNoTracking();
 
         if (input.UserId.HasValue)
             query = query.Where(x => x.UserId == input.UserId.Value);

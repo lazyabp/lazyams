@@ -107,7 +107,6 @@ public class UserController : ControllerBase
     public async Task<UserLoginDto> GetCurrentUser()
     {
         var data = await _userService.GetCurrentUserInfoAsync();
-        data.Password = "";
         var permissions = await _roleService.GetPermissionsbyUserIdAsync(data.Id);
         var menus = await _menuService.GetMenuTreeAsync();
 
