@@ -16,7 +16,7 @@ public class UserInfoDto : BaseEntityDto
 
     public int? Age { get; set; }
 
-    public bool IsAdministrator { get; set; }
+    //public bool IsAdministrator { get; set; }
 
     public Access Access { get; set; }
 

@@ -27,16 +27,16 @@ public class UserSubscriptionService :
             query = query.Where(x => x.Status == input.Status.Value);
 
         if (input.BeginStartAt.HasValue)
-            query = query.Where(x => x.StartAt >= input.BeginStartAt.Value.Date);
+            query = query.Where(x => x.StartAt >= input.BeginStartAt.Value);
 
         if (input.LastStartAt.HasValue)
-            query = query.Where(x => x.StartAt < input.LastStartAt.Value.Date.AddDays(1));
+            query = query.Where(x => x.StartAt < input.LastStartAt.Value);
 
         if (input.BeginEndAt.HasValue)
-            query = query.Where(x => x.EndAt >= input.BeginEndAt.Value.Date);
+            query = query.Where(x => x.EndAt >= input.BeginEndAt.Value);
 
         if (input.LastEndAt.HasValue)
-            query = query.Where(x => x.EndAt < input.LastEndAt.Value.Date.AddDays(1));
+            query = query.Where(x => x.EndAt < input.LastEndAt.Value);
 
         return query;
     }

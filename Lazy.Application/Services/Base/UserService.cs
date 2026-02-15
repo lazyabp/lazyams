@@ -32,10 +32,10 @@ public class UserService : CrudService<User, UserDto, UserDto, long, UserPagedRe
             query = query.Where(x => x.IsActive == input.IsActive);
 
         if (input.CreateBegin.HasValue)
-            query = query.Where(x => x.CreatedAt >= input.CreateBegin.Value.Date);
+            query = query.Where(x => x.CreatedAt >= input.CreateBegin.Value);
 
         if (input.CreateEnd.HasValue)
-            query = query.Where(x => x.CreatedAt <= input.CreateEnd.Value.AddDays(1).Date);
+            query = query.Where(x => x.CreatedAt <= input.CreateEnd.Value);
 
         if (!string.IsNullOrEmpty(input.Email))
             query = query.Where(x => x.Email.Contains(input.Email));
