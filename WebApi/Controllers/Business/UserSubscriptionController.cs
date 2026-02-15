@@ -24,9 +24,9 @@ public class UserSubscriptionController : ControllerBase
     /// <returns></returns>
     [HttpGet("GetByPage")]
     [Authorize(PermissionConsts.UserSubscription.Default)]
-    public async Task<PagedResultDto<UserSubscriptionDto>> GetByPageAsync([FromQuery] UserSubscriptionFilterPagedResultRequestDto input)
+    public Task<PagedResultDto<UserSubscriptionDto>> GetByPageAsync([FromQuery] UserSubscriptionFilterPagedResultRequestDto input)
     {
-        return await _userSubscriptionService.GetListAsync(input);
+        return _userSubscriptionService.GetListAsync(input);
     }
 
     /// <summary>
@@ -36,9 +36,33 @@ public class UserSubscriptionController : ControllerBase
     /// <returns></returns>
     [HttpGet("GetById/{id}")]
     [Authorize(PermissionConsts.UserSubscription.Default)]
-    public async Task<UserSubscriptionDto> GetById(long id)
+    public Task<UserSubscriptionDto> GetById(long id)
     {
-        return await _userSubscriptionService.GetAsync(id);
+        return _userSubscriptionService.GetAsync(id);
+    }
+
+    /// <summary>
+    /// 添加用户订阅
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpPost("Add")]
+    [Authorize(PermissionConsts.UserSubscription.Add)]
+    public Task<UserSubscriptionDto> Add([FromBody] CreateUserSubscriptionDto input)
+    {
+        return _userSubscriptionService.CreateAsync(input);
+    }
+
+    /// <summary>
+    /// 更新用户订阅
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [HttpPost("Update")]
+    [Authorize(PermissionConsts.UserSubscription.Update)]
+    public Task<UserSubscriptionDto> Update([FromBody] UpdateUserSubscriptionDto input)
+    {
+        return _userSubscriptionService.UpdateAsync(input.Id, input);
     }
 
     /// <summary>
@@ -48,9 +72,9 @@ public class UserSubscriptionController : ControllerBase
     /// <returns></returns>
     [HttpPost("SetAsExpired/{id}")]
     [Authorize(PermissionConsts.UserSubscription.SetAsExpired)]
-    public async Task<UserSubscriptionDto> SetAsExpired(long id)
+    public Task<UserSubscriptionDto> SetAsExpired(long id)
     {
-        return await _userSubscriptionService.SetAsExpiredAsync(id);
+        return _userSubscriptionService.SetAsExpiredAsync(id);
     }
 
     /// <summary>
@@ -60,9 +84,9 @@ public class UserSubscriptionController : ControllerBase
     /// <returns></returns>
     [HttpPost("SetAsFreezed/{id}")]
     [Authorize(PermissionConsts.UserSubscription.SetAsFreezed)]
-    public async Task<UserSubscriptionDto> SetAsFreezed(long id)
+    public Task<UserSubscriptionDto> SetAsFreezed(long id)
     {
-        return await _userSubscriptionService.SetAsFreezedAsync(id);
+        return _userSubscriptionService.SetAsFreezedAsync(id);
     }
 
     /// <summary>
@@ -72,9 +96,9 @@ public class UserSubscriptionController : ControllerBase
     /// <returns></returns>
     [HttpPost("SetAsActive/{id}")]
     [Authorize(PermissionConsts.UserSubscription.SetAsActive)]
-    public async Task<UserSubscriptionDto> SetAsActive(long id)
+    public Task<UserSubscriptionDto> SetAsActive(long id)
     {
-        return await _userSubscriptionService.SetAsActiveAsync(id);
+        return _userSubscriptionService.SetAsActiveAsync(id);
     }
 
     /// <summary>

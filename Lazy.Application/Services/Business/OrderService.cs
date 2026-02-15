@@ -90,10 +90,12 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             DiscountedAmount = discountedAmount,
             Currency = package.Currency,
             PaymentProvider = input.PaymentProvider,
+            SessionId = Guid.NewGuid().ToString("N")
         };
 
         SetIdForLong(order);
         SetCreatedAudit(order);
+        GetDbSet().Add(order);
 
         await LazyDBContext.SaveChangesAsync();
 
@@ -120,6 +122,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderNo = orderNo;
         SetUpdatedAudit(order);
+        GetDbSet().Update(order);
+
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.ChangeOrderNo, $"Order number changed from {oldOrderNo} to {orderNo}");
@@ -159,11 +163,13 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
             Amount = amount,
             DiscountedAmount = discountedAmount,
             Currency = userSubscription.Package.Currency,
-            PaymentProvider = input.PaymentProvider
+            PaymentProvider = input.PaymentProvider,
+            SessionId = Guid.NewGuid().ToString("N")
         };
 
         SetIdForLong(order);
         SetCreatedAudit(order);
+        GetDbSet().Add(order);
 
         await LazyDBContext.SaveChangesAsync();
 
@@ -188,7 +194,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.DiscountedAmount = input.DiscountedAmount;
         SetUpdatedAudit(order);
-        LazyDBContext.Orders.Update(order);
+        GetDbSet().Update(order);
+
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.ChangeAmount, $"Order old amount: {order.DiscountedAmount},\r\n new amount: {input.DiscountedAmount},\r\n Remark: {input.Remark}");
@@ -215,8 +222,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         order.TradeNo = tradeNo;
         order.OrderStatus = OrderStatus.Paid;        
         SetUpdatedAudit(order);
+        GetDbSet().Update(order);
 
-        LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
         // 支付完成，记录日志
@@ -244,7 +251,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderStatus = OrderStatus.AmountMismatch;
         SetUpdatedAudit(order);
-        LazyDBContext.Orders.Update(order);
+        GetDbSet().Update(order);
+
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.AmountMismatch, $"Order Currency: {order.Currency}, Order Amount: {order.DiscountedAmount}, Paid currency: {paidCurrency}, Paid Amount: {paidAmount}");
@@ -270,8 +278,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderStatus = OrderStatus.PaymentFailed;
         SetUpdatedAudit(order);
+        GetDbSet().Update(order);
 
-        LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.PaymentFailed, $"Payment failed due to: {failReason}");
@@ -294,10 +302,11 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
         if (order.OrderStatus != OrderStatus.Paid && order.OrderStatus != OrderStatus.Completed && order.OrderStatus != OrderStatus.Refunding)
             throw new LazyException($"Cannot process refund for order with status {order.OrderStatus}. Order must be in Paid, Completed or Refunding status.");
 
-        order.OrderStatus = OrderStatus.Refunded;       
+        order.OrderStatus = OrderStatus.Refunded;
+        order.RefundAmount = refundAmount;
         SetUpdatedAudit(order);
+        GetDbSet().Update(order);
 
-        LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
         var userSubscription = await LazyDBContext.UserSubscriptions
@@ -336,7 +345,7 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderStatus = OrderStatus.Paid;
         SetUpdatedAudit(order);
-        LazyDBContext.Orders.Update(order);
+        GetDbSet().Update(order);
 
         await LazyDBContext.SaveChangesAsync();
 
@@ -475,7 +484,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderStatus = OrderStatus.Completed;
         SetUpdatedAudit(order);
-        LazyDBContext.Orders.Update(order);
+        GetDbSet().Update(order);
+
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.Completed, $"User subscription is successfully,\r\nReason: {reason}");
@@ -499,8 +509,8 @@ public class OrderService : CrudService<Order, OrderDto, OrderDto, long, OrderFi
 
         order.OrderStatus = OrderStatus.Canceled;
         SetUpdatedAudit(order);
+        GetDbSet().Update(order);
 
-        LazyDBContext.Orders.Update(order);
         await LazyDBContext.SaveChangesAsync();
 
         await WriteOrderLogAsync(order.Id, OrderAction.Canceled, $"Order has been canceled.\r\nReason: {reason}");

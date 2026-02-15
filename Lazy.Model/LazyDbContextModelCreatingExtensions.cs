@@ -338,7 +338,7 @@ public static class LazyDbContextModelCreatingExtensions
                 .IsRequired(false)
                 .HasMaxLength(EntityConsts.MaxLength128);
             b.Property(x => x.SessionId)
-                .IsRequired(true)
+                .IsRequired(false)
                 .HasMaxLength(EntityConsts.MaxLength128);
             b.Property(x => x.UserId)
                 .IsRequired();

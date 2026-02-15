@@ -8,7 +8,6 @@ namespace Lazy.Application.Contracts.Dto;
 public class OrderDto : BaseEntityWithDeletingAuditDto
 {
     public string OrderNo { get; set; }
-
     public string TradeNo { get; set; }
     public long UserId { get; set; }
     public long PackageId { get; set; }

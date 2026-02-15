@@ -5,18 +5,17 @@ using System.Text;
 
 namespace Lazy.Application;
 
-public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSubscriptionDto, long, UserSubscriptionFilterPagedResultRequestDto>, 
+public class UserSubscriptionService : 
+    CrudService<UserSubscription, UserSubscriptionDto, UserSubscriptionDto, long, UserSubscriptionFilterPagedResultRequestDto, CreateUserSubscriptionDto, UpdateUserSubscriptionDto>, 
     IUserSubscriptionService, ITransientDependency
 {
-    public ICurrentUser CurrentUser { get; set; }
-
     public UserSubscriptionService(LazyDBContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
     }
 
     protected override IQueryable<UserSubscription> CreateFilteredQuery(UserSubscriptionFilterPagedResultRequestDto input)
     {
-        var query = GetQueryable();
+        var query = GetQueryable().Include(x => x.User).Include(x => x.Package).AsQueryable();
 
         if (input.UserId.HasValue)
             query = query.Where(x => x.UserId == input.UserId.Value);
@@ -40,6 +39,16 @@ public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSub
             query = query.Where(x => x.EndAt < input.LastEndAt.Value.Date.AddDays(1));
 
         return query;
+    }
+
+    public override async Task<UserSubscriptionDto> GetAsync(long id)
+    {
+        var data = await GetQueryable()
+            .Include(x => x.User)
+            .Include(x => x.Package)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        return MapToGetOutputDto(data);
     }
 
     public async Task<UserSubscriptionDto> SetAsExpiredAsync(long id)
@@ -100,20 +109,5 @@ public class UserSubscriptionService : ReadOnlyService<UserSubscription, UserSub
         await LazyDBContext.SaveChangesAsync();
 
         return MapToGetOutputDto(entity);
-    }
-
-    public async Task<bool> DeleteAsync(long id)
-    {
-        var entity = await LazyDBContext.UserSubscriptions.FirstAsync(x => x.Id == id);
-        if (entity == null)
-            throw new EntityNotFoundException(nameof(UserSubscription));
-
-        entity.IsDeleted = true;
-        entity.DeletedAt = DateTime.Now;
-        entity.DeletedBy = CurrentUser.Id;
-
-        await LazyDBContext.SaveChangesAsync();
-
-        return true;
     }
 }
